@@ -74,8 +74,31 @@ class BarangController extends Controller
 
     public function manualIndex()
     {
-        $barangs = Barang::with(['satuan', 'stokGudangs'])->where('source', 'manual')->orderBy('created_at', 'desc')->get();
+        $user = auth()->user();
+        $activeGudang = $user->getActiveGudangCode();
         $gudangs = Gudang::orderBy('nama_gudang', 'asc')->get();
+        
+        $query = Barang::with(['satuan', 'stokGudangs'])->where('source', 'manual');
+        
+        if ($user->isSuperAdmin()) {
+            if ($activeGudang && $activeGudang !== 'all') {
+                $query->whereHas('stokGudangs', function ($q) use ($activeGudang) {
+                    $q->where('kode_gudang', $activeGudang);
+                });
+            }
+        } else {
+            $query->where(function ($q) use ($user, $activeGudang) {
+                $q->where('created_by_user_id', $user->id);
+                if ($activeGudang && $activeGudang !== 'all') {
+                    $q->orWhereHas('stokGudangs', function ($sq) use ($activeGudang) {
+                        $sq->where('kode_gudang', $activeGudang);
+                    });
+                }
+            });
+        }
+
+        $barangs = $query->orderBy('created_at', 'desc')->get();
+        
         return view('barang.manual_index', compact('barangs', 'gudangs'));
     }
 

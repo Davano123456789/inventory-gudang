@@ -13,7 +13,7 @@
                     <div class="flex-none w-2/3 max-w-full px-3">
                         <div>
                             <p class="mb-0 font-sans font-semibold leading-normal text-sm">Total Jenis Barang</p>
-                            <h5 class="mb-0 font-bold">1,024 <span class="leading-normal text-sm font-weight-bolder text-emerald-500">Item</span></h5>
+                            <h5 class="mb-0 font-bold">{{ number_format($totalBarang, 0, ',', '.') }} <span class="leading-normal text-sm font-weight-bolder text-emerald-500">Item</span></h5>
                         </div>
                     </div>
                     <div class="px-3 text-right basis-1/3">
@@ -33,7 +33,7 @@
                     <div class="flex-none w-2/3 max-w-full px-3">
                         <div>
                             <p class="mb-0 font-sans font-semibold leading-normal text-sm">Barang Masuk (Hari Ini)</p>
-                            <h5 class="mb-0 font-bold">120,438 <span class="leading-normal text-sm font-weight-bolder text-emerald-500">Lbr</span></h5>
+                            <h5 class="mb-0 font-bold">{{ number_format($incomingToday, 0, ',', '.') }} <span class="leading-normal text-sm font-weight-bolder text-emerald-500">Qty</span></h5>
                         </div>
                     </div>
                     <div class="px-3 text-right basis-1/3">
@@ -53,7 +53,7 @@
                     <div class="flex-none w-2/3 max-w-full px-3">
                         <div>
                             <p class="mb-0 font-sans font-semibold leading-normal text-sm">Barang Keluar (Hari Ini)</p>
-                            <h5 class="mb-0 font-bold">1,025 <span class="leading-normal text-sm font-weight-bolder text-emerald-500">Lbr</span></h5>
+                            <h5 class="mb-0 font-bold">{{ number_format($outgoingToday, 0, ',', '.') }} <span class="leading-normal text-sm font-weight-bolder text-emerald-500">Qty</span></h5>
                         </div>
                     </div>
                     <div class="px-3 text-right basis-1/3">
@@ -72,8 +72,8 @@
                 <div class="flex flex-row -mx-3">
                     <div class="flex-none w-2/3 max-w-full px-3">
                         <div>
-                            <p class="mb-0 font-sans font-semibold leading-normal text-sm">Stok Rendah</p>
-                            <h5 class="mb-0 font-bold">12 <span class="leading-normal text-rose-500 text-sm font-weight-bolder">Peringatan</span></h5>
+                            <p class="mb-0 font-sans font-semibold leading-normal text-sm">Stok Rendah (&le; 5)</p>
+                            <h5 class="mb-0 font-bold">{{ number_format($lowStock, 0, ',', '.') }} <span class="leading-normal text-rose-500 text-sm font-weight-bolder">Barang</span></h5>
                         </div>
                     </div>
                     <div class="px-3 text-right basis-1/3">

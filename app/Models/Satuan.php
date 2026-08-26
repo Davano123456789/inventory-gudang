@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Satuan extends Model
+{
+    protected $table = 'satuans';
+
+    protected $fillable = [
+        'nama_satuan'
+    ];
+
+    /**
+     * Get the barangs that belong to this Satuan.
+     */
+    public function barangs()
+    {
+        return $this->hasMany(Barang::class, 'satuan_id');
+    }
+}

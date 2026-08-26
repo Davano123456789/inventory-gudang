@@ -3,23 +3,47 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Gudang;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1. Seed Gudang first to prevent foreign key errors
+        Gudang::firstOrCreate(['kode_gudang' => '300003'], [
+            'nama_gudang' => 'Gudang Cabang Surabaya',
+            'alamat' => 'Surabaya'
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        Gudang::firstOrCreate(['kode_gudang' => '000003'], [
+            'nama_gudang' => 'Gudang Utama Jakarta',
+            'alamat' => 'Jakarta'
+        ]);
+
+        // 2. Seed Users
+        User::updateOrCreate(['email' => 'admin@test.com'], [
+            'name' => 'Admin Utama',
+            'password' => bcrypt('password'),
+            'role' => 'super_admin',
+            'kode_gudang' => null
+        ]);
+
+        User::updateOrCreate(['email' => 'surabaya@test.com'], [
+            'name' => 'Budi (Gudang Surabaya)',
+            'password' => bcrypt('password'),
+            'role' => 'kepala_gudang',
+            'kode_gudang' => '300003'
+        ]);
+
+        User::updateOrCreate(['email' => 'jakarta@test.com'], [
+            'name' => 'Rian (Gudang Jakarta)',
+            'password' => bcrypt('password'),
+            'role' => 'kepala_gudang',
+            'kode_gudang' => '000003'
         ]);
     }
 }

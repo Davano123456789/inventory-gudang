@@ -27,7 +27,7 @@ class BarangKeluarController extends Controller
 
         }
 
-        $transactions = $query->orderBy('created_at', 'desc')->get();
+        $transactions = $query->orderBy('tanggal_keluar', 'asc')->get();
         return view('barang_keluar.index', compact('transactions'));
     }
 
@@ -115,10 +115,26 @@ class BarangKeluarController extends Controller
                 $stok = StokGudang::where('kode_gudang', $request->gudang_asal_kode)
                                   ->where('barang_id', $item['barang_id'])
                                   ->first();
+                
+                $saldoAwal = $stok ? $stok->stok_sekarang : 0;
+                $saldoAkhir = max(0, $saldoAwal - $item['qty']);
+
                 if ($stok) {
-                    $stok->stok_sekarang = max(0, $stok->stok_sekarang - $item['qty']);
+                    $stok->stok_sekarang = $saldoAkhir;
                     $stok->save();
                 }
+
+                // Create KartuStok record
+                \App\Models\KartuStok::create([
+                    'tanggal' => $request->tanggal_keluar . ' ' . date('H:i:s'),
+                    'kode_gudang' => $request->gudang_asal_kode,
+                    'barang_id' => $item['barang_id'],
+                    'saldo_awal' => $saldoAwal,
+                    'masuk' => 0,
+                    'keluar' => $item['qty'],
+                    'saldo_akhir' => $saldoAkhir,
+                    'barang_keluar_id' => $barangKeluar->id,
+                ]);
             }
         });
 
@@ -146,8 +162,23 @@ class BarangKeluarController extends Controller
                     'kode_gudang' => $barangKeluar->gudang_asal_kode,
                     'barang_id' => $detail->barang_id
                 ]);
-                $stok->stok_sekarang = ($stok->stok_sekarang ?: 0) + $detail->qty;
+                
+                $saldoAwal = $stok->stok_sekarang ?: 0;
+                $saldoAkhir = $saldoAwal + $detail->qty;
+                
+                $stok->stok_sekarang = $saldoAkhir;
                 $stok->save();
+
+                // Record reversion in kartu_stoks
+                \App\Models\KartuStok::create([
+                    'tanggal' => now(),
+                    'kode_gudang' => $barangKeluar->gudang_asal_kode,
+                    'barang_id' => $detail->barang_id,
+                    'saldo_awal' => $saldoAwal,
+                    'masuk' => $detail->qty, // revert keluar by adding it back
+                    'keluar' => 0,
+                    'saldo_akhir' => $saldoAkhir,
+                ]);
             }
 
             // Cascade delete details and parent transaction record

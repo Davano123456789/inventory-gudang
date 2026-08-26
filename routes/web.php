@@ -40,6 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::get('stock-opname/get-warehouse-items', [StockOpnameController::class, 'getWarehouseItems'])->name('stock-opname.warehouse-items');
     Route::resource('stock-opname', StockOpnameController::class);
 
+    // Laporan
+    Route::get('laporan/rekap', [App\Http\Controllers\LaporanController::class, 'index'])->name('laporan.rekap');
+
     Route::post('switch-gudang', function(\Illuminate\Http\Request $request) {
         $request->validate([
             'kode_gudang' => 'required'

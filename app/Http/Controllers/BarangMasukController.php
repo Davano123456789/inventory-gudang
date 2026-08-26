@@ -28,7 +28,7 @@ class BarangMasukController extends Controller
             });
         }
 
-        $transactions = $query->orderBy('tanggal_masuk', 'desc')->get();
+        $transactions = $query->orderBy('tanggal_masuk', 'asc')->get();
 
         // Pending Mutasi Query
         $pendingMutasiQuery = \App\Models\BarangKeluar::with(['gudang', 'user', 'details.barang'])

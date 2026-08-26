@@ -49,9 +49,13 @@
                         <input type="text" id="searchInput" placeholder="Cari surat jalan..." class="text-xs text-slate-700 bg-transparent border-0 focus:outline-none w-48 font-semibold">
                     </div>
 
+                    <!-- Export Excel Button -->
+                    <button onclick="exportTableToExcel('keluarTable', 'Riwayat_Barang_Keluar')" class="inline-block px-4 py-2.5 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-green-600 to-emerald-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
+                        <i class="fa fa-file-excel mr-1"></i> Cetak Excel
+                    </button>
                     <!-- Add Button -->
-                    <a href="{{ route('barang-keluar.create') }}" class="inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
-                        <i class="fa fa-plus mr-1"></i> Catat Barang Keluar
+                    <a href="{{ route('barang-keluar.create') }}" class="inline-block px-4 py-2.5 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
+                        <i class="fa fa-plus mr-1"></i> Catat Keluar
                     </a>
                 </div>
             </div>
@@ -59,7 +63,7 @@
             <!-- Card Body -->
             <div class="flex-auto px-0 pt-0 pb-2">
                 <div class="p-0 overflow-x-auto">
-                    <table class="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
+                    <table id="keluarTable" class="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
                         <thead class="align-bottom">
                             <tr>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">No</th>
@@ -159,7 +163,42 @@
 
 @push('scripts')
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- SheetJS for proper Excel Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+    function exportTableToExcel(tableId, filename = ''){
+        let table = document.getElementById(tableId);
+        let clone = table.cloneNode(true);
+        
+        // Hapus kolom Aksi (kolom terakhir di th dan td)
+        clone.querySelectorAll('th:last-child, td:last-child').forEach(el => el.remove());
+        
+        // Evaluasi ulang filter agar semua baris yang cocok (bukan hanya halaman ini) ikut terekspor
+        let rows = clone.querySelectorAll('.tx-row');
+        rows.forEach(row => {
+            let rowSearchText = row.getAttribute('data-search') || '';
+            let rowDate = row.getAttribute('data-date') || '';
+            
+            let searchQuery = document.getElementById("searchInput") ? document.getElementById("searchInput").value.toLowerCase().trim() : "";
+            let dateStart = document.getElementById("filterDateStart") ? document.getElementById("filterDateStart").value : '';
+            let dateEnd = document.getElementById("filterDateEnd") ? document.getElementById("filterDateEnd").value : '';
+            
+            let matchSearch = rowSearchText.indexOf(searchQuery) > -1;
+            let matchDate = true;
+            if (dateStart && rowDate < dateStart) matchDate = false;
+            if (dateEnd && rowDate > dateEnd) matchDate = false;
+            
+            if (!(matchSearch && matchDate)) {
+                row.remove(); // Buang baris yang tidak cocok filter
+            } else {
+                row.style.display = ''; // Tampilkan baris yang cocok
+            }
+        });
+        
+        let wb = XLSX.utils.table_to_book(clone, {sheet: "Riwayat"});
+        XLSX.writeFile(wb, filename + '.xlsx');
+    }
+
     function openDeleteModal(actionUrl, identifierName, itemType) {
         Swal.fire({
             title: 'Apakah Anda Yakin?',

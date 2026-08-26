@@ -249,6 +249,11 @@
             }
         });
 
+        // Trigger load on page load if already selected (e.g. locked/pre-selected)
+        if ($("#gudang_kode").val()) {
+            loadWarehouseItems();
+        }
+
         // Event listener for warehouse change
         $("#gudang_kode").on("change", loadWarehouseItems);
 

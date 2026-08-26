@@ -54,17 +54,17 @@
                             <tr>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">No</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">No Surat Jalan</th>
-                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Sales / Tipe</th>
+                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Jenis</th>
+                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Status</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Tanggal Keluar</th>
-                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Penerima (Debitur)</th>
-                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Gudang Asal</th>
+                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Gudang</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Pencatat</th>
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($transactions as $index => $tx)
-                            <tr class="tx-row" data-search="{{ strtolower($tx->no_surat_jalan) }} {{ strtolower($tx->sales_tipe) }} {{ strtolower($tx->debitur) }} {{ strtolower($tx->penerima) }} {{ strtolower($tx->gudang ? $tx->gudang->nama_gudang : '') }} {{ strtolower($tx->user ? $tx->user->name : 'system') }}">
+                            <tr class="tx-row" data-search="{{ strtolower($tx->no_surat_jalan) }} {{ strtolower($tx->jenis) }} {{ strtolower($tx->status) }} {{ strtolower($tx->gudang ? $tx->gudang->nama_gudang : '') }} {{ strtolower($tx->gudangTujuan ? $tx->gudangTujuan->nama_gudang : '') }} {{ strtolower($tx->user ? $tx->user->name : 'system') }}">
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     <span class="text-sm font-semibold leading-normal text-slate-600">{{ $index + 1 }}</span>
                                 </td>
@@ -72,24 +72,32 @@
                                     <span class="text-sm font-bold leading-normal text-slate-700">{{ $tx->no_surat_jalan }}</span>
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">{{ $tx->sales_tipe ?: '-' }}</span>
+                                    <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg uppercase">{{ $tx->jenis }}</span>
+                                </td>
+                                <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
+                                    @if($tx->status === 'completed')
+                                        <span class="text-xs font-bold leading-normal text-green-600 bg-green-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check mr-1"></i> Selesai</span>
+                                    @elseif($tx->status === 'pending')
+                                        <span class="text-xs font-bold leading-normal text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg"><i class="fa fa-clock mr-1"></i> Menunggu</span>
+                                    @elseif($tx->status === 'approved')
+                                        <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check-double mr-1"></i> Diterima</span>
+                                    @else
+                                        <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg uppercase">{{ $tx->status }}</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     <span class="text-sm leading-normal text-slate-600">{{ $tx->tanggal_keluar->format('d/m/Y') }}</span>
                                 </td>
-                                <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    <div class="flex flex-col">
-                                        <span class="text-sm font-bold leading-normal text-slate-700">{{ $tx->penerima }}</span>
-                                        @if($tx->debitur)
-                                            <span class="text-xxs text-slate-400">Debitur: {{ $tx->debitur }}</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
+                                <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none flex items-center">
                                     @if($tx->gudang)
                                         <span class="text-xs font-bold leading-normal text-rose-600 bg-rose-50 px-2.5 py-1 rounded-lg">{{ $tx->gudang->nama_gudang }}</span>
                                     @else
                                         <span class="text-xs font-semibold leading-normal text-slate-400 bg-gray-50 px-2.5 py-1 rounded-lg">Gudang Terhapus</span>
+                                    @endif
+                                    
+                                    @if($tx->jenis === 'mutasi' && $tx->gudangTujuan)
+                                        <i class="fa fa-arrow-right text-slate-300 mx-2 text-xs"></i>
+                                        <span class="text-xs font-bold leading-normal text-sky-600 bg-sky-50 px-2.5 py-1 rounded-lg">{{ $tx->gudangTujuan->nama_gudang }}</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
@@ -106,7 +114,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-10 text-center align-middle bg-transparent border-b shadow-none">
+                                <td colspan="7" class="px-6 py-10 text-center align-middle bg-transparent border-b shadow-none">
                                     <div class="flex flex-col items-center justify-center">
                                         <i class="fa fa-file-invoice text-4xl text-slate-300 mb-3"></i>
                                         <span class="text-sm text-slate-400 font-medium">Belum ada riwayat transaksi barang keluar.</span>
@@ -209,7 +217,7 @@
                 if ($("#emptySearchPlaceholder").length === 0) {
                     $("tbody").append(`
                         <tr id="emptySearchPlaceholder">
-                            <td colspan="8" class="px-6 py-10 text-center align-middle bg-transparent border-b shadow-none">
+                            <td colspan="7" class="px-6 py-10 text-center align-middle bg-transparent border-b shadow-none">
                                 <div class="flex flex-col items-center justify-center">
                                     <i class="fa fa-search text-3xl text-slate-300 mb-2"></i>
                                     <span class="text-xs text-slate-400 font-medium">Tidak ada transaksi yang cocok dengan pencarian Anda.</span>

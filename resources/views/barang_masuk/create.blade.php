@@ -110,7 +110,7 @@
                             <select name="jenis_transaksi" id="jenis_transaksi" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
                                 <option value="Biasa" {{ old('jenis_transaksi') == 'Biasa' ? 'selected' : '' }}>Reguler</option>
                                 <option value="Retur" {{ old('jenis_transaksi') == 'Retur' ? 'selected' : '' }}>Retur / Kembalian</option>
-                                <option value="Mutasi" {{ old('jenis_transaksi') == 'Mutasi' ? 'selected' : '' }}>Mutasi Antar Gudang</option>
+                                <!-- <option value="Mutasi" {{ old('jenis_transaksi') == 'Mutasi' ? 'selected' : '' }}>Mutasi Antar Gudang</option> -->
                             </select>
                         </div>
 

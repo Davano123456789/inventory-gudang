@@ -72,6 +72,20 @@ class BarangController extends Controller
         return view('barang.create', compact('satuans', 'gudangs'));
     }
 
+    public function manualIndex()
+    {
+        $barangs = Barang::with(['satuan', 'stokGudangs'])->where('source', 'manual')->orderBy('created_at', 'desc')->get();
+        $gudangs = Gudang::orderBy('nama_gudang', 'asc')->get();
+        return view('barang.manual_index', compact('barangs', 'gudangs'));
+    }
+
+    public function manualCreate()
+    {
+        $satuans = Satuan::all();
+        $gudangs = Gudang::all();
+        return view('barang.manual_create', compact('satuans', 'gudangs'));
+    }
+
     public function store(Request $request)
     {
         $user = auth()->user();
@@ -154,6 +168,42 @@ class BarangController extends Controller
         return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus!');
     }
 
+    public function manualStore(Request $request)
+    {
+        $user = auth()->user();
+        
+        $request->validate([
+            'kode_barang' => 'required|string|max:100|unique:barangs,kode_barang',
+            'nama_barang' => 'required|string|max:255',
+            'satuan_id' => 'nullable|exists:satuans,id',
+            'stok_minimum' => 'required|numeric|min:0',
+            'kode_gudang' => $user->isSuperAdmin() ? 'nullable|exists:gudangs,kode_gudang' : '',
+            'stok_awal' => 'nullable|numeric|min:0',
+        ]);
+
+        $barang = Barang::create([
+            'kode_barang' => $request->kode_barang,
+            'nama_barang' => $request->nama_barang,
+            'satuan_id' => $request->satuan_id,
+            'stok_minimum' => $request->stok_minimum,
+            'created_by_user_id' => $user->id,
+            'source' => 'manual',
+        ]);
+
+        // Resolve target warehouse and create stock balance
+        $gudangCode = $user->isSuperAdmin() ? $request->kode_gudang : $user->kode_gudang;
+        $stokAwal = $request->input('stok_awal', 0);
+
+        if ($gudangCode) {
+            $barang->stokGudangs()->create([
+                'kode_gudang' => $gudangCode,
+                'stok_sekarang' => $stokAwal,
+            ]);
+        }
+
+        return redirect()->route('barang-manual.index')->with('success', 'Barang manual berhasil ditambahkan.');
+    }
+
     public function import(Request $request)
     {
         $user = auth()->user();
@@ -202,7 +252,8 @@ class BarangController extends Controller
                     $barang = Barang::create([
                         'kode_barang' => $kodeBarang,
                         'nama_barang' => $namaBarang,
-                        'created_by_user_id' => $user->id
+                        'created_by_user_id' => $user->id,
+                        'source' => 'excel'
                     ]);
                 }
                 

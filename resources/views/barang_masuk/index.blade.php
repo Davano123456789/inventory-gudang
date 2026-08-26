@@ -7,6 +7,70 @@
 <div class="flex flex-wrap -mx-3">
     <div class="w-full max-w-full px-3">
 
+        @if(isset($pendingMutasi) && count($pendingMutasi) > 0)
+        <!-- Pending Mutasi Card -->
+        <div class="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border mb-6 border-l-4 border-orange-400">
+            <div class="p-6 pb-0 mb-0 border-b-0 border-solid border-black-125 rounded-t-2xl">
+                <h6 class="font-bold text-orange-600 text-lg leading-none mb-1"><i class="fa fa-bell mr-2"></i> Persetujuan Mutasi Masuk</h6>
+                <p class="text-sm text-slate-500 mb-0">Terdapat {{ count($pendingMutasi) }} mutasi barang yang dikirim ke gudang Anda dan menunggu persetujuan (Terima Barang).</p>
+            </div>
+            <div class="flex-auto px-0 pt-4 pb-2">
+                <div class="p-0 overflow-x-auto">
+                    <table class="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
+                        <thead class="align-bottom">
+                            <tr>
+                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-y border-gray-200 shadow-none text-xxs text-slate-400 opacity-70">Surat Jalan</th>
+                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-y border-gray-200 shadow-none text-xxs text-slate-400 opacity-70">Gudang Pengirim</th>
+                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-y border-gray-200 shadow-none text-xxs text-slate-400 opacity-70">Tanggal Kirim</th>
+                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-y border-gray-200 shadow-none text-xxs text-slate-400 opacity-70">Barang & Qty</th>
+                                <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-y border-gray-200 shadow-none text-xxs text-slate-400 opacity-70">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($pendingMutasi as $mutasi)
+                            <tr>
+                                <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
+                                    <span class="text-sm font-bold leading-normal text-slate-700">{{ $mutasi->no_surat_jalan }}</span>
+                                </td>
+                                <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
+                                    <span class="text-xs font-bold leading-normal text-rose-600 bg-rose-50 px-2.5 py-1 rounded-lg">{{ $mutasi->gudang ? $mutasi->gudang->nama_gudang : 'Gudang Terhapus' }}</span>
+                                </td>
+                                <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
+                                    <span class="text-sm leading-normal text-slate-600">{{ $mutasi->tanggal_keluar->format('d/m/Y') }}</span>
+                                </td>
+                                <td class="px-6 py-4 align-middle bg-transparent border-b shadow-none">
+                                    <ul class="list-disc pl-4 text-xs text-slate-600">
+                                        @foreach($mutasi->details->take(2) as $det)
+                                            <li>{{ $det->barang->nama_barang }} ({{ $det->qty }} {{ $det->barang->satuan ? $det->barang->satuan->nama_satuan : '' }})</li>
+                                        @endforeach
+                                        @if($mutasi->details->count() > 2)
+                                            <li class="italic text-slate-400">+ {{ $mutasi->details->count() - 2 }} barang lainnya</li>
+                                        @endif
+                                    </ul>
+                                </td>
+                                <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none text-center">
+                                    <form action="{{ route('mutasi.approve', $mutasi->id) }}" method="POST" class="inline-block mr-1">
+                                        @csrf
+                                        <button type="submit" class="px-3 py-1.5 text-xs font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded shadow-md transition-colors" onclick="return confirm('Apakah Anda yakin barang ini sudah diterima dan akan dimasukkan ke stok?')">
+                                            <i class="fa fa-check mr-1"></i> Terima
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('mutasi.reject', $mutasi->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="px-3 py-1.5 text-xs font-bold text-white uppercase bg-red-600 hover:bg-red-700 rounded shadow-md transition-colors" onclick="return confirm('Apakah Anda yakin ingin menolak mutasi ini? Stok akan dikembalikan ke gudang pengirim.')">
+                                            <i class="fa fa-times mr-1"></i> Tolak
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <!-- Card Container -->
         <div class="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
             

@@ -86,8 +86,11 @@
                         </div>
 
                         <div>
-                            <label for="debitur" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Debitur <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                            <input type="text" name="debitur" id="debitur" value="{{ old('debitur') }}" placeholder="Contoh: SSPBLRSUMA" class="w-full px-3 py-2 text-sm text-slate-700 placeholder-slate-400 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
+                            <label for="jenis" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Jenis Transaksi <span class="text-red-500">*</span></label>
+                            <select name="jenis" id="jenis" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
+                                <option value="reguler" {{ old('jenis') == 'reguler' ? 'selected' : '' }}>Reguler</option>
+                                <option value="mutasi" {{ old('jenis') == 'mutasi' ? 'selected' : '' }}>Mutasi</option>
+                            </select>
                         </div>
 
                         <!-- Row 2 -->
@@ -102,16 +105,6 @@
                         </div>
 
                         <!-- Row 3 -->
-                        <div>
-                            <label for="sales_tipe" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Sales / Tipe <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                            <input type="text" name="sales_tipe" id="sales_tipe" value="{{ old('sales_tipe') }}" placeholder="Contoh: SSYS /XX" class="w-full px-3 py-2 text-sm text-slate-700 placeholder-slate-400 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
-                        </div>
-
-                        <div>
-                            <label for="penerima" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Penerima (Kepada Yh) <span class="text-red-500">*</span></label>
-                            <input type="text" name="penerima" id="penerima" value="{{ old('penerima') }}" required placeholder="Contoh: CV. SUMBER MAKMUR / BAPAK JUMAT" class="w-full px-3 py-2 text-sm text-slate-700 placeholder-slate-400 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
-                        </div>
-
                         <div class="md:col-span-2">
                             <label for="gudang_asal_kode" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Gudang Asal (Dikurangi Dari) <span class="text-red-500">*</span></label>
                             <select name="gudang_asal_kode" id="gudang_asal_kode" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
@@ -126,10 +119,16 @@
                             </select>
                         </div>
 
-                        <!-- Row 5 (Full Width) -->
-                        <div class="md:col-span-2">
-                            <label for="alamat_kirim" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Alamat Pengiriman <span class="text-red-500">*</span></label>
-                            <textarea name="alamat_kirim" id="alamat_kirim" required placeholder="Tuliskan alamat pengiriman barang lengkap..." rows="2" class="w-full px-3 py-2 text-sm text-slate-700 placeholder-slate-400 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">{{ old('alamat_kirim') }}</textarea>
+                        <div class="md:col-span-2 hidden" id="gudangTujuanContainer">
+                            <label for="gudang_tujuan_kode" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Gudang Tujuan (Untuk Mutasi) <span class="text-red-500">*</span></label>
+                            <select name="gudang_tujuan_kode" id="gudang_tujuan_kode" class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
+                                <option value="">-- Pilih Gudang Tujuan --</option>
+                                @foreach($allGudangs as $g)
+                                    <option value="{{ $g->kode_gudang }}" {{ old('gudang_tujuan_kode') == $g->kode_gudang ? 'selected' : '' }}>
+                                        {{ $g->nama_gudang }} ({{ $g->kode_gudang }})
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
@@ -181,6 +180,20 @@
 <script>
     $(document).ready(function() {
         let rowIndex = 0;
+        
+        // Toggle Gudang Tujuan based on Jenis
+        function toggleGudangTujuan() {
+            if ($('#jenis').val() === 'mutasi') {
+                $('#gudangTujuanContainer').removeClass('hidden');
+                $('#gudang_tujuan_kode').prop('required', true);
+            } else {
+                $('#gudangTujuanContainer').addClass('hidden');
+                $('#gudang_tujuan_kode').prop('required', false);
+            }
+        }
+
+        $('#jenis').on('change', toggleGudangTujuan);
+        toggleGudangTujuan(); // Run on load
         
         // List of all units passed from DB
         const satuansData = [

@@ -23,7 +23,7 @@ class BarangKeluarController extends Controller
 
         if ($activeGudang !== 'all') {
 
-            $query->where('gudang_kode', $activeGudang);
+            $query->where('gudang_asal_kode', $activeGudang);
 
         }
 
@@ -41,9 +41,10 @@ class BarangKeluarController extends Controller
         $barangs = Barang::with('satuan')->orderBy('nama_barang', 'asc')->get();
         
         $gudangs = Gudang::where('kode_gudang', $activeGudang)->get();
+        $allGudangs = Gudang::orderBy('nama_gudang', 'asc')->get();
 
         $satuans = \App\Models\Satuan::orderBy('nama_satuan', 'asc')->get();
-        return view('barang_keluar.create', compact('barangs', 'gudangs', 'satuans'));
+        return view('barang_keluar.create', compact('barangs', 'gudangs', 'allGudangs', 'satuans'));
     }
 
     /**
@@ -55,11 +56,9 @@ class BarangKeluarController extends Controller
             'no_surat_jalan' => 'required|string|max:100|unique:barang_keluars,no_surat_jalan',
             'tanggal_keluar' => 'required|date',
             'tanggal_surat_jalan' => 'required|date',
-            'debitur' => 'nullable|string|max:100',
-            'penerima' => 'required|string|max:200',
-            'alamat_kirim' => 'required|string',
-            'sales_tipe' => 'nullable|string|max:100',
+            'jenis' => 'required|in:reguler,mutasi',
             'gudang_asal_kode' => 'required|exists:gudangs,kode_gudang',
+            'gudang_tujuan_kode' => 'required_if:jenis,mutasi',
             'items' => 'required|array|min:1',
             'items.*.barang_id' => 'required|exists:barangs,id',
             'items.*.satuan_id' => 'nullable|exists:satuans,id',
@@ -83,16 +82,16 @@ class BarangKeluarController extends Controller
         }
 
         DB::transaction(function() use ($request) {
-            // 1. Create parent record
+            $status = $request->jenis === 'mutasi' ? 'pending' : 'completed';
+
             $barangKeluar = BarangKeluar::create([
                 'no_surat_jalan' => $request->no_surat_jalan,
                 'tanggal_keluar' => $request->tanggal_keluar,
                 'tanggal_surat_jalan' => $request->tanggal_surat_jalan,
-                'debitur' => $request->debitur,
-                'penerima' => $request->penerima,
-                'alamat_kirim' => $request->alamat_kirim,
-                'sales_tipe' => $request->sales_tipe,
+                'jenis' => $request->jenis,
                 'gudang_asal_kode' => $request->gudang_asal_kode,
+                'gudang_tujuan_kode' => $request->jenis === 'mutasi' ? $request->gudang_tujuan_kode : null,
+                'status' => $status,
                 'user_id' => Auth::id() ?: 1,
             ]);
 

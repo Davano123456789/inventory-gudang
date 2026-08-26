@@ -22,7 +22,9 @@ class BarangKeluarController extends Controller
         $query = BarangKeluar::with(['gudang', 'user']);
 
         if ($activeGudang !== 'all') {
+
             $query->where('gudang_kode', $activeGudang);
+
         }
 
         $transactions = $query->orderBy('created_at', 'desc')->get();

@@ -112,8 +112,23 @@ class BarangMasukController extends Controller
                         'kode_gudang' => $request->gudang_asal_kode,
                         'barang_id' => $item['barang_id']
                     ]);
-                    $stokAsal->stok_sekarang = ($stokAsal->stok_sekarang ?: 0) - $qtyTotal;
+                    $saldoAwalAsal = $stokAsal->stok_sekarang ?: 0;
+                    $saldoAkhirAsal = $saldoAwalAsal - $qtyTotal;
+
+                    $stokAsal->stok_sekarang = $saldoAkhirAsal;
                     $stokAsal->save();
+
+                    // Record in kartu_stoks for source warehouse
+                    \App\Models\KartuStok::create([
+                        'tanggal' => $request->tanggal_masuk . ' ' . date('H:i:s'),
+                        'kode_gudang' => $request->gudang_asal_kode,
+                        'barang_id' => $item['barang_id'],
+                        'saldo_awal' => $saldoAwalAsal,
+                        'masuk' => 0,
+                        'keluar' => $qtyTotal,
+                        'saldo_akhir' => $saldoAkhirAsal,
+                        'barang_masuk_id' => $barangMasuk->id,
+                    ]);
                 }
 
                 // Always increment stock in destination warehouse
@@ -121,8 +136,23 @@ class BarangMasukController extends Controller
                     'kode_gudang' => $request->gudang_tujuan_kode,
                     'barang_id' => $item['barang_id']
                 ]);
-                $stokTujuan->stok_sekarang = ($stokTujuan->stok_sekarang ?: 0) + $qtyTotal;
+                $saldoAwalTujuan = $stokTujuan->stok_sekarang ?: 0;
+                $saldoAkhirTujuan = $saldoAwalTujuan + $qtyTotal;
+
+                $stokTujuan->stok_sekarang = $saldoAkhirTujuan;
                 $stokTujuan->save();
+
+                // Record in kartu_stoks for destination warehouse
+                \App\Models\KartuStok::create([
+                    'tanggal' => $request->tanggal_masuk . ' ' . date('H:i:s'),
+                    'kode_gudang' => $request->gudang_tujuan_kode,
+                    'barang_id' => $item['barang_id'],
+                    'saldo_awal' => $saldoAwalTujuan,
+                    'masuk' => $qtyTotal,
+                    'keluar' => 0,
+                    'saldo_akhir' => $saldoAkhirTujuan,
+                    'barang_masuk_id' => $barangMasuk->id,
+                ]);
             }
         });
 

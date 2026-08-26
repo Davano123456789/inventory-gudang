@@ -17,8 +17,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('role', 50)->default('kepala_gudang');
+            $table->string('kode_gudang', 50)->nullable();
             $table->rememberToken();
             $table->timestamps();
+
+            $table->foreign('kode_gudang')->references('kode_gudang')->on('gudangs')->onDelete('set null')->onUpdate('cascade');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

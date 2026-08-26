@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Barang extends Model
+{
+    protected $table = 'barangs';
+
+    protected $fillable = [
+        'kode_barang',
+        'nama_barang',
+        'satuan_id',
+        'stok_minimum',
+        'created_by_user_id'
+    ];
+
+    /**
+     * Get the unit (satuan) associated with the item.
+     */
+    public function satuan()
+    {
+        return $this->belongsTo(Satuan::class, 'satuan_id');
+    }
+
+    /**
+     * Get the stock records associated with the item.
+     */
+    public function stokGudangs()
+    {
+        return $this->hasMany(StokGudang::class, 'barang_id');
+    }
+
+    /**
+     * Get the user who created the item.
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by_user_id');
+    }
+}

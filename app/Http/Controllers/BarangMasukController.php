@@ -29,7 +29,19 @@ class BarangMasukController extends Controller
         }
 
         $transactions = $query->orderBy('tanggal_masuk', 'desc')->get();
-        return view('barang_masuk.index', compact('transactions'));
+
+        // Pending Mutasi Query
+        $pendingMutasiQuery = \App\Models\BarangKeluar::with(['gudang', 'user', 'details.barang'])
+            ->where('jenis', 'mutasi')
+            ->where('status', 'pending');
+            
+        if ($activeGudang !== 'all') {
+            $pendingMutasiQuery->where('gudang_tujuan_kode', $activeGudang);
+        }
+        
+        $pendingMutasi = $pendingMutasiQuery->orderBy('tanggal_keluar', 'asc')->get();
+
+        return view('barang_masuk.index', compact('transactions', 'pendingMutasi'));
     }
 
     /**
@@ -202,5 +214,125 @@ class BarangMasukController extends Controller
         });
 
         return redirect()->route('barang-masuk.index')->with('success', 'Transaksi barang masuk berhasil dihapus dan stok telah disesuaikan kembali!');
+    }
+
+    /**
+     * Approve incoming mutation.
+     */
+    public function approveMutasi($id)
+    {
+        $mutasi = \App\Models\BarangKeluar::findOrFail($id);
+        
+        if ($mutasi->status !== 'pending' || $mutasi->jenis !== 'mutasi') {
+            return redirect()->back()->with('error', 'Transaksi mutasi ini sudah tidak dapat di-approve.');
+        }
+
+        $activeGudang = auth()->user()->getActiveGudangCode();
+        if ($activeGudang !== 'all' && $activeGudang !== $mutasi->gudang_tujuan_kode) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk menyetujui mutasi ini.');
+        }
+        
+        DB::transaction(function() use ($mutasi) {
+            $mutasi->status = 'approved';
+            $mutasi->save();
+            
+            // Create Barang Masuk history record
+            $barangMasuk = \App\Models\BarangMasuk::create([
+                'no_surat_jalan' => $mutasi->no_surat_jalan . '-IN',
+                'tanggal_masuk' => date('Y-m-d'),
+                'tanggal_surat_jalan' => $mutasi->tanggal_surat_jalan,
+                'jenis_transaksi' => 'Mutasi',
+                'gudang_asal_kode' => $mutasi->gudang_asal_kode,
+                'pengirim' => $mutasi->user ? $mutasi->user->name : 'Gudang Pengirim',
+                'gudang_tujuan_kode' => $mutasi->gudang_tujuan_kode,
+                'user_id' => auth()->id() ?: 1,
+                'catatan' => 'Penerimaan Mutasi Otomatis dari ' . $mutasi->no_surat_jalan,
+            ]);
+
+            foreach ($mutasi->details as $detail) {
+                // Add detail
+                \App\Models\DetailBarangMasuk::create([
+                    'barang_masuk_id' => $barangMasuk->id,
+                    'barang_id' => $detail->barang_id,
+                    'qty_box' => 0,
+                    'qty_pcs' => 0,
+                    'qty_total' => $detail->qty,
+                ]);
+
+                // Update stock
+                $stokTujuan = StokGudang::firstOrNew([
+                    'kode_gudang' => $mutasi->gudang_tujuan_kode,
+                    'barang_id' => $detail->barang_id
+                ]);
+                $saldoAwalTujuan = $stokTujuan->stok_sekarang ?: 0;
+                $saldoAkhirTujuan = $saldoAwalTujuan + $detail->qty;
+
+                $stokTujuan->stok_sekarang = $saldoAkhirTujuan;
+                $stokTujuan->save();
+
+                // Create stock card
+                \App\Models\KartuStok::create([
+                    'tanggal' => date('Y-m-d H:i:s'),
+                    'kode_gudang' => $mutasi->gudang_tujuan_kode,
+                    'barang_id' => $detail->barang_id,
+                    'saldo_awal' => $saldoAwalTujuan,
+                    'masuk' => $detail->qty,
+                    'keluar' => 0,
+                    'saldo_akhir' => $saldoAkhirTujuan,
+                    'barang_masuk_id' => $barangMasuk->id,
+                    'barang_keluar_id' => $mutasi->id,
+                ]);
+            }
+        });
+        
+        return redirect()->back()->with('success', 'Mutasi Surat Jalan ' . $mutasi->no_surat_jalan . ' berhasil diterima. Stok telah ditambahkan ke gudang Anda.');
+    }
+
+    /**
+     * Reject incoming mutation.
+     */
+    public function rejectMutasi($id)
+    {
+        $mutasi = \App\Models\BarangKeluar::findOrFail($id);
+        
+        if ($mutasi->status !== 'pending' || $mutasi->jenis !== 'mutasi') {
+            return redirect()->back()->with('error', 'Transaksi mutasi ini sudah tidak dapat ditolak.');
+        }
+        
+        $activeGudang = auth()->user()->getActiveGudangCode();
+        if ($activeGudang !== 'all' && $activeGudang !== $mutasi->gudang_tujuan_kode) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk menolak mutasi ini.');
+        }
+
+        DB::transaction(function() use ($mutasi) {
+            $mutasi->status = 'rejected';
+            $mutasi->save();
+            
+            // Revert stock back to source warehouse
+            foreach ($mutasi->details as $detail) {
+                $stokAsal = StokGudang::where('kode_gudang', $mutasi->gudang_asal_kode)
+                                      ->where('barang_id', $detail->barang_id)
+                                      ->first();
+                if ($stokAsal) {
+                    $saldoAwalAsal = $stokAsal->stok_sekarang ?: 0;
+                    $saldoAkhirAsal = $saldoAwalAsal + $detail->qty;
+                    $stokAsal->stok_sekarang = $saldoAkhirAsal;
+                    $stokAsal->save();
+
+                    \App\Models\KartuStok::create([
+                        'tanggal' => date('Y-m-d H:i:s'),
+                        'kode_gudang' => $mutasi->gudang_asal_kode,
+                        'barang_id' => $detail->barang_id,
+                        'saldo_awal' => $saldoAwalAsal,
+                        'masuk' => $detail->qty,
+                        'keluar' => 0,
+                        'saldo_akhir' => $saldoAkhirAsal,
+                        'barang_keluar_id' => $mutasi->id, // link to original transaction
+                    ]);
+                }
+            }
+        });
+
+        return redirect()->back()->with('success', 'Mutasi Surat Jalan ' . $mutasi->no_surat_jalan . ' ditolak. Stok telah dikembalikan ke Gudang Asal.');
     }
 }

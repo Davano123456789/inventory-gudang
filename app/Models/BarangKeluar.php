@@ -13,12 +13,10 @@ class BarangKeluar extends Model
         'no_surat_jalan',
         'tanggal_keluar',
         'tanggal_surat_jalan',
-        'debitur',
-        'penerima',
-        'alamat_kirim',
-        'sales_tipe',
-        'no_po',
+        'jenis',
         'gudang_asal_kode',
+        'gudang_tujuan_kode',
+        'status',
         'user_id',
         'catatan'
     ];
@@ -34,6 +32,14 @@ class BarangKeluar extends Model
     public function gudang()
     {
         return $this->belongsTo(Gudang::class, 'gudang_asal_kode', 'kode_gudang');
+    }
+
+    /**
+     * Get the destination warehouse (for mutasi).
+     */
+    public function gudangTujuan()
+    {
+        return $this->belongsTo(Gudang::class, 'gudang_tujuan_kode', 'kode_gudang');
     }
 
     /**

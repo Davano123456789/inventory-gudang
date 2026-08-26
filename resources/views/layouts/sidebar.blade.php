@@ -1,4 +1,4 @@
-<aside class="max-w-62.5 ease-nav-brand z-990 absolute inset-y-0 block w-full -translate-x-full flex-wrap items-center justify-between overflow-y-auto border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-white text-slate-500" id="sidenav-main">
+<aside class="max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 block w-full -translate-x-full flex-wrap items-center justify-between border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-white text-slate-500" id="sidenav-main">
     <div class="h-19.5">
         <i class="absolute top-0 right-0 hidden p-4 opacity-50 cursor-pointer fas fa-times text-slate-400 xl:hidden" sidenav-close="" aria-hidden="true"></i>
         <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap text-slate-700" href="javascript:;">
@@ -51,7 +51,7 @@
             </li>
 
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ Request::is('barang*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang.index') }}">
+                <a class="py-2.7 {{ (Request::is('barang') || Request::is('barang/*')) ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang.index') }}">
                     <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
                         <i class="fa fa-boxes text-slate-500"></i>
                     </div>
@@ -64,11 +64,20 @@
             </li>
 
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ Request::is('barang-masuk*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang-masuk.index') }}">
+                <a class="py-2.7 {{ (Request::is('barang-masuk') || (Request::is('barang-masuk/*') && !Request::is('barang-masuk/create'))) ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang-masuk.index') }}">
                     <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
                         <i class="fa fa-arrow-down text-slate-500"></i>
                     </div>
                     <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Barang Masuk</span>
+                </a>
+            </li>
+
+            <li class="mt-0.5 w-full">
+                <a class="py-2.7 {{ Request::is('barang-manual') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang-manual.index') }}">
+                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+                        <i class="fa fa-list text-slate-500"></i>
+                    </div>
+                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Riwayat Input Manual</span>
                 </a>
             </li>
 

@@ -87,19 +87,7 @@
                     <h5 class="font-extrabold text-red-600 text-2xl tracking-wide uppercase m-0 leading-none">PT. BINTANG CAKRA KENCANA</h5>
                     <p class="text-[10px] text-slate-500 font-bold mt-1">BANYUDONO JL. RAYA SOLO SEMARANG KM 15 BOYOLALI</p>
                     
-                    <div class="mt-6 grid grid-cols-1 gap-2 text-xs">
-                        <div class="flex">
-                            <span class="w-24 font-bold text-slate-700 uppercase">Debitur :</span>
-                            <span class="text-slate-600 font-bold">{{ $barangKeluar->debitur ?: '-' }}</span>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="w-24 font-bold text-slate-700 uppercase">Kepada Yth :</span>
-                            <div class="flex-1">
-                                <span class="text-slate-700 font-bold block">{{ $barangKeluar->penerima }}</span>
-                                <span class="text-slate-500 mt-1 block leading-relaxed text-xs font-medium max-w-md">{{ $barangKeluar->alamat_kirim }}</span>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
 
                 <!-- Right: Document Metadata & Boxed Number -->
@@ -127,9 +115,27 @@
                             <span class="text-slate-600">{{ $barangKeluar->tanggal_keluar->format('d-m-Y') }}</span>
                         </div>
                         <div class="flex justify-between md:justify-start">
-                            <span class="w-40 font-bold text-slate-700 uppercase md:text-right md:pr-3">Sales / Tipe :</span>
-                            <span class="text-slate-600 font-semibold">{{ $barangKeluar->sales_tipe ?: '-' }}</span>
+                            <span class="w-40 font-bold text-slate-700 uppercase md:text-right md:pr-3">Jenis Transaksi :</span>
+                            <span class="text-slate-600 font-semibold uppercase">{{ $barangKeluar->jenis }}</span>
                         </div>
+                        <div class="flex justify-between md:justify-start">
+                            <span class="w-40 font-bold text-slate-700 uppercase md:text-right md:pr-3">Status :</span>
+                            @if($barangKeluar->status === 'completed')
+                                <span class="text-green-600 font-bold uppercase">Selesai</span>
+                            @elseif($barangKeluar->status === 'pending')
+                                <span class="text-orange-600 font-bold uppercase">Menunggu (Pending)</span>
+                            @elseif($barangKeluar->status === 'approved')
+                                <span class="text-blue-600 font-bold uppercase">Diterima (Approved)</span>
+                            @else
+                                <span class="text-slate-600 font-bold uppercase">{{ $barangKeluar->status }}</span>
+                            @endif
+                        </div>
+                        @if($barangKeluar->jenis === 'mutasi' && $barangKeluar->gudangTujuan)
+                        <div class="flex justify-between md:justify-start">
+                            <span class="w-40 font-bold text-slate-700 uppercase md:text-right md:pr-3">Gudang Tujuan :</span>
+                            <span class="text-sky-600 font-bold">{{ $barangKeluar->gudangTujuan->nama_gudang }}</span>
+                        </div>
+                        @endif
 
 
                     </div>

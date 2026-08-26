@@ -26,15 +26,15 @@
             
             <!-- Card Header -->
             <div class="p-6 pb-0 mb-0 border-b-0 border-solid border-black-125 rounded-t-2xl flex justify-between items-center">
-                <h6 class="font-bold text-slate-800 text-lg">Form Tambah Barang Baru</h6>
-                <a href="{{ route('barang.index') }}" class="inline-block px-5 py-2.5 font-bold text-center text-slate-500 uppercase align-middle transition-all rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200 leading-pro text-xs ease-soft-in tracking-tight">
+                <h6 class="font-bold text-slate-800 text-lg">Form Tambah Barang Baru (Manual)</h6>
+                <a href="{{ route('barang-manual.index') }}" class="inline-block px-5 py-2.5 font-bold text-center text-slate-500 uppercase align-middle transition-all rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200 leading-pro text-xs ease-soft-in tracking-tight">
                     <i class="fa fa-arrow-left mr-1"></i> Kembali
                 </a>
             </div>
 
             <!-- Card Body -->
             <div class="flex-auto p-6">
-                <form action="{{ route('barang.store') }}" method="POST">
+                <form action="{{ route('barang-manual.store') }}" method="POST">
                     @csrf
                     
                     <div class="mb-4">
@@ -96,7 +96,7 @@
                         <button type="submit" class="px-6 py-3 font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md transition-colors text-xs tracking-wider">
                             <i class="fa fa-save mr-1"></i> Simpan Barang
                         </button>
-                        <a href="{{ route('barang.index') }}" class="px-6 py-3 font-bold text-slate-500 uppercase bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-xs tracking-wider">
+                        <a href="{{ route('barang-manual.index') }}" class="px-6 py-3 font-bold text-slate-500 uppercase bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-xs tracking-wider">
                             Batal
                         </a>
                     </div>

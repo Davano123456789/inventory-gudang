@@ -23,9 +23,18 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('gudang', GudangController::class);
     Route::resource('satuan', SatuanController::class);
+    Route::get('barang-manual', [BarangController::class, 'manualIndex'])->name('barang-manual.index');
+    Route::get('barang-manual/create', [BarangController::class, 'manualCreate'])->name('barang-manual.create');
+    Route::post('barang-manual', [BarangController::class, 'manualStore'])->name('barang-manual.store');
+    
     Route::resource('barang', BarangController::class);
     Route::post('barang/import', [BarangController::class, 'import'])->name('barang.import');
-    Route::resource('barang-masuk', BarangMasukController::class);
+    
+    // Mutasi Approvals
+    Route::post('mutasi/{id}/approve', [App\Http\Controllers\BarangMasukController::class, 'approveMutasi'])->name('mutasi.approve');
+    Route::post('mutasi/{id}/reject', [App\Http\Controllers\BarangMasukController::class, 'rejectMutasi'])->name('mutasi.reject');
+
+    Route::resource('barang-masuk', App\Http\Controllers\BarangMasukController::class);
     Route::resource('barang-keluar', BarangKeluarController::class);
 
     Route::get('stock-opname/get-warehouse-items', [StockOpnameController::class, 'getWarehouseItems'])->name('stock-opname.warehouse-items');

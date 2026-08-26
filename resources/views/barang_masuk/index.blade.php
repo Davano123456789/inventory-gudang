@@ -100,8 +100,17 @@
                                 <option value="" selected>Semua Jenis</option>
                                 <option value="Biasa">Reguler</option>
                                 <option value="Retur">Retur</option>
-                                <option value="Mutasi">Mutasi</option>
                             </select>
+                        </div>
+                        
+                        <!-- Filter Tanggal -->
+                        <div class="flex items-center gap-1.5 ml-2">
+                            <span class="text-xs text-slate-500 font-semibold">Dari:</span>
+                            <input type="date" id="filterDateStart" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-xs text-slate-500 font-semibold">Sampai:</span>
+                            <input type="date" id="filterDateEnd" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
                         </div>
                     </div>
                 </div>
@@ -139,7 +148,7 @@
                         </thead>
                         <tbody>
                             @forelse($transactions as $index => $tx)
-                            <tr class="tx-row" data-jenis="{{ $tx->jenis_transaksi }}" data-search="{{ strtolower($tx->no_surat_jalan) }} {{ strtolower($tx->pengirim) }} {{ strtolower($tx->gudang ? $tx->gudang->nama_gudang : '') }} {{ strtolower($tx->user ? $tx->user->name : 'system') }}">
+                            <tr class="tx-row" data-date="{{ $tx->tanggal_masuk->format('Y-m-d') }}" data-jenis="{{ $tx->jenis_transaksi }}" data-search="{{ strtolower($tx->no_surat_jalan) }} {{ strtolower($tx->pengirim) }} {{ strtolower($tx->gudang ? $tx->gudang->nama_gudang : '') }} {{ strtolower($tx->user ? $tx->user->name : 'system') }}">
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     <span class="text-sm font-semibold leading-normal text-slate-600">{{ $index + 1 }}</span>
                                 </td>
@@ -248,17 +257,24 @@
         function filterAndPaginate() {
             let searchQuery = $("#searchInput").val().toLowerCase().trim();
             let selectedJenis = $("#filterJenis").val();
+            let dateStart = $("#filterDateStart").val();
+            let dateEnd = $("#filterDateEnd").val();
             
             // 1. Filter rows
             let $matchingRows = $(".tx-row").filter(function() {
                 let $row = $(this);
                 let rowSearchText = $row.data("search") || '';
                 let rowJenis = $row.data("jenis") || '';
+                let rowDate = $row.data("date") || '';
 
                 let matchSearch = rowSearchText.indexOf(searchQuery) > -1;
                 let matchJenis = selectedJenis === "" || rowJenis === selectedJenis;
+                
+                let matchDate = true;
+                if (dateStart && rowDate < dateStart) matchDate = false;
+                if (dateEnd && rowDate > dateEnd) matchDate = false;
 
-                return matchSearch && matchJenis;
+                return matchSearch && matchJenis && matchDate;
             });
 
             let totalItems = $matchingRows.length;
@@ -367,7 +383,7 @@
             filterAndPaginate();
         });
         
-        $("#entriesLimit").on("change", function() {
+        $("#entriesLimit, #filterDateStart, #filterDateEnd").on("change", function() {
             currentPage = 1;
             filterAndPaginate();
         });
@@ -384,7 +400,18 @@
                 let $row = $(this);
                 let rowSearchText = $row.data("search") || '';
                 let rowJenis = $row.data("jenis") || '';
-                return (rowSearchText.indexOf($("#searchInput").val().toLowerCase().trim()) > -1) && ($("#filterJenis").val() === "" || rowJenis === $("#filterJenis").val());
+                let rowDate = $row.data("date") || '';
+                
+                let matchSearch = rowSearchText.indexOf($("#searchInput").val().toLowerCase().trim()) > -1;
+                let matchJenis = ($("#filterJenis").val() === "" || rowJenis === $("#filterJenis").val());
+                
+                let dateStart = $("#filterDateStart").val();
+                let dateEnd = $("#filterDateEnd").val();
+                let matchDate = true;
+                if (dateStart && rowDate < dateStart) matchDate = false;
+                if (dateEnd && rowDate > dateEnd) matchDate = false;
+                
+                return matchSearch && matchJenis && matchDate;
             }).length;
             
             let limitVal = $("#entriesLimit").val();

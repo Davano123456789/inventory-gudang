@@ -155,27 +155,15 @@ class StockOpnameController extends Controller
                     'keterangan' => $itemKeterangan
                 ]);
 
-                // If Selesai (Posted), update warehouse stocks in database
-                if ($status === 'Selesai') {
-                    $stok = StokGudang::where('kode_gudang', $gudangKode)
-                                      ->where('barang_id', $barangId)
-                                      ->first();
-                    if ($stok) {
-                        $stok->stok_sekarang = $stokFisik;
-                        $stok->save();
-                    } else {
-                        StokGudang::create([
-                            'kode_gudang' => $gudangKode,
-                            'barang_id' => $barangId,
-                            'stok_sekarang' => $stokFisik
-                        ]);
-                    }
-                }
+                // Catatan: Sesuai permintaan, fitur Stock Opname tidak lagi
+                // otomatis mengubah/menimpa tabel stok_gudangs. 
+                // Fitur ini murni hanya sebagai dokumen audit (laporan selisih).
+                // Penyesuaian stok akan dilakukan manual via menu Barang Masuk/Keluar.
             }
         });
 
         $msg = $status === 'Selesai' 
-            ? 'Stock opname berhasil diselesaikan dan stok gudang telah diperbarui!' 
+            ? 'Dokumen Stock Opname berhasil diselesaikan (Stok gudang tidak diubah otomatis).' 
             : 'Draft stock opname berhasil disimpan!';
 
         return redirect()->route('stock-opname.index')->with('success', $msg);
@@ -186,7 +174,15 @@ class StockOpnameController extends Controller
      */
     public function show(StockOpname $stockOpname)
     {
-        $stockOpname->load(['gudang', 'user', 'details.barang.satuan']);
+        $stockOpname->load(['gudang', 'user']);
+        
+        // Memuat detail barang dan mengurutkannya:
+        // Yang punya selisih (bukan 0) akan ditaruh di paling atas.
+        // Yang selisihnya 0 akan berada di bawah.
+        $stockOpname->load(['details' => function ($query) {
+            $query->orderByRaw('ABS(selisih) DESC');
+        }, 'details.barang.satuan']);
+
         return view('stock_opname.show', compact('stockOpname'));
     }
 

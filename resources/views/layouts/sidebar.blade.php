@@ -108,7 +108,7 @@
                     <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
                         <i class="fa fa-file-invoice text-slate-500"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Rekap Stok & SJ</span>
+                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Rekap Stok</span>
                 </a>
             </li>
 

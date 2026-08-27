@@ -38,7 +38,6 @@
                         <!-- Right Block: Surat Jalan Title & Metadata -->
                         <div class="text-right md:text-right text-left">
                             <h5 class="font-bold text-red-600 text-lg uppercase tracking-wider leading-none mb-1">Surat Jalan Masuk</h5>
-                            <span class="text-xs text-slate-400 font-bold bg-white border border-slate-200 px-3 py-1 rounded-md">ASLI - Penerimaan</span>
                         </div>
                     </div>
 
@@ -56,14 +55,13 @@
                                 <span class="w-32 font-bold text-slate-700 uppercase">Tgl Surat Jalan :</span>
                                 <span class="text-slate-600">{{ $barangMasuk->tanggal_surat_jalan->format('d F Y') }}</span>
                             </div>
-                            <div class="flex">
-                                <span class="w-32 font-bold text-slate-700 uppercase">Tanggal Masuk :</span>
-                                <span class="text-slate-600">{{ $barangMasuk->tanggal_masuk->format('d F Y') }}</span>
-                            </div>
+
+                            @if($barangMasuk->jenis_transaksi !== 'Mutasi')
                             <div class="flex">
                                 <span class="w-32 font-bold text-slate-700 uppercase">Pengirim (Dari) :</span>
                                 <span class="text-slate-600">{{ $barangMasuk->pengirim ?: '-' }}</span>
                             </div>
+                            @endif
                         </div>
 
                         <!-- Right Details -->
@@ -94,10 +92,7 @@
                                 <span class="w-32 font-bold text-slate-700 uppercase">Di-input Oleh :</span>
                                 <span class="text-slate-600">{{ $barangMasuk->user ? $barangMasuk->user->name : 'System' }}</span>
                             </div>
-                            <div class="flex">
-                                <span class="w-32 font-bold text-slate-700 uppercase">Waktu Input :</span>
-                                <span class="text-slate-600">{{ $barangMasuk->created_at->format('d/m/Y H:i:s') }}</span>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -166,29 +161,7 @@
                     </table>
                 </div>
 
-                <!-- Signatures Section (Matching Paper Surat Jalan Layout) -->
-                <div class="grid grid-cols-5 gap-2 text-center text-xxs font-bold text-slate-500 border border-slate-200 rounded-2xl p-4 mt-6">
-                    <div class="flex flex-col justify-between h-24">
-                        <span>Barang diterima oleh:</span>
-                        <span class="border-t border-dashed border-slate-300 mx-2 pt-1 font-semibold text-slate-400">(........................)</span>
-                    </div>
-                    <div class="flex flex-col justify-between h-24">
-                        <span>Pengantar / Sopir:</span>
-                        <span class="border-t border-dashed border-slate-300 mx-2 pt-1 font-semibold text-slate-400">(........................)</span>
-                    </div>
-                    <div class="flex flex-col justify-between h-24">
-                        <span>Satpam / Checkers:</span>
-                        <span class="border-t border-dashed border-slate-300 mx-2 pt-1 font-semibold text-slate-400">(........................)</span>
-                    </div>
-                    <div class="flex flex-col justify-between h-24">
-                        <span>Kepala Gudang:</span>
-                        <span class="border-t border-dashed border-slate-300 mx-2 pt-1 font-semibold text-slate-400">(........................)</span>
-                    </div>
-                    <div class="flex flex-col justify-between h-24">
-                        <span>Disiapkan oleh:</span>
-                        <span class="border-t border-dashed border-slate-300 mx-2 pt-1 font-semibold text-slate-400">(........................)</span>
-                    </div>
-                </div>
+
 
             </div>
         </div>

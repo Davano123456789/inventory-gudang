@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('barangs', function (Blueprint $table) {
-            $table->string('source', 20)->default('manual')->after('stok_minimum');
+            $table->string('source', 20)->default('manual')->after('created_by_user_id');
         });
     }
 

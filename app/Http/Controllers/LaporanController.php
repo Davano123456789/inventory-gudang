@@ -25,10 +25,10 @@ class LaporanController extends Controller
         $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
         
-        // Ensure default gudang if none is selected
-        $selectedGudang = $request->input('gudang_kode');
-        if (!$selectedGudang && $gudangs->count() > 0) {
-            $selectedGudang = $gudangs->first()->kode_gudang;
+        // Force report to load only the user's active warehouse
+        $selectedGudang = $activeGudang;
+        if (($selectedGudang === 'all' || !$selectedGudang) && Gudang::count() > 0) {
+            $selectedGudang = Gudang::orderBy('nama_gudang', 'asc')->first()->kode_gudang;
         }
 
         $reportData = collect();

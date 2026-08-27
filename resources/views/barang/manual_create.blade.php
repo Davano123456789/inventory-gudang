@@ -61,23 +61,16 @@
                     </div>
 
                     <div class="mb-4">
-                        <label for="kode_gudang" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Gudang Tempat Penyimpanan (Opsional)</label>
-                        @if(Auth::user() && Auth::user()->isSuperAdmin())
-                            <select name="kode_gudang" id="kode_gudang" class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
-                                <option value="">-- Tanpa Stok Awal / Tentukan Nanti --</option>
-                                @foreach($gudangs as $gudang)
-                                    <option value="{{ $gudang->kode_gudang }}" {{ old('kode_gudang') == $gudang->kode_gudang ? 'selected' : '' }}>
-                                        {{ $gudang->nama_gudang }} ({{ $gudang->kode_gudang }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        @else
-                            <select disabled class="w-full px-3 py-2 text-sm text-slate-500 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none cursor-not-allowed">
-                                <option value="{{ Auth::user()->kode_gudang }}" selected>{{ Auth::user()->gudang ? Auth::user()->gudang->nama_gudang : 'Gudang Penugasan' }}</option>
-                            </select>
-                            <input type="hidden" name="kode_gudang" value="{{ Auth::user()->kode_gudang }}">
-                        @endif
-                        <p class="text-xs text-slate-400 mt-1">Pilih gudang jika Anda ingin langsung menginput stok awal untuk barang ini.</p>
+                        <label for="kode_gudang" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Gudang Tempat Penyimpanan <span class="text-slate-400 font-normal">(Terkunci ke Gudang Aktif)</span></label>
+                        <select id="kode_gudang_display" disabled class="w-full px-3 py-2 text-sm text-slate-700 bg-slate-100 border border-gray-300 rounded-lg focus:outline-none transition-colors cursor-not-allowed font-semibold">
+                            @foreach($gudangs as $gudang)
+                                <option value="{{ $gudang->kode_gudang }}" {{ $gudang->kode_gudang == Auth::user()->getActiveGudangCode() ? 'selected' : '' }}>
+                                    {{ $gudang->nama_gudang }} ({{ $gudang->kode_gudang }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <input type="hidden" name="kode_gudang" value="{{ Auth::user()->getActiveGudangCode() }}">
+                        <p class="text-xs text-slate-400 mt-1">Stok awal barang akan otomatis dimasukkan ke gudang aktif Anda saat ini.</p>
                     </div>
 
                     <div class="mb-4">
@@ -86,11 +79,7 @@
                         <p class="text-xs text-slate-400 mt-1">Stok awal barang di gudang yang dipilih di atas.</p>
                     </div>
 
-                    <div class="mb-6">
-                        <label for="stok_minimum" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Batas Stok Minimum <span class="text-red-500">*</span></label>
-                        <input type="number" step="any" name="stok_minimum" id="stok_minimum" value="{{ old('stok_minimum', 0) }}" required placeholder="Contoh: 50" class="w-full px-3 py-2 text-sm text-slate-700 placeholder-slate-400 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
-                        <p class="text-xs text-slate-400 mt-1">Sistem akan memberi alarm peringatan jika stok barang di gudang tersisa di bawah angka ini.</p>
-                    </div>
+
 
                     <div class="flex justify-start gap-3 border-t pt-4">
                         <button type="submit" class="px-6 py-3 font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md transition-colors text-xs tracking-wider">

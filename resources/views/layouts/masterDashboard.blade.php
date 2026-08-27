@@ -62,7 +62,7 @@
                 </nav>
                 <div class="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
                     <div class="flex items-center md:ml-auto md:pr-4">
-                        @if(Auth::user() && Auth::user()->isSuperAdmin())
+                        @if(Auth::user() && (Auth::user()->isSuperAdmin() || Auth::user()->isAdmin()))
                             @php $navbarGudangs = \App\Models\Gudang::orderBy('nama_gudang', 'asc')->get(); @endphp
                             <form action="{{ route('switch-gudang') }}" method="POST" id="switchGudangForm" class="m-0">
                                 @csrf
@@ -74,7 +74,7 @@
                                     @endforeach
                                 </select>
                             </form>
-                        @elseif(Auth::user() && Auth::user()->isKepalaGudang())
+                        @elseif(Auth::user() && (Auth::user()->isKepalaGudang() || Auth::user()->isStaff()))
                             <div class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold shadow-soft-md">
                                 <i class="fa fa-warehouse mr-1"></i> Gudang: {{ Auth::user()->gudang ? Auth::user()->gudang->nama_gudang : 'Tidak Ditugaskan' }}
                             </div>

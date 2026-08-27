@@ -49,6 +49,7 @@
                                     </ul>
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none text-center">
+                                    @if(Auth::user() && Auth::user()->role !== 'staff_gudang')
                                     <form action="{{ route('mutasi.approve', $mutasi->id) }}" method="POST" class="inline-block mr-1">
                                         @csrf
                                         <button type="submit" class="px-3 py-1.5 text-xs font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded shadow-md transition-colors" onclick="confirmTerima(event, this.closest('form'))">
@@ -61,6 +62,9 @@
                                             <i class="fa fa-times mr-1"></i> Tolak
                                         </button>
                                     </form>
+                                    @else
+                                        <span class="text-xs font-semibold leading-normal text-slate-400">Menunggu Approval Admin/Kepala</span>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach
@@ -188,9 +192,11 @@
                                     <a href="{{ route('barang-masuk.show', $tx->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-blue-600 mr-3 transition-colors">
                                         <i class="fa fa-eye mr-1"></i> Detail
                                     </a>
+                                    @if(Auth::user() && Auth::user()->isSuperAdmin())
                                     <button type="button" onclick="openDeleteModal('{{ route('barang-masuk.destroy', $tx->id) }}', '{{ $tx->no_surat_jalan }}', 'barang-masuk')" class="text-xs font-semibold leading-normal text-slate-400 hover:text-red-600 transition-colors">
                                         <i class="fa fa-trash mr-1"></i> Hapus
                                     </button>
+                                    @endif
                                 </td>
                             </tr>
                             @empty

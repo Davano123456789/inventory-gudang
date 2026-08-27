@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('kode_barang', 100)->unique();
             $table->string('nama_barang', 255);
             $table->foreignId('satuan_id')->nullable()->constrained('satuans')->onDelete('set null')->onUpdate('cascade');
-            $table->decimal('stok_minimum', 15, 2)->default(0.00);
             $table->timestamps();
         });
     }

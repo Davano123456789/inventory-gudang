@@ -14,20 +14,8 @@
                 <form action="{{ route('barang.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-end gap-4">
                     @csrf
                     
-                    @if(Auth::user() && Auth::user()->isSuperAdmin())
-                    <!-- Warehouse Dropdown -->
-                    <div class="flex flex-col gap-1 w-full max-w-xs">
-                        <label for="import_kode_gudang" class="text-xxs font-bold text-slate-700 uppercase pl-1">Pilih Gudang Tujuan <span class="text-red-500">*</span></label>
-                        <select name="kode_gudang" id="import_kode_gudang" required class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-2 focus:outline-none cursor-pointer font-semibold shadow-soft-xs w-full h-[42px]">
-                            <option value="">-- Pilih Gudang Tujuan --</option>
-                            @foreach($gudangs as $gudang)
-                                <option value="{{ $gudang->kode_gudang }}">{{ $gudang->nama_gudang }} ({{ $gudang->kode_gudang }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @else
-                    <input type="hidden" name="kode_gudang" value="{{ Auth::user()->kode_gudang }}">
-                    @endif
+                    <!-- Hidden input to automatically use currently active warehouse -->
+                    <input type="hidden" name="kode_gudang" value="{{ Auth::user()->getActiveGudangCode() }}">
 
                     <!-- File Upload Input -->
                     <div class="flex flex-col gap-1 w-full max-w-sm">
@@ -108,7 +96,6 @@
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Nama Barang</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Satuan</th>
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Stok</th>
-                                <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Stok Min</th>
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Aksi</th>
                             </tr>
                         </thead>
@@ -146,9 +133,6 @@
                                     <span class="stok-display text-sm font-bold text-slate-700">{{ number_format($totalStok, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    <span class="text-sm leading-normal text-slate-600">{{ number_format($barang->stok_minimum, 0, ',', '.') }}</span>
-                                </td>
-                                <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     <a href="{{ route('barang.show', $barang->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-blue-600 mr-3 transition-colors">
                                         <i class="fa fa-eye mr-1"></i> Detail
                                     </a>
@@ -164,7 +148,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-10 text-center align-middle bg-transparent border-b shadow-none">
+                                <td colspan="6" class="px-6 py-10 text-center align-middle bg-transparent border-b shadow-none">
                                     <div class="flex flex-col items-center justify-center">
                                         <i class="fa fa-boxes text-4xl text-slate-300 mb-3"></i>
                                         <span class="text-sm text-slate-400 font-medium">Belum ada data barang.</span>

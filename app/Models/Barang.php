@@ -12,7 +12,6 @@ class Barang extends Model
         'kode_barang',
         'nama_barang',
         'satuan_id',
-        'stok_minimum',
         'created_by_user_id',
         'source'
     ];

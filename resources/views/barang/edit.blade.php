@@ -62,10 +62,7 @@
                         <p class="text-xs text-slate-400 mt-1">Kosongkan jika Anda belum mengidentifikasi satuan untuk barang ini. Satuan dapat dipilih nanti saat transaksi barang pertama kali.</p>
                     </div>
 
-                    <div class="mb-6">
-                        <label for="stok_minimum" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Batas Stok Minimum <span class="text-red-500">*</span></label>
-                        <input type="number" step="any" name="stok_minimum" id="stok_minimum" value="{{ old('stok_minimum', $barang->stok_minimum) }}" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
-                    </div>
+
 
                     <div class="flex justify-start gap-3 border-t pt-4">
                         <button type="submit" class="px-6 py-3 font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md transition-colors text-xs tracking-wider">

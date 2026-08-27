@@ -116,16 +116,15 @@
 
                         <div>
                             <label for="gudang_tujuan_kode" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Gudang Penerima (Masuk Ke) <span class="text-red-500">*</span></label>
-                            <select name="gudang_tujuan_kode" id="gudang_tujuan_kode" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
-                                @if(count($gudangTujuans) > 1)
-                                    <option value="">-- Pilih Gudang Penerima --</option>
-                                @endif
+                            <select id="gudang_tujuan_kode_display" disabled class="w-full px-3 py-2 text-sm text-slate-700 bg-slate-100 border border-gray-300 rounded-lg focus:outline-none transition-colors cursor-not-allowed font-semibold">
                                 @foreach($gudangTujuans as $g)
-                                    <option value="{{ $g->kode_gudang }}" {{ (old('gudang_tujuan_kode') == $g->kode_gudang || count($gudangTujuans) == 1) ? 'selected' : '' }}>
+                                    <option value="{{ $g->kode_gudang }}" {{ $g->kode_gudang == Auth::user()->getActiveGudangCode() ? 'selected' : '' }}>
                                         {{ $g->nama_gudang }} ({{ $g->kode_gudang }})
                                     </option>
                                 @endforeach
                             </select>
+                            <!-- Hidden input to submit the actual value since disabled selects aren't sent by the browser -->
+                            <input type="hidden" name="gudang_tujuan_kode" value="{{ Auth::user()->getActiveGudangCode() }}">
                         </div>
 
                         <!-- Gudang Asal (Hidden by default, shown only when Mutasi) -->

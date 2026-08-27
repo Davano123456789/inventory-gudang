@@ -51,13 +51,13 @@
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none text-center">
                                     <form action="{{ route('mutasi.approve', $mutasi->id) }}" method="POST" class="inline-block mr-1">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1.5 text-xs font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded shadow-md transition-colors" onclick="return confirm('Apakah Anda yakin barang ini sudah diterima dan akan dimasukkan ke stok?')">
+                                        <button type="submit" class="px-3 py-1.5 text-xs font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded shadow-md transition-colors" onclick="confirmTerima(event, this.closest('form'))">
                                             <i class="fa fa-check mr-1"></i> Terima
                                         </button>
                                     </form>
                                     <form action="{{ route('mutasi.reject', $mutasi->id) }}" method="POST" class="inline-block">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1.5 text-xs font-bold text-white uppercase bg-red-600 hover:bg-red-700 rounded shadow-md transition-colors" onclick="return confirm('Apakah Anda yakin ingin menolak mutasi ini? Stok akan dikembalikan ke gudang pengirim.')">
+                                        <button type="submit" class="px-3 py-1.5 text-xs font-bold text-white uppercase bg-red-600 hover:bg-red-700 rounded shadow-md transition-colors" onclick="confirmTolak(event, this.closest('form'))">
                                             <i class="fa fa-times mr-1"></i> Tolak
                                         </button>
                                     </form>
@@ -232,6 +232,52 @@
 <!-- SheetJS for proper Excel Export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+    function confirmTerima(event, form) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Terima Mutasi?',
+            text: 'Apakah Anda yakin barang ini sudah diterima dan akan dimasukkan ke stok?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#aaa',
+            confirmButtonText: 'Ya, Terima!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'font-poppins rounded-2xl shadow-soft-2xl',
+                confirmButton: 'text-white bg-blue-600 hover:bg-blue-700 font-bold px-6 py-2.5 rounded-lg text-xs leading-pro uppercase tracking-tight mr-2',
+                cancelButton: 'text-slate-700 bg-gray-100 hover:bg-gray-200 font-bold px-6 py-2.5 rounded-lg text-xs leading-pro uppercase tracking-tight'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    function confirmTolak(event, form) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Tolak Mutasi?',
+            text: 'Apakah Anda yakin ingin menolak mutasi ini? Stok akan dikembalikan ke gudang pengirim.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ea0606',
+            cancelButtonColor: '#aaa',
+            confirmButtonText: 'Ya, Tolak!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'font-poppins rounded-2xl shadow-soft-2xl',
+                confirmButton: 'text-white bg-red-600 hover:bg-red-700 font-bold px-6 py-2.5 rounded-lg text-xs leading-pro uppercase tracking-tight mr-2',
+                cancelButton: 'text-slate-700 bg-gray-100 hover:bg-gray-200 font-bold px-6 py-2.5 rounded-lg text-xs leading-pro uppercase tracking-tight'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
     function exportTableToExcel(tableId, filename = ''){
         let table = document.getElementById(tableId);
         let clone = table.cloneNode(true);

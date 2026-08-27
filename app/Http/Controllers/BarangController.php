@@ -117,7 +117,6 @@ class BarangController extends Controller
             'kode_barang' => 'required|string|max:100|unique:barangs,kode_barang',
             'nama_barang' => 'required|string|max:255',
             'satuan_id' => 'nullable|exists:satuans,id',
-            'stok_minimum' => 'required|numeric|min:0',
             'kode_gudang' => $user->isSuperAdmin() ? 'nullable|exists:gudangs,kode_gudang' : '',
             'stok_awal' => 'nullable|numeric|min:0',
         ]);
@@ -126,7 +125,6 @@ class BarangController extends Controller
             'kode_barang' => $request->kode_barang,
             'nama_barang' => $request->nama_barang,
             'satuan_id' => $request->satuan_id,
-            'stok_minimum' => $request->stok_minimum,
             'created_by_user_id' => $user->id,
         ]);
 
@@ -172,7 +170,6 @@ class BarangController extends Controller
             'kode_barang' => 'required|string|max:100|unique:barangs,kode_barang,' . $barang->id,
             'nama_barang' => 'required|string|max:255',
             'satuan_id' => 'nullable|exists:satuans,id',
-            'stok_minimum' => 'required|numeric|min:0',
         ]);
 
         $barang->update($request->all());
@@ -199,8 +196,7 @@ class BarangController extends Controller
             'kode_barang' => 'required|string|max:100|unique:barangs,kode_barang',
             'nama_barang' => 'required|string|max:255',
             'satuan_id' => 'nullable|exists:satuans,id',
-            'stok_minimum' => 'required|numeric|min:0',
-            'kode_gudang' => $user->isSuperAdmin() ? 'nullable|exists:gudangs,kode_gudang' : '',
+            'kode_gudang' => 'required|exists:gudangs,kode_gudang',
             'stok_awal' => 'nullable|numeric|min:0',
         ]);
 
@@ -208,19 +204,30 @@ class BarangController extends Controller
             'kode_barang' => $request->kode_barang,
             'nama_barang' => $request->nama_barang,
             'satuan_id' => $request->satuan_id,
-            'stok_minimum' => $request->stok_minimum,
             'created_by_user_id' => $user->id,
             'source' => 'manual',
         ]);
 
         // Resolve target warehouse and create stock balance
-        $gudangCode = $user->isSuperAdmin() ? $request->kode_gudang : $user->kode_gudang;
-        $stokAwal = $request->input('stok_awal', 0);
+        $gudangCode = $request->input('kode_gudang');
+        $stokAwal = floatval($request->input('stok_awal', 0));
 
         if ($gudangCode) {
             $barang->stokGudangs()->create([
                 'kode_gudang' => $gudangCode,
                 'stok_sekarang' => $stokAwal,
+            ]);
+
+            // Record transaction in kartu_stoks
+            \App\Models\KartuStok::create([
+                'tanggal' => now()->toDateString(),
+                'kode_gudang' => $gudangCode,
+                'barang_id' => $barang->id,
+                'saldo_awal' => 0,
+                'masuk' => $stokAwal,
+                'keluar' => 0,
+                'saldo_akhir' => $stokAwal,
+                'keterangan' => 'Stok Awal (Manual)'
             ]);
         }
 
@@ -232,14 +239,12 @@ class BarangController extends Controller
         $user = auth()->user();
         $rules = [
             'file' => 'required|file|mimes:xlsx',
+            'kode_gudang' => 'required|exists:gudangs,kode_gudang',
         ];
-        if ($user->isSuperAdmin()) {
-            $rules['kode_gudang'] = 'required|exists:gudangs,kode_gudang';
-        }
         $request->validate($rules);
 
         $file = $request->file('file');
-        $selectedGudangCode = $user->isSuperAdmin() ? $request->input('kode_gudang') : $user->kode_gudang;
+        $selectedGudangCode = $request->input('kode_gudang');
 
         // Find the selected warehouse
         $gudang = Gudang::where('kode_gudang', $selectedGudangCode)->firstOrFail();
@@ -304,6 +309,12 @@ class BarangController extends Controller
                 
                 $saldoDecimal = floatval($cleanSaldo);
                 
+                // Read current stock balance before update
+                $existingStok = StokGudang::where('kode_gudang', $gudang->kode_gudang)
+                    ->where('barang_id', $barang->id)
+                    ->first();
+                $saldoAwal = $existingStok ? $existingStok->stok_sekarang : 0;
+
                 // Create or Update Stok Gudang record for the selected warehouse
                 StokGudang::updateOrCreate(
                     [
@@ -314,6 +325,18 @@ class BarangController extends Controller
                         'stok_sekarang' => $saldoDecimal
                     ]
                 );
+
+                // Record transaction in kartu_stoks
+                \App\Models\KartuStok::create([
+                    'tanggal' => now()->toDateString(),
+                    'kode_gudang' => $gudang->kode_gudang,
+                    'barang_id' => $barang->id,
+                    'saldo_awal' => $saldoAwal,
+                    'masuk' => $saldoDecimal - $saldoAwal > 0 ? $saldoDecimal - $saldoAwal : 0,
+                    'keluar' => $saldoAwal - $saldoDecimal > 0 ? $saldoAwal - $saldoDecimal : 0,
+                    'saldo_akhir' => $saldoDecimal,
+                    'keterangan' => 'Stok Awal (Import Excel)'
+                ]);
                 
                 $importedCount++;
             }

@@ -59,7 +59,23 @@
 
                     <!-- Bulk Items Table -->
                     <div id="bulkTableContainer" class="mb-6">
-                        <h6 class="font-bold text-slate-800 text-xs uppercase mb-3 tracking-wide border-b pb-2">Daftar Barang & Kuantitas Fisik</h6>
+                        <div class="flex justify-between items-center mb-3 border-b pb-2">
+                            <h6 class="font-bold text-slate-800 text-xs uppercase tracking-wide">Daftar Barang & Kuantitas Fisik</h6>
+                            <div class="flex items-center gap-3">
+                                <!-- Search -->
+                                <div class="relative flex items-center bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 shadow-soft-xs">
+                                    <i class="fa fa-search text-slate-400 text-xs mr-2"></i>
+                                    <input type="text" id="searchInput" placeholder="Cari nama/kode..." class="text-xs text-slate-700 bg-transparent border-0 focus:outline-none w-48 font-semibold">
+                                </div>
+                                <!-- Entries -->
+                                <select id="entriesLimit" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
+                                    <option value="10" selected>10 Baris</option>
+                                    <option value="25">25 Baris</option>
+                                    <option value="50">50 Baris</option>
+                                    <option value="all">Semua</option>
+                                </select>
+                            </div>
+                        </div>
                         
                         <div class="overflow-x-auto bg-slate-50/50 rounded-2xl border border-slate-100 p-2">
                             <table class="items-center w-full mb-0 align-top border-gray-200 text-slate-500" id="bulkTable">
@@ -74,7 +90,7 @@
                                 </thead>
                                 <tbody id="bulkItemsTableBody" class="bg-white">
                                     @foreach($formatted as $index => $item)
-                                    <tr class="item-row border-b border-slate-100 hover:bg-slate-50/20" data-unit="{{ $item['unit'] }}">
+                                    <tr class="item-row border-b border-slate-100 hover:bg-slate-50/20" data-unit="{{ $item['unit'] }}" data-search="{{ $item['nama_barang'] }} {{ $item['kode_barang'] }}">
                                         <!-- Barang Details -->
                                         <td class="px-4 py-3.5 align-middle bg-transparent shadow-none">
                                             <div class="flex flex-col">
@@ -112,6 +128,16 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Pagination Container -->
+                        <div id="paginationContainer" class="hidden px-2 py-4 flex flex-wrap items-center justify-between gap-3">
+                            <div class="text-xs text-slate-500 font-semibold">
+                                Menampilkan <span id="paginationInfoStart" class="text-slate-700">0</span> - <span id="paginationInfoEnd" class="text-slate-700">0</span> dari <span id="paginationInfoTotal" class="text-slate-700">0</span> barang
+                            </div>
+                            <div class="flex items-center gap-1.5" id="paginationBtns">
+                                <!-- Dynamic page buttons -->
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Action Buttons -->
@@ -145,6 +171,144 @@
     }
 
     $(document).ready(function() {
+        let currentPage = 1;
+
+        function filterAndPaginate() {
+            let searchQuery = $("#searchInput").val().toLowerCase().trim();
+            
+            let $matchingRows = $(".item-row").filter(function() {
+                let $row = $(this);
+                let rowSearchText = String($row.attr("data-search") || '').toLowerCase();
+                return rowSearchText.indexOf(searchQuery) > -1;
+            });
+
+            let totalItems = $matchingRows.length;
+            let limitVal = $("#entriesLimit").val();
+            let limit = limitVal === 'all' ? totalItems : parseInt(limitVal);
+            let itemsPerPage = limit || 10;
+            
+            let totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            $(".item-row").addClass("hidden");
+            
+            let startIndex = (currentPage - 1) * itemsPerPage;
+            let endIndex = startIndex + itemsPerPage;
+            
+            $matchingRows.slice(startIndex, endIndex).removeClass("hidden");
+
+            if (totalItems === 0) {
+                $("#paginationContainer").addClass("hidden").removeClass("flex");
+                if ($("#emptySearchPlaceholder").length === 0) {
+                    $("#bulkItemsTableBody").append(`
+                        <tr id="emptySearchPlaceholder">
+                            <td colspan="5" class="px-6 py-10 text-center align-middle bg-transparent shadow-none">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="fa fa-search text-3xl text-slate-300 mb-2"></i>
+                                    <span class="text-xs text-slate-400 font-medium">Tidak ada barang yang cocok dengan pencarian Anda.</span>
+                                </div>
+                            </td>
+                        </tr>
+                    `);
+                }
+            } else {
+                $("#paginationContainer").removeClass("hidden").addClass("flex");
+                $("#emptySearchPlaceholder").remove();
+                
+                $("#paginationInfoStart").text(startIndex + 1);
+                $("#paginationInfoEnd").text(Math.min(endIndex, totalItems));
+                $("#paginationInfoTotal").text(totalItems);
+            }
+
+            // Render buttons
+            let $btnContainer = $("#paginationBtns");
+            $btnContainer.empty();
+            
+            if (totalPages > 1) {
+                let prevDisabled = currentPage === 1 ? 'disabled opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-100';
+                $btnContainer.append(`
+                    <button type="button" class="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-white border border-gray-200 rounded-md transition-colors ${prevDisabled}" id="prevPageBtn">
+                        <i class="fa fa-chevron-left mr-1"></i>
+                    </button>
+                `);
+                
+                for (let i = 1; i <= totalPages; i++) {
+                    if (totalPages > 6) {
+                        if (i === 1 || i === totalPages || Math.abs(currentPage - i) <= 1) {
+                            appendPageBtn($btnContainer, i, currentPage);
+                        } else if (i === 2 && currentPage > 3) {
+                            $btnContainer.append(`<span class="text-slate-400 text-xs px-1">...</span>`);
+                        } else if (i === totalPages - 1 && currentPage < totalPages - 2) {
+                            $btnContainer.append(`<span class="text-slate-400 text-xs px-1">...</span>`);
+                        }
+                    } else {
+                        appendPageBtn($btnContainer, i, currentPage);
+                    }
+                }
+                
+                let nextDisabled = currentPage === totalPages ? 'disabled opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-100';
+                $btnContainer.append(`
+                    <button type="button" class="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-white border border-gray-200 rounded-md transition-colors ${nextDisabled}" id="nextPageBtn">
+                        <i class="fa fa-chevron-right ml-1"></i>
+                    </button>
+                `);
+            }
+        }
+
+        function appendPageBtn($container, pageNum, activePage) {
+            let activeClass = pageNum === activePage 
+                ? 'bg-blue-600 text-white border-blue-600 shadow-soft-md' 
+                : 'bg-white text-slate-600 border-gray-200 hover:bg-gray-100';
+            $container.append(`
+                <button type="button" class="page-num-btn px-3 py-1.5 text-xs font-semibold rounded-md border transition-all ${activeClass}" data-page="${pageNum}">
+                    ${pageNum}
+                </button>
+            `);
+        }
+
+        $("#searchInput").on("keyup", function() {
+            currentPage = 1;
+            filterAndPaginate();
+        });
+        
+        $("#entriesLimit").on("change", function() {
+            currentPage = 1;
+            filterAndPaginate();
+        });
+
+        $(document).on("click", "#prevPageBtn", function() {
+            if (currentPage > 1) {
+                currentPage--;
+                filterAndPaginate();
+            }
+        });
+
+        $(document).on("click", "#nextPageBtn", function() {
+            let totalMatching = $(".item-row").filter(function() {
+                let $row = $(this);
+                let rowSearchText = $row.data("search") || '';
+                return rowSearchText.indexOf($("#searchInput").val().toLowerCase().trim()) > -1;
+            }).length;
+            
+            let limitVal = $("#entriesLimit").val();
+            let limit = limitVal === 'all' ? totalMatching : parseInt(limitVal);
+            let itemsPerPage = limit || 10;
+            let totalPages = Math.ceil(totalMatching / itemsPerPage) || 1;
+
+            if (currentPage < totalPages) {
+                currentPage++;
+                filterAndPaginate();
+            }
+        });
+
+        $(document).on("click", ".page-num-btn", function() {
+            currentPage = parseInt($(this).data("page"));
+            filterAndPaginate();
+        });
+
+        // Run initial pagination
+        filterAndPaginate();
         
         // Live calculate difference for the specific row
         function calculateDifference($input) {

@@ -107,16 +107,15 @@
                         <!-- Row 3 -->
                         <div class="md:col-span-2">
                             <label for="gudang_asal_kode" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Gudang Asal (Dikurangi Dari) <span class="text-red-500">*</span></label>
-                            <select name="gudang_asal_kode" id="gudang_asal_kode" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
-                                @if(count($gudangs) > 1)
-                                    <option value="">-- Pilih Gudang Asal --</option>
-                                @endif
+                            <select id="gudang_asal_kode_display" disabled class="w-full px-3 py-2 text-sm text-slate-700 bg-slate-100 border border-gray-300 rounded-lg focus:outline-none transition-colors cursor-not-allowed font-semibold">
                                 @foreach($gudangs as $g)
-                                    <option value="{{ $g->kode_gudang }}" {{ (old('gudang_asal_kode') == $g->kode_gudang || count($gudangs) == 1) ? 'selected' : '' }}>
+                                    <option value="{{ $g->kode_gudang }}" {{ $g->kode_gudang == Auth::user()->getActiveGudangCode() ? 'selected' : '' }}>
                                         {{ $g->nama_gudang }} ({{ $g->kode_gudang }})
                                     </option>
                                 @endforeach
                             </select>
+                            <!-- Hidden input to submit the actual value since disabled selects aren't sent by the browser -->
+                            <input type="hidden" name="gudang_asal_kode" value="{{ Auth::user()->getActiveGudangCode() }}">
                         </div>
 
                         <div class="md:col-span-2 hidden" id="gudangTujuanContainer">

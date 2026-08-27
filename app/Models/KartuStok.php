@@ -17,7 +17,8 @@ class KartuStok extends Model
         'keluar',
         'saldo_akhir',
         'barang_masuk_id',
-        'barang_keluar_id'
+        'barang_keluar_id',
+        'keterangan'
     ];
 
     protected $casts = [

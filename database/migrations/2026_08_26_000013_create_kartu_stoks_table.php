@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('saldo_akhir', 15, 2);
             $table->foreignId('barang_masuk_id')->nullable()->constrained('barang_masuks')->onDelete('cascade');
             $table->foreignId('barang_keluar_id')->nullable()->constrained('barang_keluars')->onDelete('cascade');
+            $table->string('keterangan', 255)->nullable();
             $table->timestamps();
 
             // Set up relationship to gudangs

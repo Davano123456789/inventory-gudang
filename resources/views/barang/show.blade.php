@@ -36,10 +36,7 @@
                     <input type="text" value="{{ $barang->satuan ? $barang->satuan->nama_satuan : 'Belum Set' }}" readonly class="w-full px-3 py-2 text-sm text-slate-500 bg-gray-50 border border-gray-300 rounded-lg cursor-not-allowed focus:outline-none">
                 </div>
 
-                <div class="mb-6">
-                    <label class="block mb-2 text-xs font-bold text-slate-700 uppercase">Batas Stok Minimum</label>
-                    <input type="text" value="{{ number_format($barang->stok_minimum, 0, ',', '.') }}" readonly class="w-full px-3 py-2 text-sm text-slate-500 bg-gray-50 border border-gray-300 rounded-lg cursor-not-allowed focus:outline-none">
-                </div>
+
 
             </div>
         </div>

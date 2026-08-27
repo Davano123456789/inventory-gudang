@@ -22,10 +22,7 @@ class BarangMasukController extends Controller
         $query = BarangMasuk::with(['gudang', 'user']);
 
         if ($activeGudang !== 'all') {
-            $query->where(function($q) use ($activeGudang) {
-                $q->where('gudang_tujuan_kode', $activeGudang)
-                  ->orWhere('gudang_asal_kode', $activeGudang);
-            });
+            $query->where('gudang_tujuan_kode', $activeGudang);
         }
 
         $transactions = $query->orderBy('tanggal_masuk', 'asc')->get();

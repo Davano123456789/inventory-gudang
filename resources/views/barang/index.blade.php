@@ -7,6 +7,7 @@
 <div class="flex flex-wrap -mx-3">
     <div class="w-full max-w-full px-3">
 
+        @if(Auth::user() && Auth::user()->isSuperAdmin())
         <!-- Import Excel Card (Outside/Above the table card) -->
         <div class="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border mb-6">
             <div class="p-6">
@@ -33,6 +34,7 @@
                 </form>
             </div>
         </div>
+        @endif
 
         <!-- Card Container (Table) -->
         <div class="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
@@ -44,8 +46,32 @@
                     <h6 class="font-bold text-slate-800 text-lg leading-none">Daftar Barang</h6>
                     
                     <div class="flex flex-wrap items-center gap-3 mt-1">
-                        <!-- Pagination Limit Select (Client-Side) -->
-                        <div class="flex items-center gap-1.5">
+                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-slate-500 font-semibold"><i class="fa fa-warehouse mr-1"></i> Gudang:</span>
+                                <select id="gudangFilterSelect" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
+                                    <option value="all">Semua Gudang</option>
+                                    @foreach($gudangs as $g)
+                                        <option value="{{ $g->kode_gudang }}" {{ $g->kode_gudang == Auth::user()->getActiveGudangCode() ? 'selected' : '' }}>
+                                            {{ $g->nama_gudang }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @else
+                            <!-- Hidden active warehouse selector for JQuery -->
+                            <input type="hidden" id="gudangFilterSelect" value="{{ Auth::user()->getActiveGudangCode() }}">
+                            <!-- Active Warehouse Name Display -->
+                            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1">
+                                <span class="text-xs text-slate-500 font-semibold">Gudang Aktif:</span>
+                                @php
+                                    $currentGudang = $gudangs->firstWhere('kode_gudang', Auth::user()->getActiveGudangCode());
+                                @endphp
+                                <span class="text-xs text-blue-600 font-bold">{{ $currentGudang ? $currentGudang->nama_gudang : 'Gudang Penugasan' }}</span>
+                            </div>
+                        @endif
+                        
+                        <div class="flex items-center gap-2 border-l pl-3 border-gray-200">
                             <span class="text-xs text-slate-500 font-semibold">Tampilkan:</span>
                             <select id="perPageSelect" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
                                 <option value="10" selected>10 Baris</option>
@@ -53,19 +79,6 @@
                                 <option value="50">50 Baris</option>
                                 <option value="all">Semua Baris</option>
                             </select>
-                        </div>
-
-                        <!-- Gudang Filter Select (Client-Side) -->
-                        <!-- Hidden active warehouse selector for JQuery -->
-                        <input type="hidden" id="gudangFilterSelect" value="{{ Auth::user()->getActiveGudangCode() }}">
-                        
-                        <!-- Active Warehouse Name Display -->
-                        <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1">
-                            <span class="text-xs text-slate-500 font-semibold">Gudang Aktif:</span>
-                            @php
-                                $currentGudang = $gudangs->firstWhere('kode_gudang', Auth::user()->getActiveGudangCode());
-                            @endphp
-                            <span class="text-xs text-blue-600 font-bold">{{ $currentGudang ? $currentGudang->nama_gudang : 'Gudang Penugasan' }}</span>
                         </div>
                     </div>
                 </div>
@@ -79,9 +92,11 @@
                     </div>
 
                     <!-- Add Barang Button -->
+                    @if(Auth::user() && Auth::user()->isSuperAdmin())
                     <a href="{{ route('barang.create') }}" class="inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
                         <i class="fa fa-plus mr-1"></i> Tambah Barang
                     </a>
+                    @endif
                 </div>
             </div>
 
@@ -136,7 +151,7 @@
                                     <a href="{{ route('barang.show', $barang->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-blue-600 mr-3 transition-colors">
                                         <i class="fa fa-eye mr-1"></i> Detail
                                     </a>
-                                    @if(Auth::user() && (Auth::user()->isSuperAdmin() || $barang->created_by_user_id == Auth::id()))
+                                    @if(Auth::user() && Auth::user()->isSuperAdmin())
                                     <a href="{{ route('barang.edit', $barang->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-amber-600 mr-3 transition-colors">
                                         <i class="fa fa-edit mr-1"></i> Edit
                                     </a>
@@ -195,12 +210,23 @@
             $rows.each(function() {
                 if ($(this).find('td[colspan]').length) return;
                 
+                let $row = $(this);
+                
+                // Check local items constraint
+                if (selectedGudang !== 'all') {
+                    let hasGudang = $row.attr('data-has-gudang-' + selectedGudang);
+                    if (hasGudang === 'false') {
+                        $row.hide();
+                        return; // Skip this row
+                    }
+                }
+                
                 // Filter by search query
-                var rowText = $(this).text().toLowerCase();
+                var rowText = $row.text().toLowerCase();
                 if (rowText.indexOf(searchValue) > -1) {
                     matched.push(this);
                 } else {
-                    $(this).hide();
+                    $row.hide();
                 }
             });
             return $(matched);

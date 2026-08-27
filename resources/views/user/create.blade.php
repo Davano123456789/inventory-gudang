@@ -64,22 +64,27 @@
                         <div>
                             <label for="role" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Peran (Role) <span class="text-red-500">*</span></label>
                             <select name="role" id="role" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
-                                <option value="kepala_gudang" {{ old('role', 'kepala_gudang') == 'kepala_gudang' ? 'selected' : '' }}>Kepala Gudang</option>
-                                <option value="super_admin" {{ old('role') == 'super_admin' ? 'selected' : '' }}>Super Admin</option>
+                                @foreach($allowedRoles as $roleKey => $roleLabel)
+                                    <option value="{{ $roleKey }}" {{ old('role') == $roleKey ? 'selected' : '' }}>{{ $roleLabel }}</option>
+                                @endforeach
                             </select>
                         </div>
 
                         <!-- Warehouse Selector (Toggled dynamically by JQuery) -->
-                        <div id="warehouseSelectorContainer">
+                        <div id="warehouseSelectorContainer" class="{{ Auth::user()->isKepalaGudang() ? 'hidden' : '' }}">
                             <label for="kode_gudang" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Gudang Penugasan <span class="text-red-500">*</span></label>
-                            <select name="kode_gudang" id="kode_gudang" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
-                                <option value="">-- Pilih Gudang Tugas --</option>
-                                @foreach($gudangs as $g)
-                                    <option value="{{ $g->kode_gudang }}" {{ old('kode_gudang') == $g->kode_gudang ? 'selected' : '' }}>
-                                        {{ $g->nama_gudang }} ({{ $g->kode_gudang }})
-                                    </option>
-                                @endforeach
-                            </select>
+                            @if(Auth::user()->isKepalaGudang())
+                                <input type="text" disabled value="{{ Auth::user()->gudang ? Auth::user()->gudang->nama_gudang : '' }}" class="w-full px-3 py-2 text-sm text-slate-700 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none cursor-not-allowed">
+                            @else
+                                <select name="kode_gudang" id="kode_gudang" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
+                                    <option value="">-- Pilih Gudang Tugas --</option>
+                                    @foreach($gudangs as $g)
+                                        <option value="{{ $g->kode_gudang }}" {{ old('kode_gudang') == $g->kode_gudang ? 'selected' : '' }}>
+                                            {{ $g->nama_gudang }} ({{ $g->kode_gudang }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            @endif
                         </div>
                     </div>
 
@@ -108,12 +113,14 @@
             let $container = $("#warehouseSelectorContainer");
             let $select = $("#kode_gudang");
 
-            if (roleVal === "super_admin") {
-                $container.hide();
-                $select.prop("required", false).val("");
-            } else {
-                $container.show();
-                $select.prop("required", true);
+            if ($select.length) {
+                if (roleVal === "super_admin" || roleVal === "admin") {
+                    $container.hide();
+                    $select.prop("required", false).val("");
+                } else {
+                    $container.show();
+                    $select.prop("required", true);
+                }
             }
         }
 

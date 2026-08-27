@@ -72,16 +72,33 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is Admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is Staff Gudang.
+     */
+    public function isStaff(): bool
+    {
+        return $this->role === 'staff_gudang';
+    }
+
+    /**
      * Get active warehouse code.
-     * If user is a Kepala Gudang, always returns their assigned warehouse.
+     * If user is a Kepala Gudang or Staff, always returns their assigned warehouse.
      * If user is Super Admin, returns selected session warehouse or 'all'.
      */
     public function getActiveGudangCode(): string
     {
-        if ($this->isKepalaGudang()) {
+        if ($this->isKepalaGudang() || $this->isStaff()) {
             return $this->kode_gudang ?? '';
         }
         
+        // Super Admin dan Admin bisa memilih gudang (global)
         $sessionCode = session('active_gudang_kode');
         if (!$sessionCode || $sessionCode === 'all') {
             $firstGudang = \App\Models\Gudang::orderBy('nama_gudang', 'asc')->first();

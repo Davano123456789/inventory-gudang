@@ -145,8 +145,10 @@
                     <hr class="my-6 border-slate-200">
 
                     <!-- Detail Items Section -->
-                    <div class="flex justify-between items-center mb-4">
-                        <h6 class="font-bold text-slate-800 text-md">Daftar Barang Masuk</h6>
+                    <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
+                        <div class="flex items-center gap-4">
+                            <h6 class="font-bold text-slate-800 text-md mb-0">Daftar Barang Masuk</h6>
+                        </div>
                         <button type="button" id="addRowBtn" class="inline-block px-4 py-2 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
                             <i class="fa fa-plus mr-1"></i> Tambah Baris
                         </button>
@@ -211,17 +213,27 @@
                 kode: "{{ $b->kode_barang }}",
                 nama: "{{ $b->nama_barang }}",
                 satuan_id: "{{ $b->satuan_id }}",
-                satuan: "{{ $b->satuan ? $b->satuan->nama_satuan : '' }}"
+                satuan: "{{ $b->satuan ? $b->satuan->nama_satuan : '' }}",
+                is_lokal: {{ $b->stokGudangs->contains('kode_gudang', Auth::user()->getActiveGudangCode()) ? 'true' : 'false' }}
             },
             @endforeach
         ];
 
         // Function to create a new row HTML
         function createRow(index) {
-            let options = '';
+            let lokalOptions = '';
+            
             itemsData.forEach(function(item) {
-                options += `<option value="${item.id}">${item.kode} - ${item.nama}</option>`;
+                let opt = `<option value="${item.id}">${item.kode} - ${item.nama}</option>`;
+                if (item.is_lokal) {
+                    lokalOptions += opt;
+                }
             });
+
+            let options = '<option value="">-- Pilih Barang --</option>';
+            if (lokalOptions) {
+                options += lokalOptions;
+            }
 
             let satuanOptions = '<option value="">-- Pilih Satuan --</option>';
             satuansData.forEach(function(s) {
@@ -261,6 +273,7 @@
 
         // Add row on button click
         $("#addRowBtn").on("click", function() {
+            $("#emptyPlaceholderRow").remove();
             let $row = $(createRow(rowIndex));
             $("#itemsTableBody").append($row);
             
@@ -337,7 +350,6 @@
                 $("#emptyPlaceholderRow").remove();
             }
         }
-
         // Add initial row
         $("#addRowBtn").trigger("click");
 

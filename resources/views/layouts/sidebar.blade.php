@@ -8,7 +8,7 @@
     </div>
     <hr class="h-px mt-0 bg-transparent bg-gradient-horizontal-dark">
     <div class="items-center block w-auto max-h-screen overflow-auto grow basis-full">
-        <ul class="flex flex-col pl-0 mb-0">
+        <ul class="flex flex-col pl-0 mb-0 pb-32">
             <li class="mt-0.5 w-full">
                 <a class="py-2.7 {{ Request::is('/') || Request::is('dashboard') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ url('/') }}">
                     <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
@@ -73,7 +73,7 @@
             </li>
 
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ Request::is('barang-manual') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang-manual.index') }}">
+                <a class="py-2.7 {{ Request::is('barang-manual*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang-manual.index') }}">
                     <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
                         <i class="fa fa-list text-slate-500"></i>
                     </div>
@@ -113,7 +113,7 @@
             </li>
 
 
-            @if(Auth::user() && Auth::user()->isSuperAdmin())
+            @if(Auth::user() && !Auth::user()->isStaff())
             <li class="w-full mt-4">
                 <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">Sistem</h6>
             </li>
@@ -128,7 +128,7 @@
             </li>
             @endif
 
-            <li class="mt-0.5 w-full">
+            <li class="mt-0.5 w-full mb-6">
                 <a class="py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors text-slate-500 hover:text-red-600" href="javascript:;" onclick="event.preventDefault(); document.getElementById('sidebarLogoutForm').submit();" title="Keluar dari sistem">
                     <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
                         <i class="fa fa-sign-out-alt text-red-500"></i>

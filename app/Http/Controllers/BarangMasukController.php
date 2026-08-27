@@ -48,7 +48,7 @@ class BarangMasukController extends Controller
     {
         $user = auth()->user();
         $activeGudang = $user->getActiveGudangCode();
-        $barangs = Barang::with('satuan')->orderBy('nama_barang', 'asc')->get();
+        $barangs = Barang::with(['satuan', 'stokGudangs'])->orderBy('nama_barang', 'asc')->get();
         
         $gudangTujuans = Gudang::where('kode_gudang', $activeGudang)->get();
 
@@ -224,6 +224,10 @@ class BarangMasukController extends Controller
             return redirect()->back()->with('error', 'Transaksi mutasi ini sudah tidak dapat di-approve.');
         }
 
+        if (auth()->user()->role === 'staff_gudang') {
+            return redirect()->back()->with('error', 'Staff Gudang tidak memiliki hak untuk menyetujui mutasi.');
+        }
+
         $activeGudang = auth()->user()->getActiveGudangCode();
         if ($activeGudang !== 'all' && $activeGudang !== $mutasi->gudang_tujuan_kode) {
             return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk menyetujui mutasi ini.');
@@ -294,6 +298,10 @@ class BarangMasukController extends Controller
         
         if ($mutasi->status !== 'pending' || $mutasi->jenis !== 'mutasi') {
             return redirect()->back()->with('error', 'Transaksi mutasi ini sudah tidak dapat ditolak.');
+        }
+
+        if (auth()->user()->role === 'staff_gudang') {
+            return redirect()->back()->with('error', 'Staff Gudang tidak memiliki hak untuk menolak mutasi.');
         }
         
         $activeGudang = auth()->user()->getActiveGudangCode();

@@ -99,19 +99,25 @@
                                 </td>
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     @if($op->status === 'Draft')
+                                        @if(Auth::user() && Auth::user()->isSuperAdmin())
                                         <a href="{{ route('stock-opname.edit', $op->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-amber-600 mr-3 transition-colors">
                                             <i class="fa fa-edit mr-1"></i> Edit (Lanjutkan)
                                         </a>
                                         <button type="button" onclick="openDeleteModal('{{ route('stock-opname.destroy', $op->id) }}', '{{ $op->no_opname }}', false)" class="text-xs font-semibold leading-normal text-slate-400 hover:text-red-600 transition-colors">
                                             <i class="fa fa-trash mr-1"></i> Hapus
                                         </button>
+                                        @else
+                                        <span class="text-xs font-semibold leading-normal text-slate-400">Tidak ada aksi</span>
+                                        @endif
                                     @else
                                         <a href="{{ route('stock-opname.show', $op->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-blue-600 mr-3 transition-colors">
                                             <i class="fa fa-eye mr-1"></i> Detail
                                         </a>
+                                        @if(Auth::user() && Auth::user()->isSuperAdmin())
                                         <button type="button" onclick="openDeleteModal('{{ route('stock-opname.destroy', $op->id) }}', '{{ $op->no_opname }}', true)" class="text-xs font-semibold leading-normal text-slate-400 hover:text-red-600 transition-colors">
                                             <i class="fa fa-trash mr-1"></i> Hapus
                                         </button>
+                                        @endif
                                     @endif
                                 </td>
                             </tr>

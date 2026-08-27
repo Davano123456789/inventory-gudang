@@ -13,9 +13,11 @@
             <!-- Card Header -->
             <div class="p-6 pb-0 mb-0 border-b-0 border-solid border-black-125 rounded-t-2xl flex justify-between items-center">
                 <h6 class="font-bold text-slate-800 text-lg">Daftar Satuan Barang</h6>
+                @if(Auth::user() && Auth::user()->isSuperAdmin())
                 <a href="{{ route('satuan.create') }}" class="inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
                     <i class="fa fa-plus mr-1"></i> Tambah Satuan
                 </a>
+                @endif
             </div>
 
             <!-- Card Body (Table) -->

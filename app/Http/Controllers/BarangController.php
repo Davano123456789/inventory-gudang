@@ -128,16 +128,29 @@ class BarangController extends Controller
             'created_by_user_id' => $user->id,
         ]);
 
-        // Resolve target warehouse and create stock balance
-        $gudangCode = $user->isSuperAdmin() ? $request->kode_gudang : $user->kode_gudang;
-        $stokAwal = $request->input('stok_awal', 0);
-
-        if ($gudangCode) {
+        // Global Sync: Create stok_gudang for ALL warehouses
+        $gudangs = \App\Models\Gudang::all();
+        foreach ($gudangs as $gudang) {
+            $isTarget = ($gudang->kode_gudang == $gudangCode);
             StokGudang::create([
-                'kode_gudang' => $gudangCode,
+                'kode_gudang' => $gudang->kode_gudang,
                 'barang_id' => $barang->id,
-                'stok_sekarang' => $stokAwal
+                'stok_sekarang' => $isTarget ? $stokAwal : 0
             ]);
+
+            // Only record KartuStok if it's the target warehouse and there's initial stock
+            if ($isTarget && $stokAwal > 0) {
+                \App\Models\KartuStok::create([
+                    'tanggal' => now()->toDateString(),
+                    'kode_gudang' => $gudangCode,
+                    'barang_id' => $barang->id,
+                    'saldo_awal' => 0,
+                    'masuk' => $stokAwal,
+                    'keluar' => 0,
+                    'saldo_akhir' => $stokAwal,
+                    'keterangan' => 'Stok Awal (Master)'
+                ]);
+            }
         }
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan!');
@@ -200,6 +213,10 @@ class BarangController extends Controller
             'stok_awal' => 'nullable|numeric|min:0',
         ]);
 
+        $gudangCode = $request->input('kode_gudang');
+        $stokAwal = floatval($request->input('stok_awal', 0));
+
+        // Create new global master
         $barang = Barang::create([
             'kode_barang' => $request->kode_barang,
             'nama_barang' => $request->nama_barang,
@@ -208,30 +225,31 @@ class BarangController extends Controller
             'source' => 'manual',
         ]);
 
-        // Resolve target warehouse and create stock balance
-        $gudangCode = $request->input('kode_gudang');
-        $stokAwal = floatval($request->input('stok_awal', 0));
-
-        if ($gudangCode) {
+        // Global Sync: Create stok_gudang for ALL warehouses
+        $gudangs = \App\Models\Gudang::all();
+        foreach ($gudangs as $gudang) {
+            $isTarget = ($gudang->kode_gudang == $gudangCode);
             $barang->stokGudangs()->create([
-                'kode_gudang' => $gudangCode,
-                'stok_sekarang' => $stokAwal,
+                'kode_gudang' => $gudang->kode_gudang,
+                'stok_sekarang' => $isTarget ? $stokAwal : 0,
             ]);
 
-            // Record transaction in kartu_stoks
-            \App\Models\KartuStok::create([
-                'tanggal' => now()->toDateString(),
-                'kode_gudang' => $gudangCode,
-                'barang_id' => $barang->id,
-                'saldo_awal' => 0,
-                'masuk' => $stokAwal,
-                'keluar' => 0,
-                'saldo_akhir' => $stokAwal,
-                'keterangan' => 'Stok Awal (Manual)'
-            ]);
+            // Record transaction in kartu_stoks ONLY for target warehouse if stock > 0
+            if ($isTarget && $stokAwal > 0) {
+                \App\Models\KartuStok::create([
+                    'tanggal' => now()->toDateString(),
+                    'kode_gudang' => $gudangCode,
+                    'barang_id' => $barang->id,
+                    'saldo_awal' => 0,
+                    'masuk' => $stokAwal,
+                    'keluar' => 0,
+                    'saldo_akhir' => $stokAwal,
+                    'keterangan' => 'Stok Awal (Manual)'
+                ]);
+            }
         }
 
-        return redirect()->route('barang-manual.index')->with('success', 'Barang manual berhasil ditambahkan.');
+        return redirect()->route('barang-manual.index')->with('success', 'Barang manual berhasil ditambahkan dan disinkronisasi ke seluruh gudang.');
     }
 
     public function import(Request $request)

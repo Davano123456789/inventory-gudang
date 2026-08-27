@@ -109,7 +109,7 @@
                                     <a href="{{ route('barang.show', $barang->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-blue-600 mr-3 transition-colors">
                                         <i class="fa fa-eye mr-1"></i> Detail
                                     </a>
-                                    @if(Auth::user() && (Auth::user()->isSuperAdmin() || $barang->created_by_user_id == Auth::id()))
+                                    @if(Auth::user() && Auth::user()->isSuperAdmin())
                                     <a href="{{ route('barang.edit', $barang->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-amber-600 mr-3 transition-colors">
                                         <i class="fa fa-edit mr-1"></i> Edit
                                     </a>

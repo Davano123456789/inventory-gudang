@@ -121,9 +121,11 @@
                                     <a href="{{ route('barang-keluar.show', $tx->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-blue-600 mr-3 transition-colors">
                                         <i class="fa fa-eye mr-1"></i> Detail
                                     </a>
+                                    @if(Auth::user() && Auth::user()->isSuperAdmin())
                                     <button type="button" onclick="openDeleteModal('{{ route('barang-keluar.destroy', $tx->id) }}', '{{ $tx->no_surat_jalan }}', 'barang-keluar')" class="text-xs font-semibold leading-normal text-slate-400 hover:text-red-600 transition-colors">
                                         <i class="fa fa-trash mr-1"></i> Hapus
                                     </button>
+                                    @endif
                                 </td>
                             </tr>
                             @empty

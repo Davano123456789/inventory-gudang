@@ -32,6 +32,13 @@ class DatabaseSeeder extends Seeder
             'kode_gudang' => null
         ]);
 
+        User::updateOrCreate(['email' => 'admin_biasa@test.com'], [
+            'name' => 'Admin Operasional',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'kode_gudang' => null
+        ]);
+
         User::updateOrCreate(['email' => 'surabaya@test.com'], [
             'name' => 'Budi (Gudang Surabaya)',
             'password' => bcrypt('password'),
@@ -40,9 +47,23 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::updateOrCreate(['email' => 'jakarta@test.com'], [
-            'name' => 'Rian (Gudang Jakarta)',
+            'name' => 'Rian (Kepala Gudang Jakarta)',
             'password' => bcrypt('password'),
             'role' => 'kepala_gudang',
+            'kode_gudang' => '000003'
+        ]);
+
+        User::updateOrCreate(['email' => 'staff_sby@test.com'], [
+            'name' => 'Siti (Staff Surabaya)',
+            'password' => bcrypt('password'),
+            'role' => 'staff_gudang',
+            'kode_gudang' => '300003'
+        ]);
+
+        User::updateOrCreate(['email' => 'staff_jkt@test.com'], [
+            'name' => 'Joko (Staff Jakarta)',
+            'password' => bcrypt('password'),
+            'role' => 'staff_gudang',
             'kode_gudang' => '000003'
         ]);
     }

@@ -73,11 +73,13 @@
                         <p class="text-xs text-slate-400 mt-1">Stok awal barang akan otomatis dimasukkan ke gudang aktif Anda saat ini.</p>
                     </div>
 
+                    <!--
                     <div class="mb-4">
                         <label for="stok_awal" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Stok Awal (Opsional)</label>
                         <input type="number" step="any" name="stok_awal" id="stok_awal" value="{{ old('stok_awal', 0) }}" placeholder="Contoh: 100" class="w-full px-3 py-2 text-sm text-slate-700 placeholder-slate-400 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
                         <p class="text-xs text-slate-400 mt-1">Stok awal barang di gudang yang dipilih di atas.</p>
                     </div>
+                    -->
 
 
 

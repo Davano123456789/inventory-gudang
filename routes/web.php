@@ -18,7 +18,11 @@ Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 // Authenticated Scoped Routes
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'force_change_password'])->group(function () {
+    // Force Change Password Routes
+    Route::get('/force-change-password', [UserController::class, 'showForceChangePasswordForm'])->name('password.force-change.show');
+    Route::post('/force-change-password', [UserController::class, 'forceChangePassword'])->name('password.force-change.update');
+
     Route::get('/', [DashboardController::class, 'index']);
 
     // Master Data - Read Only for All Roles

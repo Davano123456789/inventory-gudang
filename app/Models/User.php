@@ -22,6 +22,7 @@ class User extends Authenticatable
         'password',
         'role',
         'kode_gudang',
+        'must_change_password',
     ];
 
     /**

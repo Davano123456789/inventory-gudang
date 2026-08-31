@@ -29,42 +29,48 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin Utama',
             'password' => bcrypt('password'),
             'role' => 'super_admin',
-            'kode_gudang' => null
+            'kode_gudang' => null,
+            'must_change_password' => false,
         ]);
 
         User::updateOrCreate(['email' => 'admin_biasa@test.com'], [
             'name' => 'Admin Operasional',
             'password' => bcrypt('password'),
             'role' => 'admin',
-            'kode_gudang' => null
+            'kode_gudang' => null,
+            'must_change_password' => false,
         ]);
 
         User::updateOrCreate(['email' => 'surabaya@test.com'], [
             'name' => 'Budi (Gudang Surabaya)',
             'password' => bcrypt('password'),
             'role' => 'kepala_gudang',
-            'kode_gudang' => '300003'
+            'kode_gudang' => '300003',
+            'must_change_password' => false,
         ]);
 
         User::updateOrCreate(['email' => 'jakarta@test.com'], [
             'name' => 'Rian (Kepala Gudang Jakarta)',
             'password' => bcrypt('password'),
             'role' => 'kepala_gudang',
-            'kode_gudang' => '000003'
+            'kode_gudang' => '000003',
+            'must_change_password' => false
         ]);
 
         User::updateOrCreate(['email' => 'staff_sby@test.com'], [
             'name' => 'Siti (Staff Surabaya)',
             'password' => bcrypt('password'),
             'role' => 'staff_gudang',
-            'kode_gudang' => '300003'
+            'kode_gudang' => '300003',
+            'must_change_password' => false
         ]);
 
         User::updateOrCreate(['email' => 'staff_jkt@test.com'], [
             'name' => 'Joko (Staff Jakarta)',
             'password' => bcrypt('password'),
             'role' => 'staff_gudang',
-            'kode_gudang' => '000003'
+            'kode_gudang' => '000003',
+            'must_change_password' => false
         ]);
     }
 }

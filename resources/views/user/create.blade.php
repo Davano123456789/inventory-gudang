@@ -48,22 +48,27 @@
                             <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="contoh@domain.com" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
                         </div>
 
-                        <!-- Password -->
-                        <div>
-                            <label for="password" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Kata Sandi (Password) <span class="text-red-500">*</span></label>
-                            <input type="password" name="password" id="password" placeholder="Minimal 6 karakter..." required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
-                        </div>
-
-                        <!-- Password Confirmation -->
-                        <div>
-                            <label for="password_confirmation" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Konfirmasi Kata Sandi <span class="text-red-500">*</span></label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Ulangi kata sandi..." required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
+                        <div class="col-span-1 md:col-span-2 mt-2">
+                            <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fa fa-info-circle text-blue-500 mt-1"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-blue-800">Informasi Kata Sandi</h3>
+                                        <div class="mt-1 text-xs text-blue-700">
+                                            <p>Kata sandi pengguna baru akan diatur ke <strong>password</strong> secara otomatis. Pengguna akan dipaksa untuk mengubahnya saat pertama kali login ke dalam sistem.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Role Select -->
                         <div>
                             <label for="role" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Peran (Role) <span class="text-red-500">*</span></label>
                             <select name="role" id="role" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
+                                <option value="" disabled {{ old('role') ? '' : 'selected' }}>-- Pilih Peran --</option>
                                 @foreach($allowedRoles as $roleKey => $roleLabel)
                                     <option value="{{ $roleKey }}" {{ old('role') == $roleKey ? 'selected' : '' }}>{{ $roleLabel }}</option>
                                 @endforeach
@@ -114,7 +119,7 @@
             let $select = $("#kode_gudang");
 
             if ($select.length) {
-                if (roleVal === "super_admin" || roleVal === "admin") {
+                if (roleVal === "super_admin" || roleVal === "admin" || !roleVal) {
                     $container.hide();
                     $select.prop("required", false).val("");
                 } else {

@@ -74,7 +74,6 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
             'role' => 'required|in:' . implode(',', $allowedRoles),
             'kode_gudang' => 'nullable|exists:gudangs,kode_gudang',
         ]);
@@ -92,9 +91,10 @@ class UserController extends Controller
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => bcrypt('password'), // Auto-assign default password
             'role' => $request->role,
             'kode_gudang' => $kodeGudang,
+            'must_change_password' => true,
         ]);
 
         return redirect()->route('user.index')->with('success', 'Akun pengguna berhasil didaftarkan!');
@@ -136,7 +136,6 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:6|confirmed',
             'role' => 'required|in:' . implode(',', $allowedRoles),
             'kode_gudang' => 'nullable|exists:gudangs,kode_gudang',
         ]);
@@ -158,9 +157,7 @@ class UserController extends Controller
             'kode_gudang' => $kodeGudang,
         ];
 
-        if ($request->filled('password')) {
-            $data['password'] = bcrypt($request->password);
-        }
+        // Password fields removed from edit form
 
         $user->update($data);
 
@@ -187,5 +184,24 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('user.index')->with('success', 'Akun pengguna berhasil dihapus!');
+    }
+
+    public function showForceChangePasswordForm()
+    {
+        return view('auth.force-change-password');
+    }
+
+    public function forceChangePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = Auth::user();
+        $user->password = bcrypt($request->password);
+        $user->must_change_password = false;
+        $user->save();
+
+        return redirect('/')->with('success', 'Kata sandi berhasil diubah! Selamat datang kembali.');
     }
 }

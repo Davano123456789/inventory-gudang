@@ -49,22 +49,13 @@
                             <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" placeholder="contoh@domain.com" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
                         </div>
 
-                        <!-- Password (Optional) -->
-                        <div>
-                            <label for="password" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Kata Sandi Baru <span class="text-slate-400 font-normal">(Biarkan kosong jika tidak ingin diubah)</span></label>
-                            <input type="password" name="password" id="password" placeholder="Minimal 6 karakter..." class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
-                        </div>
-
-                        <!-- Password Confirmation -->
-                        <div>
-                            <label for="password_confirmation" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Konfirmasi Kata Sandi Baru</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Ulangi kata sandi baru..." class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
-                        </div>
+                        <!-- Password fields removed - Users must manage their own passwords now -->
 
                         <!-- Role Select -->
                         <div>
                             <label for="role" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Peran (Role) <span class="text-red-500">*</span></label>
                             <select name="role" id="role" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
+                                <option value="" disabled {{ old('role', $user->role) ? '' : 'selected' }}>-- Pilih Peran --</option>
                                 @foreach($allowedRoles as $roleKey => $roleLabel)
                                     <option value="{{ $roleKey }}" {{ old('role', $user->role) == $roleKey ? 'selected' : '' }}>{{ $roleLabel }}</option>
                                 @endforeach
@@ -115,7 +106,7 @@
             let $select = $("#kode_gudang");
 
             if ($select.length) {
-                if (roleVal === "super_admin" || roleVal === "admin") {
+                if (roleVal === "super_admin" || roleVal === "admin" || !roleVal) {
                     $container.hide();
                     $select.prop("required", false).val("");
                 } else {

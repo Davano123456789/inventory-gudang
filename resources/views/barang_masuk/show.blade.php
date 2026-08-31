@@ -108,7 +108,6 @@
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-b border-slate-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Kode Barang</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-b border-slate-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Nama Barang</th>
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-slate-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">BOX</th>
-                                <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-slate-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">PCS</th>
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-slate-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">QTY (Total)</th>
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-slate-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Satuan</th>
                             </tr>
@@ -129,9 +128,6 @@
                                     <span class="text-xs leading-normal text-slate-600">{{ number_format($detail->qty_box, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    <span class="text-xs leading-normal text-slate-600">{{ number_format($detail->qty_pcs, 0, ',', '.') }}</span>
-                                </td>
-                                <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     <span class="text-xs font-bold leading-normal text-slate-700">{{ number_format($detail->qty_total, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
@@ -148,9 +144,6 @@
                                 <td colspan="3" class="px-6 py-4 font-bold text-slate-700 text-xs text-right uppercase">Total Jumlah :</td>
                                 <td class="px-6 py-4 text-center font-bold text-slate-700 text-xs">
                                     {{ number_format($barangMasuk->details->sum('qty_box'), 0, ',', '.') }}
-                                </td>
-                                <td class="px-6 py-4 text-center font-bold text-slate-700 text-xs">
-                                    {{ number_format($barangMasuk->details->sum('qty_pcs'), 0, ',', '.') }}
                                 </td>
                                 <td class="px-6 py-4 text-center font-bold text-slate-700 text-xs text-blue-600">
                                     {{ number_format($barangMasuk->details->sum('qty_total'), 0, ',', '.') }}

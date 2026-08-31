@@ -15,6 +15,25 @@ class StokGudang extends Model
     ];
 
     /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        $syncStokGlobal = function ($stokGudang) {
+            $barang = $stokGudang->barang;
+            if ($barang) {
+                $barang->stok_global = StokGudang::where('barang_id', $barang->id)->sum('stok_sekarang');
+                $barang->save();
+            }
+        };
+
+        static::saved($syncStokGlobal);
+        static::deleted($syncStokGlobal);
+    }
+
+    /**
      * Get the warehouse associated with this stock.
      */
     public function gudang()

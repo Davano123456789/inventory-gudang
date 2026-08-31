@@ -69,8 +69,16 @@
 
                 </div>
 
-                <!-- Detail Table -->
-                <h6 class="font-bold text-slate-800 text-xs uppercase mb-3 tracking-wide">Daftar Barang & Selisih Penyesuaian</h6>
+                <!-- Detail Table Header & Search -->
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+                    <h6 class="font-bold text-slate-800 text-xs uppercase tracking-wide m-0">Daftar Barang & Selisih Penyesuaian</h6>
+                    <div class="relative w-full sm:w-64 no-print">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa fa-search text-slate-400 text-xs"></i>
+                        </div>
+                        <input type="text" id="searchTable" placeholder="Cari nama atau kode barang..." class="block w-full pl-9 pr-3 py-2 text-sm text-slate-700 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
+                    </div>
+                </div>
                 <div class="overflow-x-auto border border-slate-100 rounded-2xl">
                     <table class="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
                         <thead class="align-bottom">
@@ -85,7 +93,7 @@
                         </thead>
                         <tbody>
                             @forelse($stockOpname->details as $index => $detail)
-                            <tr class="border-b border-slate-100 hover:bg-slate-50/20">
+                            <tr class="border-b border-slate-100 hover:bg-slate-50/20 data-row">
                                 <td class="px-6 py-4 align-middle bg-transparent shadow-none">
                                     <span class="text-sm font-semibold leading-normal text-slate-600">{{ $index + 1 }}</span>
                                 </td>
@@ -137,4 +145,27 @@
 
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchTable');
+        const rows = document.querySelectorAll('.data-row');
+
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function(e) {
+                const term = e.target.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(term)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+@endpush
 @endsection

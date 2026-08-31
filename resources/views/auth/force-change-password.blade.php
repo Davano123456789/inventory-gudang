@@ -51,7 +51,7 @@
             <div class="mb-5 p-4 text-xs text-rose-700 bg-rose-50/70 border border-rose-100 rounded-2xl flex flex-col gap-1.5 relative z-10">
                 <div class="flex items-center gap-2 font-semibold">
                     <i class="fa fa-circle-exclamation text-rose-500 text-sm"></i>
-                    <span>Gagal!</span>
+                    <span>Gagals!!</span>
                 </div>
                 <ul class="list-disc pl-4 text-rose-600/90 font-medium">
                     @foreach($errors->all() as $error)

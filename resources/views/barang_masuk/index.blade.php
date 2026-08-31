@@ -166,6 +166,8 @@
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     @if($tx->jenis_transaksi === 'Mutasi')
                                         <span class="text-xs font-bold leading-normal text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">Mutasi</span>
+                                    @elseif($tx->jenis_transaksi === 'Mutasi Ditolak')
+                                        <span class="text-xs font-bold leading-normal text-red-600 bg-red-50 px-2.5 py-1 rounded-lg">Mutasi Ditolak</span>
                                     @elseif($tx->jenis_transaksi === 'Retur')
                                         <span class="text-xs font-bold leading-normal text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">Retur</span>
                                     @else

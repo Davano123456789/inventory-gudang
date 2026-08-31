@@ -73,15 +73,6 @@
             </li>
 
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ Request::is('barang-manual*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang-manual.index') }}">
-                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="fa fa-list text-slate-500"></i>
-                    </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft"> Barang Masuk Baru</span>
-                </a>
-            </li>
-
-            <li class="mt-0.5 w-full">
                 <a class="py-2.7 {{ Request::is('barang-keluar*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang-keluar.index') }}">
                     <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
                         <i class="fa fa-arrow-up text-slate-500"></i>

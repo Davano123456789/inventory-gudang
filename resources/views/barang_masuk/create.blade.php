@@ -170,6 +170,46 @@
                             </tbody>
                         </table>
                     </div>
+                    
+                    <hr class="my-6 border-slate-200">
+
+                    <div class="mb-4">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggleNewItemSection" class="sr-only peer">
+                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            <span class="ms-3 text-sm font-medium text-slate-700">Ada barang baru yang belum terdaftar di sistem?</span>
+                        </label>
+                    </div>
+
+                    <!-- Detail New Items Section -->
+                    <div id="newItemsWrapper" style="display: none;">
+                        <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
+                            <div class="flex items-center gap-4">
+                                <h6 class="font-bold text-slate-800 text-md mb-0">Daftarkan Barang Baru <span class="text-xs font-normal text-slate-400 ml-1">(Opsional)</span></h6>
+                            </div>
+                            <button type="button" id="addNewRowBtn" class="inline-block px-4 py-2 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-emerald-500 to-teal-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
+                                <i class="fa fa-plus mr-1"></i> Tambah Barang Baru
+                            </button>
+                        </div>
+
+                    <div class="overflow-x-auto mb-6">
+                        <table class="items-center w-full mb-0 align-top border-gray-200 text-slate-500" id="newItemsTable">
+                            <thead class="align-bottom">
+                                <tr>
+                                    <th class="px-3 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[20%]">Kode Barang</th>
+                                    <th class="px-3 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[20%]">Nama Barang</th>
+                                    <th class="px-3 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[15%]">BOX</th>
+                                    <th class="px-3 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[15%]">QTY</th>
+                                    <th class="px-3 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[20%]">Satuan</th>
+                                    <th class="px-3 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[10%]">Hapus</th>
+                                </tr>
+                            </thead>
+                            <tbody id="newItemsTableBody">
+                                <!-- Dynamic rows for new items go here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    </div>
 
                     <!-- Action Buttons -->
                     <div class="flex justify-start gap-3 border-t pt-4">
@@ -193,6 +233,7 @@
 <script>
     $(document).ready(function() {
         let rowIndex = 0;
+        let newRowIndex = 0;
         
         // List of all units passed from DB
         const satuansData = [
@@ -241,7 +282,7 @@
 
             return `
                 <tr class="item-row">
-                    <td class="p-3 align-middle bg-transparent border-b shadow-none">
+                    <td class="p-3 align-top bg-transparent border-b shadow-none">
                         <select name="items[${index}][barang_id]" required class="barang-select w-full px-3 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
                             ${options}
                         </select>
@@ -268,6 +309,42 @@
             `;
         }
 
+        // Function to create a new item row HTML
+        function createNewItemRow(index) {
+            let satuanOptions = '<option value="">-- Pilih Satuan --</option>';
+            satuansData.forEach(function(s) {
+                satuanOptions += `<option value="${s.id}">${s.nama}</option>`;
+            });
+
+            return `
+                <tr class="new-item-row">
+                    <td class="p-3 align-top bg-transparent border-b shadow-none">
+                        <input type="text" name="new_items[${index}][kode_barang]" required placeholder="Ketik Kode Barang..." class="w-full px-3 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
+                    </td>
+                    <td class="p-3 align-top bg-transparent border-b shadow-none">
+                        <input type="text" name="new_items[${index}][nama_barang]" required placeholder="Ketik Nama Barang..." class="w-full px-3 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
+                    </td>
+                    <td class="p-3 align-top bg-transparent border-b shadow-none text-center">
+                        <input type="number" step="any" name="new_items[${index}][qty_box]" value="0" class="w-full text-center px-3 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
+                    </td>
+                    <td class="p-3 align-top bg-transparent border-b shadow-none text-center">
+                        <input type="hidden" name="new_items[${index}][qty_pcs]" value="0" class="qty-pcs-hidden">
+                        <input type="number" step="any" name="new_items[${index}][qty_total]" required placeholder="QTY" class="qty-total-input w-full text-center px-3 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
+                    </td>
+                    <td class="p-3 align-top bg-transparent border-b shadow-none text-left">
+                        <select name="new_items[${index}][satuan_id]" required class="satuan-select w-full px-2.5 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
+                            ${satuanOptions}
+                        </select>
+                    </td>
+                    <td class="p-3 align-top bg-transparent border-b shadow-none text-center">
+                        <button type="button" class="remove-new-row-btn text-slate-400 hover:text-red-600 transition-colors bg-transparent border-0">
+                            <i class="fa fa-trash text-sm"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }
+
         // Add row on button click
         $("#addRowBtn").on("click", function() {
             $("#emptyPlaceholderRow").remove();
@@ -282,11 +359,27 @@
             rowIndex++;
         });
 
+        // Add new item row on button click
+        $("#addNewRowBtn").on("click", function() {
+            $("#emptyNewPlaceholderRow").remove();
+            let $row = $(createNewItemRow(newRowIndex));
+            $("#newItemsTableBody").append($row);
+            
+            newRowIndex++;
+        });
+
         // Delete row on trash icon click
         $(document).on("click", ".remove-row-btn", function() {
             $(this).closest(".item-row").remove();
             checkEmptyTable();
         });
+
+        $(document).on("click", ".remove-new-row-btn", function() {
+            $(this).closest(".new-item-row").remove();
+            checkEmptyNewTable();
+        });
+
+
 
         // Sync QTY Total to QTY Pcs hidden input
         $(document).on("input", ".qty-total-input", function() {
@@ -353,17 +446,46 @@
                 $("#emptyPlaceholderRow").remove();
             }
         }
-        // Add initial row
-        $("#addRowBtn").trigger("click");
+        function checkEmptyNewTable() {
+            if ($("#newItemsTableBody tr").length === 0) {
+                $("#newItemsTableBody").append(`
+                    <tr id="emptyNewPlaceholderRow">
+                        <td colspan="6" class="px-6 py-6 text-center align-middle bg-transparent border-b shadow-none">
+                            <div class="flex flex-col items-center justify-center">
+                                <i class="fa fa-plus-circle text-2xl text-slate-300 mb-2"></i>
+                                <span class="text-xs text-slate-400 font-medium">Jika ingin mendaftarkan barang baru, klik "Tambah Barang Baru" di atas.</span>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            } else {
+                $("#emptyNewPlaceholderRow").remove();
+            }
+        }
+
+        // Add initial row for existing items, but leave new items empty
+        checkEmptyTable();
+        checkEmptyNewTable();
+
+        // Toggle new items section
+        $("#toggleNewItemSection").on("change", function() {
+            if ($(this).is(":checked")) {
+                $("#newItemsWrapper").slideDown(300);
+            } else {
+                $("#newItemsWrapper").slideUp(300);
+            }
+        });
 
         // Validate form before submission
         $("#barangMasukForm").on("submit", function(e) {
             let rowCount = $("#itemsTableBody tr.item-row").length;
-            if (rowCount === 0) {
+            let newRowCount = $("#newItemsTableBody tr.new-item-row").length;
+            
+            if (rowCount === 0 && newRowCount === 0) {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Kesalahan!',
-                    text: 'Anda harus menambahkan minimal 1 barang sebelum menyimpan transaksi!',
+                    text: 'Anda harus menambahkan minimal 1 barang (lama atau baru) sebelum menyimpan transaksi!',
                     icon: 'error',
                     confirmButtonColor: '#ea0606',
                     customClass: {

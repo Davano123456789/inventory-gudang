@@ -71,6 +71,8 @@
                                 <span class="text-slate-600 font-semibold">
                                     @if($barangMasuk->jenis_transaksi === 'Mutasi')
                                         <span class="text-purple-600 bg-purple-50 px-2.5 py-1 rounded text-xxs font-bold">Mutasi Antar Gudang</span>
+                                    @elseif($barangMasuk->jenis_transaksi === 'Mutasi Ditolak')
+                                        <span class="text-red-600 bg-red-50 px-2.5 py-1 rounded text-xxs font-bold">Mutasi Ditolak</span>
                                     @elseif($barangMasuk->jenis_transaksi === 'Retur')
                                         <span class="text-amber-600 bg-amber-50 px-2.5 py-1 rounded text-xxs font-bold">Retur / Kembalian</span>
                                     @else
@@ -123,6 +125,9 @@
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b shadow-none">
                                     <span class="text-xs leading-normal text-slate-600">{{ $detail->barang->nama_barang }}</span>
+                                    @if($detail->barang->source === 'masuk_baru')
+                                        <span class="ml-2 text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 shadow-sm">Barang Baru</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     <span class="text-xs leading-normal text-slate-600">{{ number_format($detail->qty_box, 0, ',', '.') }}</span>

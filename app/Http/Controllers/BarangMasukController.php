@@ -71,12 +71,19 @@ class BarangMasukController extends Controller
             'pengirim' => 'nullable|string|max:150',
             'gudang_tujuan_kode' => 'required|exists:gudangs,kode_gudang',
             'catatan' => 'nullable|string',
-            'items' => 'required|array|min:1',
+            'items' => 'required_without:new_items|array',
             'items.*.barang_id' => 'required|exists:barangs,id',
             'items.*.satuan_id' => 'nullable|exists:satuans,id',
             'items.*.qty_box' => 'nullable|numeric|min:0',
             'items.*.qty_pcs' => 'nullable|numeric|min:0',
             'items.*.qty_total' => 'required|numeric|min:0.01',
+            'new_items' => 'required_without:items|array',
+            'new_items.*.kode_barang' => 'required|string|max:100|unique:barangs,kode_barang',
+            'new_items.*.nama_barang' => 'required|string|max:255',
+            'new_items.*.satuan_id' => 'required|exists:satuans,id',
+            'new_items.*.qty_box' => 'nullable|numeric|min:0',
+            'new_items.*.qty_pcs' => 'nullable|numeric|min:0',
+            'new_items.*.qty_total' => 'required|numeric|min:0.01',
         ]);
 
         DB::transaction(function() use ($request) {
@@ -93,10 +100,50 @@ class BarangMasukController extends Controller
                 'catatan' => $request->catatan,
             ]);
 
+            $allItems = [];
+            
+            // Collect existing items
+            if ($request->has('items') && is_array($request->items)) {
+                foreach ($request->items as $item) {
+                    $allItems[] = $item;
+                }
+            }
+
+            // Collect and process new items
+            if ($request->has('new_items') && is_array($request->new_items)) {
+                foreach ($request->new_items as $newItem) {
+                    $newBarang = \App\Models\Barang::create([
+                        'kode_barang' => $newItem['kode_barang'],
+                        'nama_barang' => $newItem['nama_barang'],
+                        'satuan_id' => $newItem['satuan_id'],
+                        'created_by_user_id' => Auth::id() ?: 1,
+                        'source' => 'masuk_baru',
+                    ]);
+
+                    // Sync to all warehouses with 0 stock
+                    $gudangs = \App\Models\Gudang::all();
+                    foreach ($gudangs as $gudang) {
+                        $newBarang->stokGudangs()->create([
+                            'kode_gudang' => $gudang->kode_gudang,
+                            'stok_sekarang' => 0,
+                        ]);
+                    }
+
+                    $allItems[] = [
+                        'barang_id' => $newBarang->id,
+                        'satuan_id' => $newItem['satuan_id'],
+                        'qty_box' => $newItem['qty_box'] ?? 0,
+                        'qty_pcs' => $newItem['qty_pcs'] ?? 0,
+                        'qty_total' => $newItem['qty_total'],
+                    ];
+                }
+            }
+
             // 2. Create each detail and increment/decrement warehouse stock
-            foreach ($request->items as $item) {
-                $qtyBox = $item['qty_box'] ?: 0;
-                $qtyPcs = $item['qty_pcs'] ?: 0;
+            foreach ($allItems as $item) {
+
+                $qtyBox = $item['qty_box'] ?? 0;
+                $qtyPcs = $item['qty_pcs'] ?? 0;
                 $qtyTotal = $item['qty_total'];
 
                 // Auto-update item's unit if it doesn't have one and unit is provided
@@ -313,8 +360,30 @@ class BarangMasukController extends Controller
             $mutasi->status = 'rejected';
             $mutasi->save();
             
+            // Create Barang Masuk as "Mutasi Ditolak" for historical record
+            $barangMasuk = \App\Models\BarangMasuk::create([
+                'no_surat_jalan' => $mutasi->no_surat_jalan . '-REJ',
+                'tanggal_masuk' => date('Y-m-d'),
+                'tanggal_surat_jalan' => $mutasi->tanggal_keluar,
+                'jenis_transaksi' => 'Mutasi Ditolak',
+                'gudang_asal_kode' => $mutasi->gudang_asal_kode,
+                'pengirim' => $mutasi->user ? $mutasi->user->name : 'Gudang Pengirim',
+                'gudang_tujuan_kode' => $mutasi->gudang_tujuan_kode,
+                'user_id' => auth()->id(),
+                'catatan' => 'Penolakan Mutasi dari ' . $mutasi->no_surat_jalan,
+            ]);
+            
             // Revert stock back to source warehouse
             foreach ($mutasi->details as $detail) {
+                // Add detail to barang masuk for history
+                \App\Models\DetailBarangMasuk::create([
+                    'barang_masuk_id' => $barangMasuk->id,
+                    'barang_id' => $detail->barang_id,
+                    'qty_box' => $detail->qty_box ?? 0,
+                    'qty_pcs' => $detail->qty_pcs ?? 0,
+                    'qty_total' => $detail->qty,
+                ]);
+
                 $stokAsal = StokGudang::where('kode_gudang', $mutasi->gudang_asal_kode)
                                       ->where('barang_id', $detail->barang_id)
                                       ->first();

@@ -30,7 +30,9 @@
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Kode Gudang</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Nama Gudang</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Alamat</th>
+                                @if(Auth::user() && Auth::user()->isSuperAdmin())
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -48,19 +50,16 @@
                                 <td class="px-6 py-4 align-middle bg-transparent border-b shadow-none">
                                     <span class="text-sm leading-normal text-slate-500">{{ Str::limit($gudang->alamat, 50) ?? '-' }}</span>
                                 </td>
+                                @if(Auth::user() && Auth::user()->isSuperAdmin())
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    <a href="{{ route('gudang.show', $gudang->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-blue-600 mr-3 transition-colors">
-                                        <i class="fa fa-eye mr-1"></i> Detail
-                                    </a>
-                                    @if(Auth::user() && Auth::user()->isSuperAdmin())
                                     <a href="{{ route('gudang.edit', $gudang->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-amber-600 mr-3 transition-colors">
                                         <i class="fa fa-edit mr-1"></i> Edit
                                     </a>
-                                    <button type="button" onclick="openDeleteModal('{{ route('gudang.destroy', $gudang->id) }}', '{{ $gudang->nama_gudang }}')" class="text-xs font-semibold leading-normal text-slate-400 hover:text-red-600 transition-colors">
+                                    <button type="button" onclick="openDeleteModal('{{ route('gudang.destroy', $gudang->id) }}', '{{ $gudang->nama_gudang }}', 'gudang')" class="text-xs font-semibold leading-normal text-slate-400 hover:text-red-600 transition-colors">
                                         <i class="fa fa-trash mr-1"></i> Hapus
                                     </button>
-                                    @endif
                                 </td>
+                                @endif
                             </tr>
                             @empty
                             <tr>

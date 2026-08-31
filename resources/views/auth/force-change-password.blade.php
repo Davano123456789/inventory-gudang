@@ -65,6 +65,28 @@
         <form action="{{ route('password.force-change.update') }}" method="POST" class="space-y-5 relative z-10">
             @csrf
             
+            <!-- Name Input (Disabled) -->
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider pl-1">Nama Lengkap</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i class="fa fa-user text-slate-400 text-sm"></i>
+                    </div>
+                    <input type="text" value="{{ auth()->user()->name }}" disabled class="block w-full pl-11 pr-3 py-3 text-sm text-slate-500 bg-gray-100 border border-slate-200 rounded-2xl cursor-not-allowed font-medium shadow-inner">
+                </div>
+            </div>
+
+            <!-- Email Input (Disabled) -->
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider pl-1">Alamat Email</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i class="fa fa-envelope text-slate-400 text-sm"></i>
+                    </div>
+                    <input type="email" value="{{ auth()->user()->email }}" disabled class="block w-full pl-11 pr-3 py-3 text-sm text-slate-500 bg-gray-100 border border-slate-200 rounded-2xl cursor-not-allowed font-medium shadow-inner">
+                </div>
+            </div>
+
             <!-- Password Input -->
             <div class="space-y-1.5">
                 <label for="password" class="block text-xs font-bold text-slate-600 uppercase tracking-wider pl-1">Password Baru <span class="text-red-500">*</span></label>

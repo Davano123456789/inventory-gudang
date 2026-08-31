@@ -71,7 +71,18 @@
 
                 <!-- Detail Table Header & Search -->
                 <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-                    <h6 class="font-bold text-slate-800 text-xs uppercase tracking-wide m-0">Daftar Barang & Selisih Penyesuaian</h6>
+                    <div class="flex items-center gap-4">
+                        <h6 class="font-bold text-slate-800 text-xs uppercase tracking-wide m-0">Daftar Barang & Selisih Penyesuaian</h6>
+                        <div class="flex items-center gap-1.5 no-print">
+                            <span class="text-[10px] text-slate-500 font-semibold uppercase">Tampilkan:</span>
+                            <select id="entriesLimit" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
+                                <option value="10" selected>10 Baris</option>
+                                <option value="25">25 Baris</option>
+                                <option value="50">50 Baris</option>
+                                <option value="all">Semua Baris</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="relative w-full sm:w-64 no-print">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fa fa-search text-slate-400 text-xs"></i>
@@ -165,8 +176,9 @@
         const pageEnd = document.getElementById('pageEnd');
         const totalItemsLabel = document.getElementById('totalItems');
         const noDataRow = document.getElementById('noDataRow'); // we need to add this ID if it exists, or handle it
+        const entriesLimitSelect = document.getElementById('entriesLimit');
         
-        const itemsPerPage = 10;
+        let itemsPerPage = 10;
         let currentPage = 1;
         let filteredRows = rows;
 
@@ -234,6 +246,19 @@
             searchInput.addEventListener('keyup', function(e) {
                 const term = e.target.value.toLowerCase();
                 filteredRows = rows.filter(row => row.textContent.toLowerCase().includes(term));
+                currentPage = 1;
+                renderTable();
+            });
+        }
+        
+        if (entriesLimitSelect) {
+            entriesLimitSelect.addEventListener('change', function(e) {
+                const val = e.target.value;
+                if (val === 'all') {
+                    itemsPerPage = filteredRows.length > 0 ? filteredRows.length : 1;
+                } else {
+                    itemsPerPage = parseInt(val, 10);
+                }
                 currentPage = 1;
                 renderTable();
             });

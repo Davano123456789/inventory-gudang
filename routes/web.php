@@ -25,15 +25,6 @@ Route::middleware(['auth', 'force_change_password'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index']);
 
-    // Master Data - Read Only for All Roles
-    Route::resource('gudang', GudangController::class)->only(['index', 'show']);
-    Route::resource('satuan', SatuanController::class)->only(['index', 'show']);
-    Route::resource('barang', BarangController::class)->only(['index', 'show']);
-    Route::get('barang-manual', [BarangController::class, 'manualIndex'])->name('barang-manual.index');
-    
-    Route::get('barang-manual/create', [BarangController::class, 'manualCreate'])->name('barang-manual.create');
-    Route::post('barang-manual', [BarangController::class, 'manualStore'])->name('barang-manual.store');
-    
     // Master Data - Write Actions (Super Admin Only)
     Route::middleware('super_admin')->group(function () {
         Route::resource('gudang', GudangController::class)->except(['index', 'show']);
@@ -47,6 +38,11 @@ Route::middleware(['auth', 'force_change_password'])->group(function () {
         Route::resource('barang-keluar', BarangKeluarController::class)->only(['edit', 'update', 'destroy']);
         Route::resource('stock-opname', StockOpnameController::class)->only(['edit', 'update', 'destroy']);
     });
+
+    // Master Data - Read Only for All Roles (Must be defined AFTER write actions to prevent shadowing /create)
+    Route::resource('gudang', GudangController::class)->only(['index', 'show']);
+    Route::resource('satuan', SatuanController::class)->only(['index', 'show']);
+    Route::resource('barang', BarangController::class)->only(['index', 'show']);
     
     // Mutasi Approvals
     Route::post('mutasi/{id}/approve', [App\Http\Controllers\BarangMasukController::class, 'approveMutasi'])->name('mutasi.approve');

@@ -139,7 +139,23 @@ class BarangKeluarController extends Controller
                     'keluar' => $item['qty'],
                     'saldo_akhir' => $saldoAkhir,
                     'barang_keluar_id' => $barangKeluar->id,
+                    'status' => 'completed',
                 ]);
+
+                if ($request->jenis === 'mutasi') {
+                    \App\Models\KartuStok::create([
+                        'tanggal' => $request->tanggal_keluar . ' ' . date('H:i:s'),
+                        'kode_gudang' => $request->gudang_tujuan_kode,
+                        'barang_id' => $item['barang_id'],
+                        'saldo_awal' => 0,
+                        'masuk' => $item['qty'],
+                        'keluar' => 0,
+                        'saldo_akhir' => 0,
+                        'barang_keluar_id' => $barangKeluar->id,
+                        'status' => 'pending',
+                        'keterangan' => 'Mutasi Masuk Pending'
+                    ]);
+                }
             }
         });
 

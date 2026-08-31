@@ -110,8 +110,10 @@
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Kode Barang</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Nama Barang</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Satuan</th>
-                                <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Stok</th>
-                                <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Aksi</th>
+                                <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[15%]">Total Stok</th>
+                                @if(Auth::user() && Auth::user()->isSuperAdmin())
+                                <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[15%]">Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody id="barangTableBody">
@@ -147,23 +149,20 @@
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     <span class="stok-display text-sm font-bold text-slate-700">{{ number_format($totalStok, 0, ',', '.') }}</span>
                                 </td>
+                                @if(Auth::user() && Auth::user()->isSuperAdmin())
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    <a href="{{ route('barang.show', $barang->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-blue-600 mr-3 transition-colors">
-                                        <i class="fa fa-eye mr-1"></i> Detail
-                                    </a>
-                                    @if(Auth::user() && Auth::user()->isSuperAdmin())
                                     <a href="{{ route('barang.edit', $barang->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-amber-600 mr-3 transition-colors">
                                         <i class="fa fa-edit mr-1"></i> Edit
                                     </a>
                                     <button type="button" onclick="openDeleteModal('{{ route('barang.destroy', $barang->id) }}', '{{ $barang->nama_barang }}', 'barang')" class="text-xs font-semibold leading-normal text-slate-400 hover:text-red-600 transition-colors">
                                         <i class="fa fa-trash mr-1"></i> Hapus
                                     </button>
-                                    @endif
                                 </td>
+                                @endif
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-10 text-center align-middle bg-transparent border-b shadow-none">
+                                <td colspan="7" class="px-6 py-10 text-center align-middle bg-transparent border-b shadow-none">
                                     <div class="flex flex-col items-center justify-center">
                                         <i class="fa fa-boxes text-4xl text-slate-300 mb-3"></i>
                                         <span class="text-sm text-slate-400 font-medium">Belum ada data barang.</span>

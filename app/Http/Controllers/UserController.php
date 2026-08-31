@@ -21,7 +21,6 @@ class UserController extends Controller
         $user = Auth::user();
         if ($user->isSuperAdmin()) {
             return [
-                'super_admin' => 'Super Admin',
                 'admin' => 'Admin',
                 'kepala_gudang' => 'Kepala Gudang',
                 'staff_gudang' => 'Staff Gudang'

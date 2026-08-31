@@ -66,9 +66,9 @@
 
                         <!-- Role Select -->
                         <div>
-                            <label for="role" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Peran (Role) <span class="text-red-500">*</span></label>
+                            <label for="role" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Jabatan <span class="text-red-500">*</span></label>
                             <select name="role" id="role" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
-                                <option value="" disabled {{ old('role') ? '' : 'selected' }}>-- Pilih Peran --</option>
+                                <option value="" disabled {{ old('role') ? '' : 'selected' }}>-- Pilih Jabatan --</option>
                                 @foreach($allowedRoles as $roleKey => $roleLabel)
                                     <option value="{{ $roleKey }}" {{ old('role') == $roleKey ? 'selected' : '' }}>{{ $roleLabel }}</option>
                                 @endforeach

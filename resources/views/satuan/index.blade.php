@@ -28,7 +28,9 @@
                             <tr>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">No</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Nama Satuan</th>
+                                @if(Auth::user() && Auth::user()->isSuperAdmin())
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -40,19 +42,16 @@
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     <span class="text-sm font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">{{ $satuan->nama_satuan }}</span>
                                 </td>
+                                @if(Auth::user() && Auth::user()->isSuperAdmin())
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    <a href="{{ route('satuan.show', $satuan->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-blue-600 mr-3 transition-colors">
-                                        <i class="fa fa-eye mr-1"></i> Detail
-                                    </a>
-                                    @if(Auth::user() && Auth::user()->isSuperAdmin())
                                     <a href="{{ route('satuan.edit', $satuan->id) }}" class="text-xs font-semibold leading-normal text-slate-400 hover:text-amber-600 mr-3 transition-colors">
                                         <i class="fa fa-edit mr-1"></i> Edit
                                     </a>
                                     <button type="button" onclick="openDeleteModal('{{ route('satuan.destroy', $satuan->id) }}', '{{ $satuan->nama_satuan }}', 'satuan')" class="text-xs font-semibold leading-normal text-slate-400 hover:text-red-600 transition-colors">
                                         <i class="fa fa-trash mr-1"></i> Hapus
                                     </button>
-                                    @endif
                                 </td>
+                                @endif
                             </tr>
                             @empty
                             <tr>

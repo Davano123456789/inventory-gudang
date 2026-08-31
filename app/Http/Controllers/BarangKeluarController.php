@@ -41,7 +41,12 @@ class BarangKeluarController extends Controller
         $barangs = Barang::with('satuan')->orderBy('nama_barang', 'asc')->get();
         
         $gudangs = Gudang::where('kode_gudang', $activeGudang)->get();
-        $allGudangs = Gudang::orderBy('nama_gudang', 'asc')->get();
+        
+        $allGudangsQuery = Gudang::orderBy('nama_gudang', 'asc');
+        if ($activeGudang !== 'all') {
+            $allGudangsQuery->where('kode_gudang', '!=', $activeGudang);
+        }
+        $allGudangs = $allGudangsQuery->get();
 
         $satuans = \App\Models\Satuan::orderBy('nama_satuan', 'asc')->get();
         return view('barang_keluar.create', compact('barangs', 'gudangs', 'allGudangs', 'satuans'));

@@ -139,6 +139,15 @@
                     </table>
                 </div>
 
+                <!-- Pagination Container -->
+                <div id="paginationControls" class="flex justify-between items-center mt-4 px-2 no-print">
+                    <div class="text-xs text-slate-500 font-medium">
+                        Menampilkan <span id="pageStart">0</span> - <span id="pageEnd">0</span> dari <span id="totalItems">0</span> barang
+                    </div>
+                    <div class="flex gap-1" id="paginationButtons">
+                        <!-- Buttons injected via JS -->
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -150,21 +159,88 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchTable');
-        const rows = document.querySelectorAll('.data-row');
+        const rows = Array.from(document.querySelectorAll('.data-row'));
+        const paginationButtons = document.getElementById('paginationButtons');
+        const pageStart = document.getElementById('pageStart');
+        const pageEnd = document.getElementById('pageEnd');
+        const totalItemsLabel = document.getElementById('totalItems');
+        const noDataRow = document.getElementById('noDataRow'); // we need to add this ID if it exists, or handle it
+        
+        const itemsPerPage = 10;
+        let currentPage = 1;
+        let filteredRows = rows;
+
+        function renderTable() {
+            // Hide all rows first
+            rows.forEach(row => row.style.display = 'none');
+            
+            // Calculate limits
+            const totalItems = filteredRows.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+            
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+            // Show current page rows
+            for (let i = startIndex; i < endIndex; i++) {
+                filteredRows[i].style.display = '';
+            }
+
+            // Update Labels
+            totalItemsLabel.textContent = totalItems;
+            pageStart.textContent = totalItems > 0 ? startIndex + 1 : 0;
+            pageEnd.textContent = endIndex;
+
+            renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+            paginationButtons.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            // Prev Button
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '<i class="fa fa-chevron-left text-xs"></i>';
+            prevBtn.className = `px-3 py-1.5 text-xs font-bold rounded-lg border transition-colors ${currentPage === 1 ? 'bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed' : 'bg-white text-slate-600 border-gray-200 hover:bg-gray-50'}`;
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => { currentPage--; renderTable(); };
+            paginationButtons.appendChild(prevBtn);
+
+            // Page Numbers
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i;
+                pageBtn.className = `px-3 py-1.5 text-xs font-bold rounded-lg border transition-colors ${i === currentPage ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-gray-200 hover:bg-gray-50'}`;
+                pageBtn.onclick = () => { currentPage = i; renderTable(); };
+                paginationButtons.appendChild(pageBtn);
+            }
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '<i class="fa fa-chevron-right text-xs"></i>';
+            nextBtn.className = `px-3 py-1.5 text-xs font-bold rounded-lg border transition-colors ${currentPage === totalPages ? 'bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed' : 'bg-white text-slate-600 border-gray-200 hover:bg-gray-50'}`;
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => { currentPage++; renderTable(); };
+            paginationButtons.appendChild(nextBtn);
+        }
 
         if (searchInput) {
             searchInput.addEventListener('keyup', function(e) {
                 const term = e.target.value.toLowerCase();
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    if (text.includes(term)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
+                filteredRows = rows.filter(row => row.textContent.toLowerCase().includes(term));
+                currentPage = 1;
+                renderTable();
             });
         }
+        
+        // Initial render
+        renderTable();
     });
 </script>
 @endpush

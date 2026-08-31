@@ -159,9 +159,8 @@
                             <thead class="align-bottom">
                                 <tr>
                                     <th class="px-3 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[35%]">Barang</th>
-                                    <th class="px-3 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[10%]">BOX</th>
-                                    <th class="px-3 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[10%]">PCS</th>
-                                    <th class="px-3 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[15%]">QTY</th>
+                                    <th class="px-3 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[15%]">BOX</th>
+                                    <th class="px-3 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[20%]">QTY</th>
                                     <th class="px-3 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[20%]">Satuan</th>
                                     <th class="px-3 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70 w-[10%]">Hapus</th>
                                 </tr>
@@ -251,10 +250,8 @@
                         <input type="number" step="any" name="items[${index}][qty_box]" value="0" class="w-full text-center px-3 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
                     </td>
                     <td class="p-3 align-middle bg-transparent border-b shadow-none text-center">
-                        <input type="number" step="any" name="items[${index}][qty_pcs]" value="0" class="w-full text-center px-3 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
-                    </td>
-                    <td class="p-3 align-middle bg-transparent border-b shadow-none text-center">
-                        <input type="number" step="any" name="items[${index}][qty_total]" required placeholder="QTY" class="w-full text-center px-3 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
+                        <input type="hidden" name="items[${index}][qty_pcs]" value="0" class="qty-pcs-hidden">
+                        <input type="number" step="any" name="items[${index}][qty_total]" required placeholder="QTY" class="qty-total-input w-full text-center px-3 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
                     </td>
                     <td class="p-3 align-middle bg-transparent border-b shadow-none text-left">
                         <input type="hidden" name="items[${index}][satuan_id]" class="satuan-hidden-input">
@@ -289,6 +286,12 @@
         $(document).on("click", ".remove-row-btn", function() {
             $(this).closest(".item-row").remove();
             checkEmptyTable();
+        });
+
+        // Sync QTY Total to QTY Pcs hidden input
+        $(document).on("input", ".qty-total-input", function() {
+            let val = $(this).val();
+            $(this).siblings(".qty-pcs-hidden").val(val);
         });
 
         // Update Satuan dropdown when item changes

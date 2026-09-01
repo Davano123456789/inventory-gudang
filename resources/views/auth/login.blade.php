@@ -67,14 +67,14 @@
         <form action="{{ route('login') }}" method="POST" class="space-y-5">
             @csrf
             
-            <!-- Email Input -->
+            <!-- Username Input -->
             <div class="space-y-1.5">
-                <label for="email" class="block text-xs font-bold text-slate-600 uppercase tracking-wider pl-1">Email</label>
+                <label for="username" class="block text-xs font-bold text-slate-600 uppercase tracking-wider pl-1">Username</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                        <i class="fa fa-envelope text-slate-400 text-sm"></i>
+                        <i class="fa fa-user text-slate-400 text-sm"></i>
                     </div>
-                    <input type="email" name="email" id="email" value="{{ old('email') }}" required placeholder="nama@email.com" class="block w-full pl-11 pr-4 py-3 text-sm text-slate-700 placeholder-slate-400 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none transition-all font-medium">
+                    <input type="text" name="username" id="username" value="{{ old('username') }}" required placeholder="Masukkan username" class="block w-full pl-11 pr-4 py-3 text-sm text-slate-700 placeholder-slate-400 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none transition-all font-medium">
                 </div>
             </div>
 

@@ -30,7 +30,7 @@ class BarangMasukController extends Controller
         // Pending Mutasi Query
         $pendingMutasiQuery = \App\Models\BarangKeluar::with(['gudang', 'user', 'details.barang'])
             ->where('jenis', 'mutasi')
-            ->where('status', 'pending');
+            ->where('status', \App\Models\KartuStok::STATUS_PENDING);
             
         if ($activeGudang !== 'all') {
             $pendingMutasiQuery->where('gudang_tujuan_kode', $activeGudang);
@@ -88,9 +88,12 @@ class BarangMasukController extends Controller
 
         DB::transaction(function() use ($request) {
             // 1. Create the main BarangMasuk
-            $jenisTrans = $request->jenis_transaksi;
-            if ($jenisTrans === 'Biasa') $jenisTrans = 'Reguler';
-            if ($jenisTrans === 'Retur') $jenisTrans = 'Return';
+            $jenisTrans = match($request->jenis_transaksi) {
+                'Mutasi' => \App\Models\BarangMasuk::JENIS_MUTASI,
+                'Retur', 'Return' => \App\Models\BarangMasuk::JENIS_RETURN,
+                'Stock Opname' => \App\Models\BarangMasuk::JENIS_STOCK_OPNAME,
+                default => \App\Models\BarangMasuk::JENIS_REGULER,
+            };
 
             $barangMasuk = BarangMasuk::create([
                 'no_surat_jalan' => $request->no_surat_jalan,
@@ -272,7 +275,7 @@ class BarangMasukController extends Controller
     {
         $mutasi = \App\Models\BarangKeluar::findOrFail($id);
         
-        if ($mutasi->status !== 'pending' || $mutasi->jenis !== 'mutasi') {
+        if ($mutasi->status != \App\Models\BarangKeluar::STATUS_PENDING || $mutasi->jenis != \App\Models\BarangKeluar::JENIS_MUTASI) {
             return redirect()->back()->with('error', 'Transaksi mutasi ini sudah tidak dapat di-approve.');
         }
 
@@ -286,7 +289,7 @@ class BarangMasukController extends Controller
         }
         
         DB::transaction(function() use ($mutasi) {
-            $mutasi->status = 'approved';
+            $mutasi->status = \App\Models\BarangKeluar::STATUS_COMPLETED;
             $mutasi->save();
             
             // Create Barang Masuk history record
@@ -294,8 +297,8 @@ class BarangMasukController extends Controller
                 'no_surat_jalan' => $mutasi->no_surat_jalan . '-IN',
                 'tanggal_masuk' => date('Y-m-d'),
                 'tanggal_surat_jalan' => $mutasi->tanggal_surat_jalan,
-                'jenis_transaksi' => 'Mutasi',
-                'status' => 'approved',
+                'jenis_transaksi' => \App\Models\BarangMasuk::JENIS_MUTASI,
+                'status' => \App\Models\BarangMasuk::STATUS_COMPLETED,
                 'gudang_asal_kode' => $mutasi->gudang_asal_kode,
                 'pengirim' => $mutasi->user ? $mutasi->user->name : 'Gudang Pengirim',
                 'gudang_tujuan_kode' => $mutasi->gudang_tujuan_kode,
@@ -328,7 +331,7 @@ class BarangMasukController extends Controller
                 $kartuPending = \App\Models\KartuStok::where('barang_keluar_id', $mutasi->id)
                     ->where('kode_gudang', $mutasi->gudang_tujuan_kode)
                     ->where('barang_id', $detail->barang_id)
-                    ->where('status', 'pending')
+                    ->where('status', \App\Models\KartuStok::STATUS_PENDING)
                     ->first();
 
                 if ($kartuPending) {
@@ -337,7 +340,7 @@ class BarangMasukController extends Controller
                         'saldo_awal' => $saldoAwalTujuan,
                         'saldo_akhir' => $saldoAkhirTujuan,
                         'barang_masuk_id' => $barangMasuk->id,
-                        'status' => 'completed',
+                        'status' => \App\Models\BarangMasuk::STATUS_COMPLETED,
                         'keterangan' => null
                     ]);
                 } else {
@@ -352,7 +355,7 @@ class BarangMasukController extends Controller
                         'saldo_akhir' => $saldoAkhirTujuan,
                         'barang_masuk_id' => $barangMasuk->id,
                         'barang_keluar_id' => $mutasi->id,
-                        'status' => 'completed'
+                        'status' => \App\Models\BarangMasuk::STATUS_COMPLETED
                     ]);
                 }
             }
@@ -368,7 +371,7 @@ class BarangMasukController extends Controller
     {
         $mutasi = \App\Models\BarangKeluar::findOrFail($id);
         
-        if ($mutasi->status !== 'pending' || $mutasi->jenis !== 'mutasi') {
+        if ($mutasi->status != \App\Models\BarangKeluar::STATUS_PENDING || $mutasi->jenis != \App\Models\BarangKeluar::JENIS_MUTASI) {
             return redirect()->back()->with('error', 'Transaksi mutasi ini sudah tidak dapat ditolak.');
         }
 
@@ -382,7 +385,7 @@ class BarangMasukController extends Controller
         }
 
         DB::transaction(function() use ($mutasi) {
-            $mutasi->status = 'rejected';
+            $mutasi->status = \App\Models\BarangKeluar::STATUS_REJECTED;
             $mutasi->save();
             
             // Create Barang Masuk as "Mutasi" with status "rejected" for historical record
@@ -390,8 +393,8 @@ class BarangMasukController extends Controller
                 'no_surat_jalan' => $mutasi->no_surat_jalan . '-REJ',
                 'tanggal_masuk' => date('Y-m-d'),
                 'tanggal_surat_jalan' => $mutasi->tanggal_keluar,
-                'jenis_transaksi' => 'Mutasi',
-                'status' => 'rejected',
+                'jenis_transaksi' => \App\Models\BarangMasuk::JENIS_MUTASI,
+                'status' => \App\Models\BarangMasuk::STATUS_REJECTED,
                 'gudang_asal_kode' => $mutasi->gudang_asal_kode,
                 'pengirim' => $mutasi->user ? $mutasi->user->name : 'Gudang Pengirim',
                 'gudang_tujuan_kode' => $mutasi->gudang_tujuan_kode,
@@ -405,7 +408,7 @@ class BarangMasukController extends Controller
                 \App\Models\KartuStok::where('barang_keluar_id', $mutasi->id)
                     ->where('kode_gudang', $mutasi->gudang_tujuan_kode)
                     ->where('barang_id', $detail->barang_id)
-                    ->where('status', 'pending')
+                    ->where('status', \App\Models\KartuStok::STATUS_PENDING)
                     ->delete();
 
                 // Add detail to barang masuk for history

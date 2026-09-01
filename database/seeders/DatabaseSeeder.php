@@ -25,52 +25,50 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 2. Seed Users
-        User::updateOrCreate(['email' => 'admin@test.com'], [
-            'name' => 'Admin Utama',
+        User::updateOrCreate(['username' => 'admin'], [
+            'name' => 'Super Admin',
             'password' => bcrypt('password'),
             'role' => 'super_admin',
-            'kode_gudang' => null,
             'must_change_password' => false,
         ]);
 
-        User::updateOrCreate(['email' => 'admin_biasa@test.com'], [
-            'name' => 'Admin Operasional',
+        User::updateOrCreate(['username' => 'admin_biasa'], [
+            'name' => 'Admin Gudang',
             'password' => bcrypt('password'),
             'role' => 'admin',
-            'kode_gudang' => null,
             'must_change_password' => false,
         ]);
 
-        User::updateOrCreate(['email' => 'surabaya@test.com'], [
-            'name' => 'Budi (Gudang Surabaya)',
+        User::updateOrCreate(['username' => 'kepala_sby'], [
+            'name' => 'Kepala Gudang SBY',
             'password' => bcrypt('password'),
             'role' => 'kepala_gudang',
             'kode_gudang' => '300003',
             'must_change_password' => false,
         ]);
 
-        User::updateOrCreate(['email' => 'jakarta@test.com'], [
-            'name' => 'Rian (Kepala Gudang Jakarta)',
+        User::updateOrCreate(['username' => 'kepala_jkt'], [
+            'name' => 'Kepala Gudang JKT',
             'password' => bcrypt('password'),
             'role' => 'kepala_gudang',
             'kode_gudang' => '000003',
-            'must_change_password' => false
+            'must_change_password' => false,
         ]);
 
-        User::updateOrCreate(['email' => 'staff_sby@test.com'], [
-            'name' => 'Siti (Staff Surabaya)',
+        User::updateOrCreate(['username' => 'staff_sby'], [
+            'name' => 'Staff SBY 1',
             'password' => bcrypt('password'),
-            'role' => 'staff',
+            'role' => 'staff_gudang',
             'kode_gudang' => '300003',
             'must_change_password' => false,
         ]);
 
-        User::updateOrCreate(['email' => 'staff_jkt@test.com'], [
+        User::updateOrCreate(['username' => 'staff_jkt'], [
             'name' => 'Joko (Staff Jakarta)',
             'password' => bcrypt('password'),
             'role' => 'staff_gudang',
             'kode_gudang' => '000003',
-            'must_change_password' => false
+            'must_change_password' => false,
         ]);
 
         // Seed default application settings

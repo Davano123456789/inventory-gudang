@@ -141,15 +141,15 @@
                                             $jenisLabel = 'Mutasi Ditolak';
                                             $jenisClass = 'text-red-600 bg-red-50';
                                             $jenisCode = 'mutasi';
-                                        } elseif ($jenisTrans === 'Stock Opname' || str_contains($row->keterangan ?? '', 'Stock Opname')) {
+                                        } elseif ($jenisTrans == 4 || str_contains($row->keterangan ?? '', 'Stock Opname')) {
                                             $jenisLabel = 'Stock Opname';
                                             $jenisClass = 'text-indigo-600 bg-indigo-50';
                                             $jenisCode = 'stock_opname';
-                                        } elseif ($jenisTrans === 'Mutasi') {
+                                        } elseif ($jenisTrans == 2) {
                                             $jenisLabel = 'Mutasi Masuk';
                                             $jenisClass = 'text-purple-600 bg-purple-50';
                                             $jenisCode = 'mutasi';
-                                        } elseif ($jenisTrans === 'Retur' || $jenisTrans === 'Return') {
+                                        } elseif ($jenisTrans == 3) {
                                             $jenisLabel = 'Return';
                                             $jenisClass = 'text-amber-600 bg-amber-50';
                                             $jenisCode = 'retur';
@@ -161,7 +161,7 @@
                                     } elseif ($row->barangKeluar) {
                                         $jenisTrans = $row->barangKeluar->jenis;
                                         $detailLink = route('barang-keluar.show', $row->barangKeluar->id);
-                                        if ($row->status === 'pending') {
+                                        if ($row->status == 1) {
                                             $ref = 'Mutasi Masuk Pending: ' . $row->barangKeluar->no_surat_jalan;
                                             $jenisLabel = 'Mutasi Masuk Pending';
                                             $jenisClass = 'text-yellow-600 bg-yellow-50';
@@ -171,12 +171,12 @@
                                             $jenisLabel = 'Mutasi Ditolak';
                                             $jenisClass = 'text-red-600 bg-red-50';
                                             $jenisCode = 'mutasi';
-                                        } elseif ($jenisTrans === 'stock_opname' || str_contains($row->keterangan ?? '', 'Stock Opname')) {
+                                        } elseif ($jenisTrans == 4 || str_contains($row->keterangan ?? '', 'Stock Opname')) {
                                             $ref = 'Keluar: ' . $row->barangKeluar->no_surat_jalan;
                                             $jenisLabel = 'Stock Opname';
                                             $jenisClass = 'text-indigo-600 bg-indigo-50';
                                             $jenisCode = 'stock_opname';
-                                        } elseif ($jenisTrans === 'mutasi') {
+                                        } elseif ($jenisTrans == 2) {
                                             $ref = 'Keluar: ' . $row->barangKeluar->no_surat_jalan;
                                             $jenisLabel = 'Mutasi Keluar';
                                             $jenisClass = 'text-purple-600 bg-purple-50';
@@ -204,12 +204,12 @@
                                         $ref = $row->keterangan ?: '-';
                                     }
                                 @endphp
-                                <tr class="report-row border-b border-slate-100 hover:bg-slate-50/50 transition-colors {{ $row->status === 'pending' ? 'bg-yellow-50/50' : '' }}" 
+                                <tr class="report-row border-b border-slate-100 hover:bg-slate-50/50 transition-colors {{ $row->status == 1 ? 'bg-yellow-50/50' : '' }}" 
                                     data-search="{{ strtolower(($row->barang ? $row->barang->nama_barang : '') . ' ' . ($row->barang ? $row->barang->kode_barang : '')) }}"
                                     data-type="{{ $jenisCode }}">
                                     <td class="px-4 py-3 align-middle bg-transparent shadow-none">
                                         <span class="text-sm font-semibold text-slate-600">{{ $row->tanggal->format('d M Y') }}</span>
-                                        @if($row->status === 'pending')
+                                        @if($row->status == 1)
                                             <span class="inline-block mt-1 px-2 py-0.5 text-[10px] font-bold text-yellow-700 bg-yellow-100 rounded-md">Pending</span>
                                         @endif
                                     </td>
@@ -235,7 +235,7 @@
                                         <span class="text-sm font-bold text-red-600">{{ number_format($row->keluar, 0, ',', '.') }} <span class="text-xs text-red-400">{{ $satuan }}</span></span>
                                     </td>
                                     <td class="px-4 py-3 text-right align-middle bg-transparent shadow-none">
-                                        @if($row->status === 'pending')
+                                        @if($row->status == 1)
                                             <span class="text-sm font-bold text-slate-400">? <span class="text-xs">{{ $satuan }}</span></span>
                                         @else
                                             <span class="text-sm font-bold text-slate-800">{{ number_format($row->saldo_akhir, 0, ',', '.') }} <span class="text-xs text-slate-400">{{ $satuan }}</span></span>

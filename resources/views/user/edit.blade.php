@@ -43,10 +43,10 @@
                             <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" placeholder="Masukkan nama lengkap..." required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
                         </div>
 
-                        <!-- Email -->
-                        <div>
-                            <label for="email" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Alamat Email <span class="text-red-500">*</span></label>
-                            <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" placeholder="contoh@domain.com" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
+                        <!-- Username -->
+                        <div class="mb-4">
+                            <label for="username" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Username <span class="text-red-500">*</span></label>
+                            <input type="text" name="username" id="username" value="{{ old('username', $user->username) }}" placeholder="Contoh: budi_santoso" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
                         </div>
 
                         <!-- Password fields removed - Users must manage their own passwords now -->

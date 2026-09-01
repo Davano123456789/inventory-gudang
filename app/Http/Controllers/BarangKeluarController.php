@@ -87,13 +87,20 @@ class BarangKeluarController extends Controller
         }
 
         DB::transaction(function() use ($request) {
-            $status = $request->jenis === 'mutasi' ? 'pending' : 'completed';
+            $status = $request->jenis === 'mutasi' ? \App\Models\BarangKeluar::STATUS_PENDING : \App\Models\BarangKeluar::STATUS_COMPLETED;
+
+            $jenisTrans = match($request->jenis) {
+                'mutasi' => \App\Models\BarangKeluar::JENIS_MUTASI,
+                'retur' => \App\Models\BarangKeluar::JENIS_RETUR,
+                'stock_opname' => \App\Models\BarangKeluar::JENIS_STOCK_OPNAME,
+                default => \App\Models\BarangKeluar::JENIS_REGULER,
+            };
 
             $barangKeluar = BarangKeluar::create([
                 'no_surat_jalan' => $request->no_surat_jalan,
                 'tanggal_keluar' => $request->tanggal_keluar,
                 'tanggal_surat_jalan' => $request->tanggal_surat_jalan,
-                'jenis' => $request->jenis,
+                'jenis' => $jenisTrans,
                 'gudang_asal_kode' => $request->gudang_asal_kode,
                 'gudang_tujuan_kode' => $request->jenis === 'mutasi' ? $request->gudang_tujuan_kode : null,
                 'status' => $status,
@@ -139,7 +146,7 @@ class BarangKeluarController extends Controller
                     'keluar' => $item['qty'],
                     'saldo_akhir' => $saldoAkhir,
                     'barang_keluar_id' => $barangKeluar->id,
-                    'status' => 'completed',
+                    'status' => \App\Models\BarangMasuk::STATUS_COMPLETED,
                     'keterangan' => $request->jenis === 'stock_opname' ? ('Penyesuaian Stock Opname: ' . $request->no_surat_jalan) : null,
                 ]);
 
@@ -153,7 +160,7 @@ class BarangKeluarController extends Controller
                         'keluar' => 0,
                         'saldo_akhir' => 0,
                         'barang_keluar_id' => $barangKeluar->id,
-                        'status' => 'pending',
+                        'status' => \App\Models\BarangMasuk::STATUS_PENDING,
                         'keterangan' => 'Mutasi Masuk Pending'
                     ]);
                 }

@@ -3,9 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class KartuStok extends Model
 {
+    use HasFactory;
+
+    // Constants for Status
+    public const STATUS_PENDING = 1;
+    public const STATUS_COMPLETED = 2;
+
     protected $table = 'kartu_stoks';
 
     protected $fillable = [
@@ -48,5 +55,14 @@ class KartuStok extends Model
     public function barangKeluar()
     {
         return $this->belongsTo(BarangKeluar::class, 'barang_keluar_id');
+    }
+
+    public function getStatusTextAttribute()
+    {
+        return match($this->status) {
+            self::STATUS_PENDING => 'pending',
+            self::STATUS_COMPLETED => 'completed',
+            default => 'completed',
+        };
     }
 }

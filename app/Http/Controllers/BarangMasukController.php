@@ -318,18 +318,37 @@ class BarangMasukController extends Controller
                 $stokTujuan->stok_sekarang = $saldoAkhirTujuan;
                 $stokTujuan->save();
 
-                // Create stock card
-                \App\Models\KartuStok::create([
-                    'tanggal' => date('Y-m-d H:i:s'),
-                    'kode_gudang' => $mutasi->gudang_tujuan_kode,
-                    'barang_id' => $detail->barang_id,
-                    'saldo_awal' => $saldoAwalTujuan,
-                    'masuk' => $detail->qty,
-                    'keluar' => 0,
-                    'saldo_akhir' => $saldoAkhirTujuan,
-                    'barang_masuk_id' => $barangMasuk->id,
-                    'barang_keluar_id' => $mutasi->id,
-                ]);
+                // Update existing pending stock card
+                $kartuPending = \App\Models\KartuStok::where('barang_keluar_id', $mutasi->id)
+                    ->where('kode_gudang', $mutasi->gudang_tujuan_kode)
+                    ->where('barang_id', $detail->barang_id)
+                    ->where('status', 'pending')
+                    ->first();
+
+                if ($kartuPending) {
+                    $kartuPending->update([
+                        'tanggal' => date('Y-m-d H:i:s'),
+                        'saldo_awal' => $saldoAwalTujuan,
+                        'saldo_akhir' => $saldoAkhirTujuan,
+                        'barang_masuk_id' => $barangMasuk->id,
+                        'status' => 'completed',
+                        'keterangan' => null
+                    ]);
+                } else {
+                    // Fallback if not found
+                    \App\Models\KartuStok::create([
+                        'tanggal' => date('Y-m-d H:i:s'),
+                        'kode_gudang' => $mutasi->gudang_tujuan_kode,
+                        'barang_id' => $detail->barang_id,
+                        'saldo_awal' => $saldoAwalTujuan,
+                        'masuk' => $detail->qty,
+                        'keluar' => 0,
+                        'saldo_akhir' => $saldoAkhirTujuan,
+                        'barang_masuk_id' => $barangMasuk->id,
+                        'barang_keluar_id' => $mutasi->id,
+                        'status' => 'completed'
+                    ]);
+                }
             }
         });
         

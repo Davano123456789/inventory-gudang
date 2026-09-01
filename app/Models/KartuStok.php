@@ -18,6 +18,7 @@ class KartuStok extends Model
         'saldo_akhir',
         'barang_masuk_id',
         'barang_keluar_id',
+        'status',
         'keterangan'
     ];
 

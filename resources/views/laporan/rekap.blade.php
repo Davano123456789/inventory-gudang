@@ -139,11 +139,14 @@
                                         $ref = $row->keterangan ?: '-';
                                     }
                                 @endphp
-                                <tr class="report-row border-b border-slate-100 hover:bg-slate-50/50 transition-colors" 
+                                <tr class="report-row border-b border-slate-100 hover:bg-slate-50/50 transition-colors {{ $row->status === 'pending' ? 'bg-yellow-50/50' : '' }}" 
                                     data-search="{{ strtolower(($row->barang ? $row->barang->nama_barang : '') . ' ' . ($row->barang ? $row->barang->kode_barang : '')) }}"
                                     data-type="{{ str_contains($row->keterangan ?? '', 'Stok Awal') ? 'saldo_awal' : ($row->masuk > 0 ? 'masuk' : ($row->keluar > 0 ? 'keluar' : 'all')) }}">
                                     <td class="px-4 py-3 align-middle bg-transparent shadow-none">
                                         <span class="text-sm font-semibold text-slate-600">{{ $row->tanggal->format('d M Y') }}</span>
+                                        @if($row->status === 'pending')
+                                            <span class="inline-block mt-1 px-2 py-0.5 text-[10px] font-bold text-yellow-700 bg-yellow-100 rounded-md">Pending</span>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-3 align-middle bg-transparent shadow-none">
                                         <div class="flex flex-col">
@@ -164,7 +167,11 @@
                                         <span class="text-sm font-bold text-red-600">{{ number_format($row->keluar, 0, ',', '.') }} <span class="text-xs text-red-400">{{ $satuan }}</span></span>
                                     </td>
                                     <td class="px-4 py-3 text-right align-middle bg-transparent shadow-none">
-                                        <span class="text-sm font-bold text-slate-800">{{ number_format($row->saldo_akhir, 0, ',', '.') }} <span class="text-xs text-slate-400">{{ $satuan }}</span></span>
+                                        @if($row->status === 'pending')
+                                            <span class="text-sm font-bold text-slate-400">? <span class="text-xs">{{ $satuan }}</span></span>
+                                        @else
+                                            <span class="text-sm font-bold text-slate-800">{{ number_format($row->saldo_akhir, 0, ',', '.') }} <span class="text-xs text-slate-400">{{ $satuan }}</span></span>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-3 text-center align-middle bg-transparent shadow-none hide-on-print">
                                         @if($detailLink)

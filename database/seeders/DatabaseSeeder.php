@@ -60,9 +60,9 @@ class DatabaseSeeder extends Seeder
         User::updateOrCreate(['email' => 'staff_sby@test.com'], [
             'name' => 'Siti (Staff Surabaya)',
             'password' => bcrypt('password'),
-            'role' => 'staff_gudang',
+            'role' => 'staff',
             'kode_gudang' => '300003',
-            'must_change_password' => false
+            'must_change_password' => false,
         ]);
 
         User::updateOrCreate(['email' => 'staff_jkt@test.com'], [
@@ -71,6 +71,12 @@ class DatabaseSeeder extends Seeder
             'role' => 'staff_gudang',
             'kode_gudang' => '000003',
             'must_change_password' => false
+        ]);
+
+        // Seed default application settings
+        \App\Models\Setting::updateOrCreate(['key' => 'min_stok_alert'], [
+            'value' => '5',
+            'keterangan' => 'Batas minimum stok untuk peringatan stok rendah di dashboard'
         ]);
     }
 }

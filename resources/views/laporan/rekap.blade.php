@@ -92,9 +92,11 @@
                                 <span class="text-xs text-slate-500 font-semibold">Jenis:</span>
                                 <select id="filterType" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
                                     <option value="all" selected>Semua Transaksi</option>
-                                    <option value="masuk">Hanya Masuk (+)</option>
-                                    <option value="keluar">Hanya Keluar (-)</option>
-                                    <option value="saldo_awal">Hanya Saldo Awal (Excel/Manual)</option>
+                                    <option value="reguler">Reguler</option>
+                                    <option value="stock_opname">Stock Opname</option>
+                                    <option value="mutasi">Mutasi Antar Gudang</option>
+                                    <option value="retur">Return</option>
+                                    <option value="saldo_awal">Saldo Awal</option>
                                 </select>
                             </div>
                         </div>
@@ -111,6 +113,7 @@
                                 <tr class="bg-slate-50">
                                     <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400 rounded-tl-lg">Tanggal</th>
                                     <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Barang</th>
+                                    <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Jenis Transaksi</th>
                                     <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Referensi Dokumen</th>
                                     <th class="px-4 py-3 font-bold text-right uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Saldo Awal</th>
                                     <th class="px-4 py-3 font-bold text-right uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-green-500">Masuk (+)</th>
@@ -124,24 +127,82 @@
                                 @php
                                     $satuan = $row->barang && $row->barang->satuan ? $row->barang->satuan->nama_satuan : 'Unit';
                                     $ref = '-';
+                                    $jenisLabel = 'Reguler';
+                                    $jenisClass = 'text-blue-600 bg-blue-50';
+                                    $jenisCode = 'reguler';
                                     $detailLink = null;
+
                                     if ($row->barangMasuk) {
+                                        $jenisTrans = $row->barangMasuk->jenis_transaksi;
                                         $ref = 'Masuk: ' . $row->barangMasuk->no_surat_jalan;
                                         $detailLink = route('barang-masuk.show', $row->barangMasuk->id);
+                                        
+                                        if ($row->barangMasuk->status === 'rejected' || $jenisTrans === 'Mutasi Ditolak') {
+                                            $jenisLabel = 'Mutasi Ditolak';
+                                            $jenisClass = 'text-red-600 bg-red-50';
+                                            $jenisCode = 'mutasi';
+                                        } elseif ($jenisTrans === 'Stock Opname' || str_contains($row->keterangan ?? '', 'Stock Opname')) {
+                                            $jenisLabel = 'Stock Opname';
+                                            $jenisClass = 'text-indigo-600 bg-indigo-50';
+                                            $jenisCode = 'stock_opname';
+                                        } elseif ($jenisTrans === 'Mutasi') {
+                                            $jenisLabel = 'Mutasi Masuk';
+                                            $jenisClass = 'text-purple-600 bg-purple-50';
+                                            $jenisCode = 'mutasi';
+                                        } elseif ($jenisTrans === 'Retur' || $jenisTrans === 'Return') {
+                                            $jenisLabel = 'Return';
+                                            $jenisClass = 'text-amber-600 bg-amber-50';
+                                            $jenisCode = 'retur';
+                                        } else {
+                                            $jenisLabel = 'Reguler';
+                                            $jenisClass = 'text-blue-600 bg-blue-50';
+                                            $jenisCode = 'reguler';
+                                        }
                                     } elseif ($row->barangKeluar) {
+                                        $jenisTrans = $row->barangKeluar->jenis;
+                                        $detailLink = route('barang-keluar.show', $row->barangKeluar->id);
+                                        
                                         if ($row->masuk > 0) {
                                             $ref = 'Mutasi Ditolak: ' . $row->barangKeluar->no_surat_jalan;
+                                            $jenisLabel = 'Mutasi Ditolak';
+                                            $jenisClass = 'text-red-600 bg-red-50';
+                                            $jenisCode = 'mutasi';
+                                        } elseif ($jenisTrans === 'stock_opname' || str_contains($row->keterangan ?? '', 'Stock Opname')) {
+                                            $ref = 'Keluar: ' . $row->barangKeluar->no_surat_jalan;
+                                            $jenisLabel = 'Stock Opname';
+                                            $jenisClass = 'text-indigo-600 bg-indigo-50';
+                                            $jenisCode = 'stock_opname';
+                                        } elseif ($jenisTrans === 'mutasi') {
+                                            $ref = 'Keluar: ' . $row->barangKeluar->no_surat_jalan;
+                                            $jenisLabel = 'Mutasi Keluar';
+                                            $jenisClass = 'text-purple-600 bg-purple-50';
+                                            $jenisCode = 'mutasi';
                                         } else {
                                             $ref = 'Keluar: ' . $row->barangKeluar->no_surat_jalan;
+                                            $jenisLabel = 'Reguler';
+                                            $jenisClass = 'text-blue-600 bg-blue-50';
+                                            $jenisCode = 'reguler';
                                         }
-                                        $detailLink = route('barang-keluar.show', $row->barangKeluar->id);
                                     } else {
+                                        if (str_contains($row->keterangan ?? '', 'Stock Opname')) {
+                                            $jenisLabel = 'Stock Opname';
+                                            $jenisClass = 'text-indigo-600 bg-indigo-50';
+                                            $jenisCode = 'stock_opname';
+                                        } elseif (str_contains($row->keterangan ?? '', 'Stok Awal') || str_contains($row->keterangan ?? '', 'Saldo Awal')) {
+                                            $jenisLabel = 'Saldo Awal';
+                                            $jenisClass = 'text-slate-600 bg-slate-100';
+                                            $jenisCode = 'saldo_awal';
+                                        } else {
+                                            $jenisLabel = 'Lainnya';
+                                            $jenisClass = 'text-gray-600 bg-gray-100';
+                                            $jenisCode = 'lainnya';
+                                        }
                                         $ref = $row->keterangan ?: '-';
                                     }
                                 @endphp
                                 <tr class="report-row border-b border-slate-100 hover:bg-slate-50/50 transition-colors {{ $row->status === 'pending' ? 'bg-yellow-50/50' : '' }}" 
                                     data-search="{{ strtolower(($row->barang ? $row->barang->nama_barang : '') . ' ' . ($row->barang ? $row->barang->kode_barang : '')) }}"
-                                    data-type="{{ str_contains($row->keterangan ?? '', 'Stok Awal') ? 'saldo_awal' : ($row->masuk > 0 ? 'masuk' : ($row->keluar > 0 ? 'keluar' : 'all')) }}">
+                                    data-type="{{ $jenisCode }}">
                                     <td class="px-4 py-3 align-middle bg-transparent shadow-none">
                                         <span class="text-sm font-semibold text-slate-600">{{ $row->tanggal->format('d M Y') }}</span>
                                         @if($row->status === 'pending')
@@ -155,7 +216,10 @@
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 align-middle bg-transparent shadow-none">
-                                        <span class="text-xs font-semibold text-slate-500">{{ $ref }}</span>
+                                        <span class="text-[10px] font-bold uppercase leading-none {{ $jenisClass }} px-2.5 py-1 rounded-lg inline-block whitespace-nowrap">{{ $jenisLabel }}</span>
+                                    </td>
+                                    <td class="px-4 py-3 align-middle bg-transparent shadow-none">
+                                        <span class="text-xs font-semibold text-slate-600">{{ $ref }}</span>
                                     </td>
                                     <td class="px-4 py-3 text-right align-middle bg-transparent shadow-none">
                                         <span class="text-sm font-semibold text-slate-600">{{ number_format($row->saldo_awal, 0, ',', '.') }} <span class="text-xs text-slate-400">{{ $satuan }}</span></span>

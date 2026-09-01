@@ -46,32 +46,10 @@
                     <h6 class="font-bold text-slate-800 text-lg leading-none">Daftar Barang</h6>
                     
                     <div class="flex flex-wrap items-center gap-3 mt-1">
-                        @if(Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-slate-500 font-semibold"><i class="fa fa-warehouse mr-1"></i> Gudang:</span>
-                                <select id="gudangFilterSelect" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
-                                    <option value="all">Semua Gudang</option>
-                                    @foreach($gudangs as $g)
-                                        <option value="{{ $g->kode_gudang }}" {{ $g->kode_gudang == Auth::user()->getActiveGudangCode() ? 'selected' : '' }}>
-                                            {{ $g->nama_gudang }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        @else
-                            <!-- Hidden active warehouse selector for JQuery -->
-                            <input type="hidden" id="gudangFilterSelect" value="{{ Auth::user()->getActiveGudangCode() }}">
-                            <!-- Active Warehouse Name Display -->
-                            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1">
-                                <span class="text-xs text-slate-500 font-semibold">Gudang Aktif:</span>
-                                @php
-                                    $currentGudang = $gudangs->firstWhere('kode_gudang', Auth::user()->getActiveGudangCode());
-                                @endphp
-                                <span class="text-xs text-blue-600 font-bold">{{ $currentGudang ? $currentGudang->nama_gudang : 'Gudang Penugasan' }}</span>
-                            </div>
-                        @endif
+                        <!-- Hidden active warehouse selector for JQuery -->
+                        <input type="hidden" id="gudangFilterSelect" value="{{ Auth::user()->getActiveGudangCode() }}">
                         
-                        <div class="flex items-center gap-2 border-l pl-3 border-gray-200">
+                        <div class="flex items-center gap-2">
                             <span class="text-xs text-slate-500 font-semibold">Tampilkan:</span>
                             <select id="perPageSelect" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
                                 <option value="10" selected>10 Baris</option>

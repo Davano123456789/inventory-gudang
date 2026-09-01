@@ -13,6 +13,7 @@ class BarangMasuk extends Model
         'tanggal_masuk',
         'tanggal_surat_jalan',
         'jenis_transaksi',
+        'status',
         'gudang_asal_kode',
         'pengirim',
         'gudang_tujuan_kode',

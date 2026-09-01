@@ -61,7 +61,7 @@ class BarangKeluarController extends Controller
             'no_surat_jalan' => 'required|string|max:100|unique:barang_keluars,no_surat_jalan',
             'tanggal_keluar' => 'required|date',
             'tanggal_surat_jalan' => 'required|date',
-            'jenis' => 'required|in:reguler,mutasi',
+            'jenis' => 'required|in:reguler,mutasi,stock_opname',
             'gudang_asal_kode' => 'required|exists:gudangs,kode_gudang',
             'gudang_tujuan_kode' => 'required_if:jenis,mutasi',
             'items' => 'required|array|min:1',
@@ -140,6 +140,7 @@ class BarangKeluarController extends Controller
                     'saldo_akhir' => $saldoAkhir,
                     'barang_keluar_id' => $barangKeluar->id,
                     'status' => 'completed',
+                    'keterangan' => $request->jenis === 'stock_opname' ? ('Penyesuaian Stock Opname: ' . $request->no_surat_jalan) : null,
                 ]);
 
                 if ($request->jenis === 'mutasi') {

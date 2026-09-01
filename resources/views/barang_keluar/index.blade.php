@@ -86,23 +86,23 @@
                                     <span class="text-sm font-bold leading-normal text-slate-700">{{ $tx->no_surat_jalan }}</span>
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    @if($tx->jenis === 'stock_opname')
+                                    @if($tx->jenis == \App\Models\BarangKeluar::JENIS_STOCK_OPNAME)
                                         <span class="text-xs font-bold leading-normal text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg uppercase">Stock Opname</span>
+                                    @elseif($tx->jenis == \App\Models\BarangKeluar::JENIS_MUTASI)
+                                        <span class="text-xs font-bold leading-normal text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg uppercase">Mutasi</span>
                                     @else
-                                        <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg uppercase">{{ $tx->jenis }}</span>
+                                        <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg uppercase">{{ $tx->jenis_text }}</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    @if($tx->status === 'completed')
-                                        <span class="text-xs font-bold leading-normal text-green-600 bg-green-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check mr-1"></i> Selesai</span>
-                                    @elseif($tx->status === 'pending')
+                                    @if($tx->status == \App\Models\BarangKeluar::STATUS_COMPLETED)
+                                        <span class="text-xs font-bold leading-normal text-green-600 bg-green-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check mr-1"></i> Selesai/Diterima</span>
+                                    @elseif($tx->status == \App\Models\BarangKeluar::STATUS_PENDING)
                                         <span class="text-xs font-bold leading-normal text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg"><i class="fa fa-clock mr-1"></i> Menunggu</span>
-                                    @elseif($tx->status === 'approved')
-                                        <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check-double mr-1"></i> Diterima</span>
-                                    @elseif($tx->status === 'rejected')
+                                    @elseif($tx->status == \App\Models\BarangKeluar::STATUS_REJECTED)
                                         <span class="text-xs font-bold leading-normal text-red-600 bg-red-50 px-2.5 py-1 rounded-lg"><i class="fa fa-times mr-1"></i> Ditolak</span>
                                     @else
-                                        <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg uppercase">{{ $tx->status }}</span>
+                                        <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg uppercase">{{ $tx->status_text }}</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">

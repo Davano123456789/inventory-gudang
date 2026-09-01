@@ -166,27 +166,25 @@
                                     <span class="text-sm font-bold leading-normal text-slate-700">{{ $tx->no_surat_jalan }}</span>
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    @if($tx->jenis_transaksi === 'Mutasi' || $tx->jenis_transaksi === 'Mutasi Ditolak')
+                                    @if($tx->jenis_transaksi == \App\Models\BarangMasuk::JENIS_MUTASI)
                                         <span class="text-xs font-bold leading-normal text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">Mutasi</span>
-                                    @elseif($tx->jenis_transaksi === 'Retur' || $tx->jenis_transaksi === 'Return')
+                                    @elseif($tx->jenis_transaksi == \App\Models\BarangMasuk::JENIS_RETURN)
                                         <span class="text-xs font-bold leading-normal text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">Return</span>
-                                    @elseif($tx->jenis_transaksi === 'Stock Opname')
+                                    @elseif($tx->jenis_transaksi == \App\Models\BarangMasuk::JENIS_STOCK_OPNAME)
                                         <span class="text-xs font-bold leading-normal text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">Stock Opname</span>
                                     @else
                                         <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">Reguler</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    @if($tx->status === 'approved')
-                                        <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check-double mr-1"></i> Diterima</span>
-                                    @elseif($tx->status === 'rejected' || $tx->jenis_transaksi === 'Mutasi Ditolak')
+                                    @if($tx->status == \App\Models\BarangMasuk::STATUS_COMPLETED)
+                                        <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check-double mr-1"></i> Diterima/Selesai</span>
+                                    @elseif($tx->status == \App\Models\BarangMasuk::STATUS_REJECTED)
                                         <span class="text-xs font-bold leading-normal text-red-600 bg-red-50 px-2.5 py-1 rounded-lg"><i class="fa fa-times mr-1"></i> Ditolak</span>
-                                    @elseif($tx->status === 'pending')
+                                    @elseif($tx->status == \App\Models\BarangMasuk::STATUS_PENDING)
                                         <span class="text-xs font-bold leading-normal text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg"><i class="fa fa-clock mr-1"></i> Menunggu</span>
-                                    @elseif($tx->status === 'completed')
-                                        <span class="text-xs font-bold leading-normal text-green-600 bg-green-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check mr-1"></i> Selesai</span>
                                     @else
-                                        <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg uppercase">{{ $tx->status }}</span>
+                                        <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg uppercase">{{ $tx->status_text }}</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">

@@ -401,6 +401,13 @@ class BarangMasukController extends Controller
             
             // Revert stock back to source warehouse
             foreach ($mutasi->details as $detail) {
+                // Delete pending stock card in destination warehouse
+                \App\Models\KartuStok::where('barang_keluar_id', $mutasi->id)
+                    ->where('kode_gudang', $mutasi->gudang_tujuan_kode)
+                    ->where('barang_id', $detail->barang_id)
+                    ->where('status', 'pending')
+                    ->delete();
+
                 // Add detail to barang masuk for history
                 \App\Models\DetailBarangMasuk::create([
                     'barang_masuk_id' => $barangMasuk->id,

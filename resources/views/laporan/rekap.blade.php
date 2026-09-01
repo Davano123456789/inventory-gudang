@@ -161,8 +161,12 @@
                                     } elseif ($row->barangKeluar) {
                                         $jenisTrans = $row->barangKeluar->jenis;
                                         $detailLink = route('barang-keluar.show', $row->barangKeluar->id);
-                                        
-                                        if ($row->masuk > 0) {
+                                        if ($row->status === 'pending') {
+                                            $ref = 'Mutasi Masuk Pending: ' . $row->barangKeluar->no_surat_jalan;
+                                            $jenisLabel = 'Mutasi Masuk Pending';
+                                            $jenisClass = 'text-yellow-600 bg-yellow-50';
+                                            $jenisCode = 'mutasi';
+                                        } elseif ($row->masuk > 0) {
                                             $ref = 'Mutasi Ditolak: ' . $row->barangKeluar->no_surat_jalan;
                                             $jenisLabel = 'Mutasi Ditolak';
                                             $jenisClass = 'text-red-600 bg-red-50';

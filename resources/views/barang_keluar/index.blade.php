@@ -99,6 +99,8 @@
                                         <span class="text-xs font-bold leading-normal text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg"><i class="fa fa-clock mr-1"></i> Menunggu</span>
                                     @elseif($tx->status === 'approved')
                                         <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check-double mr-1"></i> Diterima</span>
+                                    @elseif($tx->status === 'rejected')
+                                        <span class="text-xs font-bold leading-normal text-red-600 bg-red-50 px-2.5 py-1 rounded-lg"><i class="fa fa-times mr-1"></i> Ditolak</span>
                                     @else
                                         <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg uppercase">{{ $tx->status }}</span>
                                     @endif
@@ -108,7 +110,7 @@
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none flex items-center">
                                     @if($tx->gudang)
-                                        <span class="text-xs font-bold leading-normal text-rose-600 bg-rose-50 px-2.5 py-1 rounded-lg">{{ $tx->gudang->nama_gudang }}</span>
+                                        <span class="text-xs font-bold leading-normal text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">{{ $tx->gudang->nama_gudang }}</span>
                                     @else
                                         <span class="text-xs font-semibold leading-normal text-slate-400 bg-gray-50 px-2.5 py-1 rounded-lg">Gudang Terhapus</span>
                                     @endif

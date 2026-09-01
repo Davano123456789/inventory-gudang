@@ -66,7 +66,7 @@ class BarangMasukController extends Controller
             'no_surat_jalan' => 'required|string|max:100|unique:barang_masuks,no_surat_jalan',
             'tanggal_masuk' => 'required|date',
             'tanggal_surat_jalan' => 'required|date',
-            'jenis_transaksi' => 'required|string|in:Biasa,Retur,Mutasi',
+            'jenis_transaksi' => 'required|string|in:Reguler,Biasa,Return,Retur,Mutasi,Stock Opname',
             'gudang_asal_kode' => 'required_if:jenis_transaksi,Mutasi|nullable|exists:gudangs,kode_gudang',
             'pengirim' => 'nullable|string|max:150',
             'gudang_tujuan_kode' => 'required|exists:gudangs,kode_gudang',
@@ -88,11 +88,15 @@ class BarangMasukController extends Controller
 
         DB::transaction(function() use ($request) {
             // 1. Create the main BarangMasuk
+            $jenisTrans = $request->jenis_transaksi;
+            if ($jenisTrans === 'Biasa') $jenisTrans = 'Reguler';
+            if ($jenisTrans === 'Retur') $jenisTrans = 'Return';
+
             $barangMasuk = BarangMasuk::create([
                 'no_surat_jalan' => $request->no_surat_jalan,
                 'tanggal_masuk' => $request->tanggal_masuk,
                 'tanggal_surat_jalan' => $request->tanggal_surat_jalan,
-                'jenis_transaksi' => $request->jenis_transaksi,
+                'jenis_transaksi' => $jenisTrans,
                 'gudang_asal_kode' => $request->jenis_transaksi === 'Mutasi' ? $request->gudang_asal_kode : null,
                 'pengirim' => $request->pengirim,
                 'gudang_tujuan_kode' => $request->gudang_tujuan_kode,
@@ -208,6 +212,7 @@ class BarangMasukController extends Controller
                     'keluar' => 0,
                     'saldo_akhir' => $saldoAkhirTujuan,
                     'barang_masuk_id' => $barangMasuk->id,
+                    'keterangan' => $request->jenis_transaksi === 'Stock Opname' ? ('Penyesuaian Stock Opname: ' . ($request->catatan ?: $request->no_surat_jalan)) : null,
                 ]);
             }
         });
@@ -290,6 +295,7 @@ class BarangMasukController extends Controller
                 'tanggal_masuk' => date('Y-m-d'),
                 'tanggal_surat_jalan' => $mutasi->tanggal_surat_jalan,
                 'jenis_transaksi' => 'Mutasi',
+                'status' => 'approved',
                 'gudang_asal_kode' => $mutasi->gudang_asal_kode,
                 'pengirim' => $mutasi->user ? $mutasi->user->name : 'Gudang Pengirim',
                 'gudang_tujuan_kode' => $mutasi->gudang_tujuan_kode,
@@ -379,12 +385,13 @@ class BarangMasukController extends Controller
             $mutasi->status = 'rejected';
             $mutasi->save();
             
-            // Create Barang Masuk as "Mutasi Ditolak" for historical record
+            // Create Barang Masuk as "Mutasi" with status "rejected" for historical record
             $barangMasuk = \App\Models\BarangMasuk::create([
                 'no_surat_jalan' => $mutasi->no_surat_jalan . '-REJ',
                 'tanggal_masuk' => date('Y-m-d'),
                 'tanggal_surat_jalan' => $mutasi->tanggal_keluar,
-                'jenis_transaksi' => 'Mutasi Ditolak',
+                'jenis_transaksi' => 'Mutasi',
+                'status' => 'rejected',
                 'gudang_asal_kode' => $mutasi->gudang_asal_kode,
                 'pengirim' => $mutasi->user ? $mutasi->user->name : 'Gudang Pengirim',
                 'gudang_tujuan_kode' => $mutasi->gudang_tujuan_kode,

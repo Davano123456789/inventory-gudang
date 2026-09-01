@@ -86,7 +86,11 @@
                                     <span class="text-sm font-bold leading-normal text-slate-700">{{ $tx->no_surat_jalan }}</span>
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg uppercase">{{ $tx->jenis }}</span>
+                                    @if($tx->jenis === 'stock_opname')
+                                        <span class="text-xs font-bold leading-normal text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg uppercase">Stock Opname</span>
+                                    @else
+                                        <span class="text-xs font-bold leading-normal text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg uppercase">{{ $tx->jenis }}</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     @if($tx->status === 'completed')

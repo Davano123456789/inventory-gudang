@@ -108,9 +108,9 @@
                         <div>
                             <label for="jenis_transaksi" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Jenis Transaksi <span class="text-red-500">*</span></label>
                             <select name="jenis_transaksi" id="jenis_transaksi" required class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
-                                <option value="Biasa" {{ old('jenis_transaksi') == 'Biasa' ? 'selected' : '' }}>Reguler</option>
-                                <option value="Retur" {{ old('jenis_transaksi') == 'Retur' ? 'selected' : '' }}>Retur / Kembalian</option>
-                                <!-- <option value="Mutasi" {{ old('jenis_transaksi') == 'Mutasi' ? 'selected' : '' }}>Mutasi Antar Gudang</option> -->
+                                <option value="Reguler" {{ old('jenis_transaksi') == 'Reguler' || old('jenis_transaksi') == 'Biasa' ? 'selected' : '' }}>Reguler</option>
+                                <option value="Return" {{ old('jenis_transaksi') == 'Return' || old('jenis_transaksi') == 'Retur' ? 'selected' : '' }}>Return / Kembalian</option>
+                                <option value="Stock Opname" {{ old('jenis_transaksi') == 'Stock Opname' ? 'selected' : '' }}>Penyesuaian Stock Opname</option>
                             </select>
                         </div>
 

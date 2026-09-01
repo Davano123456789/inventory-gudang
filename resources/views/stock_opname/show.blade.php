@@ -39,9 +39,15 @@
                     <span class="text-xs text-slate-400 font-semibold mt-1 block">Nomor: {{ $stockOpname->no_opname }}</span>
                 </div>
                 
-                <!-- Back button -->
-                <div class="flex gap-2 no-print">
-                    <a href="{{ route('stock-opname.index') }}" class="inline-block px-6 py-2.5 font-bold text-center text-slate-600 bg-gray-100 hover:bg-gray-200 uppercase align-middle transition-all rounded-lg cursor-pointer leading-pro text-xs ease-soft-in shadow-soft-xs hover:shadow-soft-md tracking-tight">
+                <!-- Back button & Quick Adjustment Links -->
+                <div class="flex flex-wrap items-center gap-2 no-print">
+                    <a href="{{ route('barang-masuk.create') }}?jenis_transaksi=Stock+Opname" class="inline-block px-3.5 py-2 font-bold text-center text-white bg-emerald-600 hover:bg-emerald-700 uppercase align-middle transition-all rounded-lg cursor-pointer leading-pro text-xs ease-soft-in shadow-soft-xs hover:shadow-soft-md tracking-tight">
+                        <i class="fa fa-plus mr-1"></i> Penyesuaian Masuk
+                    </a>
+                    <a href="{{ route('barang-keluar.create') }}?jenis=stock_opname" class="inline-block px-3.5 py-2 font-bold text-center text-white bg-rose-600 hover:bg-rose-700 uppercase align-middle transition-all rounded-lg cursor-pointer leading-pro text-xs ease-soft-in shadow-soft-xs hover:shadow-soft-md tracking-tight">
+                        <i class="fa fa-minus mr-1"></i> Penyesuaian Keluar
+                    </a>
+                    <a href="{{ route('stock-opname.index') }}" class="inline-block px-4 py-2 font-bold text-center text-slate-600 bg-gray-100 hover:bg-gray-200 uppercase align-middle transition-all rounded-lg cursor-pointer leading-pro text-xs ease-soft-in shadow-soft-xs hover:shadow-soft-md tracking-tight">
                         Kembali
                     </a>
                 </div>

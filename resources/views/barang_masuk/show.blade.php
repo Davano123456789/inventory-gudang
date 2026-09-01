@@ -69,14 +69,26 @@
                             <div class="flex">
                                 <span class="w-32 font-bold text-slate-700 uppercase">Jenis Transaksi :</span>
                                 <span class="text-slate-600 font-semibold">
-                                    @if($barangMasuk->jenis_transaksi === 'Mutasi')
-                                        <span class="text-purple-600 bg-purple-50 px-2.5 py-1 rounded text-xxs font-bold">Mutasi Antar Gudang</span>
-                                    @elseif($barangMasuk->jenis_transaksi === 'Mutasi Ditolak')
-                                        <span class="text-red-600 bg-red-50 px-2.5 py-1 rounded text-xxs font-bold">Mutasi Ditolak</span>
-                                    @elseif($barangMasuk->jenis_transaksi === 'Retur')
-                                        <span class="text-amber-600 bg-amber-50 px-2.5 py-1 rounded text-xxs font-bold">Retur / Kembalian</span>
+                                    @if($barangMasuk->jenis_transaksi === 'Mutasi' || $barangMasuk->jenis_transaksi === 'Mutasi Ditolak')
+                                        <span class="text-purple-600 bg-purple-50 px-2.5 py-1 rounded text-xxs font-bold">Mutasi</span>
+                                    @elseif($barangMasuk->jenis_transaksi === 'Retur' || $barangMasuk->jenis_transaksi === 'Return')
+                                        <span class="text-amber-600 bg-amber-50 px-2.5 py-1 rounded text-xxs font-bold">Return</span>
+                                    @elseif($barangMasuk->jenis_transaksi === 'Stock Opname')
+                                        <span class="text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded text-xxs font-bold">Stock Opname</span>
                                     @else
                                         <span class="text-blue-600 bg-blue-50 px-2.5 py-1 rounded text-xxs font-bold">Reguler</span>
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="flex">
+                                <span class="w-32 font-bold text-slate-700 uppercase">Status Transaksi :</span>
+                                <span class="text-slate-600 font-semibold">
+                                    @if($barangMasuk->status === 'approved')
+                                        <span class="text-blue-600 bg-blue-50 px-2.5 py-1 rounded text-xxs font-bold"><i class="fa fa-check-double mr-1"></i> Diterima</span>
+                                    @elseif($barangMasuk->status === 'rejected' || $barangMasuk->jenis_transaksi === 'Mutasi Ditolak')
+                                        <span class="text-red-600 bg-red-50 px-2.5 py-1 rounded text-xxs font-bold"><i class="fa fa-times mr-1"></i> Ditolak</span>
+                                    @else
+                                        <span class="text-green-600 bg-green-50 px-2.5 py-1 rounded text-xxs font-bold"><i class="fa fa-check mr-1"></i> Selesai</span>
                                     @endif
                                 </span>
                             </div>

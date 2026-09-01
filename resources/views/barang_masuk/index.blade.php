@@ -103,7 +103,8 @@
                             <select id="filterJenis" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
                                 <option value="" selected>Semua Jenis</option>
                                 <option value="Biasa">Reguler</option>
-                                <option value="Retur">Retur</option>
+                                <option value="Return">Return</option>
+                                <option value="Stock Opname">Stock Opname</option>
                             </select>
                         </div>
                         
@@ -147,6 +148,7 @@
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">No</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">No Surat Jalan</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Jenis</th>
+                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Status</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Tanggal Masuk</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Pengirim</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Gudang Penerima</th>
@@ -164,14 +166,23 @@
                                     <span class="text-sm font-bold leading-normal text-slate-700">{{ $tx->no_surat_jalan }}</span>
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    @if($tx->jenis_transaksi === 'Mutasi')
+                                    @if($tx->jenis_transaksi === 'Mutasi' || $tx->jenis_transaksi === 'Mutasi Ditolak')
                                         <span class="text-xs font-bold leading-normal text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">Mutasi</span>
-                                    @elseif($tx->jenis_transaksi === 'Mutasi Ditolak')
-                                        <span class="text-xs font-bold leading-normal text-red-600 bg-red-50 px-2.5 py-1 rounded-lg">Mutasi Ditolak</span>
-                                    @elseif($tx->jenis_transaksi === 'Retur')
-                                        <span class="text-xs font-bold leading-normal text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">Retur</span>
+                                    @elseif($tx->jenis_transaksi === 'Retur' || $tx->jenis_transaksi === 'Return')
+                                        <span class="text-xs font-bold leading-normal text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">Return</span>
+                                    @elseif($tx->jenis_transaksi === 'Stock Opname')
+                                        <span class="text-xs font-bold leading-normal text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">Stock Opname</span>
                                     @else
                                         <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">Reguler</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
+                                    @if($tx->status === 'approved')
+                                        <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check-double mr-1"></i> Diterima</span>
+                                    @elseif($tx->status === 'rejected' || $tx->jenis_transaksi === 'Mutasi Ditolak')
+                                        <span class="text-xs font-bold leading-normal text-red-600 bg-red-50 px-2.5 py-1 rounded-lg"><i class="fa fa-times mr-1"></i> Ditolak</span>
+                                    @else
+                                        <span class="text-xs font-bold leading-normal text-green-600 bg-green-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check mr-1"></i> Selesai</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">

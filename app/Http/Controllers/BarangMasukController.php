@@ -167,6 +167,7 @@ class BarangMasukController extends Controller
                 DetailBarangMasuk::create([
                     'barang_masuk_id' => $barangMasuk->id,
                     'barang_id' => $item['barang_id'],
+                    'size_id' => $item['size_id'] ?? 1,
                     'qty_box' => $qtyBox,
                     'qty_pcs' => $qtyPcs,
                     'qty_total' => $qtyTotal,

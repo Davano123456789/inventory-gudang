@@ -12,6 +12,7 @@ class DetailBarangKeluar extends Model
     protected $fillable = [
         'barang_keluar_id',
         'barang_id',
+        'size_id',
         'qty'
     ];
 
@@ -29,5 +30,13 @@ class DetailBarangKeluar extends Model
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'barang_id');
+    }
+
+    /**
+     * Get the size.
+     */
+    public function size()
+    {
+        return $this->belongsTo(Size::class, 'size_id');
     }
 }

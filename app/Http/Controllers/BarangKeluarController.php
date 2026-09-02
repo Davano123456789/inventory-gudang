@@ -120,6 +120,7 @@ class BarangKeluarController extends Controller
                 DetailBarangKeluar::create([
                     'barang_keluar_id' => $barangKeluar->id,
                     'barang_id' => $item['barang_id'],
+                    'size_id' => $item['size_id'] ?? 1,
                     'qty' => $item['qty']
                 ]);
 

@@ -11,6 +11,7 @@ class StokGudang extends Model
     protected $fillable = [
         'kode_gudang',
         'barang_id',
+        'size_id',
         'stok_sekarang'
     ];
 
@@ -47,5 +48,13 @@ class StokGudang extends Model
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'barang_id');
+    }
+
+    /**
+     * Get the size associated with this stock.
+     */
+    public function size()
+    {
+        return $this->belongsTo(Size::class, 'size_id');
     }
 }

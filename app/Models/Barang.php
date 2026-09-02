@@ -12,6 +12,7 @@ class Barang extends Model
         'kode_barang',
         'nama_barang',
         'satuan_id',
+        'size_id',
         'created_by_user_id',
         'gudang_pendaftar_kode',
         'stok_global'
@@ -23,6 +24,14 @@ class Barang extends Model
     public function satuan()
     {
         return $this->belongsTo(Satuan::class, 'satuan_id');
+    }
+
+    /**
+     * Get the size associated with the item.
+     */
+    public function size()
+    {
+        return $this->belongsTo(Size::class, 'size_id');
     }
 
     /**

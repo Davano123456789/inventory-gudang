@@ -19,6 +19,7 @@ class KartuStok extends Model
         'tanggal',
         'kode_gudang',
         'barang_id',
+        'size_id',
         'saldo_awal',
         'masuk',
         'keluar',
@@ -42,6 +43,11 @@ class KartuStok extends Model
         return $this->belongsTo(Barang::class, 'barang_id');
     }
 
+    public function size()
+    {
+        return $this->belongsTo(Size::class, 'size_id');
+    }
+
     public function gudang()
     {
         return $this->belongsTo(Gudang::class, 'kode_gudang', 'kode_gudang');
@@ -62,7 +68,7 @@ class KartuStok extends Model
         return match($this->status) {
             self::STATUS_PENDING => 'pending',
             self::STATUS_COMPLETED => 'completed',
-            default => 'completed',
+            default => 'unknown'
         };
     }
 }

@@ -129,6 +129,7 @@ class BarangController extends Controller
             'kode_barang' => $request->kode_barang,
             'nama_barang' => $request->nama_barang,
             'satuan_id' => $request->satuan_id,
+            'size_id' => $request->input('size_id', 1),
             'created_by_user_id' => $user->id,
             'gudang_pendaftar_kode' => $gudangCode,
         ]);
@@ -140,6 +141,7 @@ class BarangController extends Controller
             StokGudang::create([
                 'kode_gudang' => $gudang->kode_gudang,
                 'barang_id' => $barang->id,
+                'size_id' => 1,
                 'stok_sekarang' => $isTarget ? $stokAwal : 0
             ]);
 
@@ -303,6 +305,8 @@ class BarangController extends Controller
                     $barang = Barang::create([
                         'kode_barang' => $kodeBarang,
                         'nama_barang' => $namaBarang,
+                        'satuan_id' => null,
+                        'size_id' => 1,
                         'created_by_user_id' => $user->id,
                         'gudang_pendaftar_kode' => 'excel'
                     ]);

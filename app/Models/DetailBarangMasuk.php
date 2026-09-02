@@ -11,6 +11,7 @@ class DetailBarangMasuk extends Model
     protected $fillable = [
         'barang_masuk_id',
         'barang_id',
+        'size_id',
         'qty_box',
         'qty_pcs',
         'qty_total'
@@ -22,6 +23,14 @@ class DetailBarangMasuk extends Model
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'barang_id');
+    }
+
+    /**
+     * Get the size associated with this detail.
+     */
+    public function size()
+    {
+        return $this->belongsTo(Size::class, 'size_id');
     }
 
     /**

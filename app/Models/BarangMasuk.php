@@ -32,12 +32,15 @@ class BarangMasuk extends Model
         'pengirim',
         'gudang_tujuan_kode',
         'user_id',
+        'approved_by',
+        'approved_at',
         'catatan'
     ];
 
     protected $casts = [
         'tanggal_masuk' => 'date',
-        'tanggal_surat_jalan' => 'date'
+        'tanggal_surat_jalan' => 'date',
+        'approved_at' => 'datetime'
     ];
 
     /**
@@ -62,6 +65,14 @@ class BarangMasuk extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get the user who approved or rejected this transaction.
+     */
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     /**

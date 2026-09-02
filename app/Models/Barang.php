@@ -13,7 +13,7 @@ class Barang extends Model
         'nama_barang',
         'satuan_id',
         'created_by_user_id',
-        'source',
+        'gudang_pendaftar_kode',
         'stok_global'
     ];
 
@@ -39,5 +39,13 @@ class Barang extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by_user_id');
+    }
+
+    /**
+     * Get the warehouse where the item was first registered.
+     */
+    public function gudangPendaftar()
+    {
+        return $this->belongsTo(Gudang::class, 'gudang_pendaftar_kode', 'kode_gudang');
     }
 }

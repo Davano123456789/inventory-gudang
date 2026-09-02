@@ -68,6 +68,7 @@
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Kode Barang</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Nama Barang</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Satuan</th>
+                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Pendaftar</th>
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Stok</th>
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Aksi</th>
                             </tr>
@@ -100,6 +101,19 @@
                                     <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">{{ $barang->satuan->nama_satuan }}</span>
                                     @else
                                     <span class="text-xs font-semibold leading-normal text-slate-400 bg-gray-50 px-2.5 py-1 rounded-lg">Belum Set</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
+                                    @if($barang->gudang_pendaftar_kode === 'excel')
+                                        <span class="text-xs font-bold leading-normal text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">Excel</span>
+                                    @elseif($barang->gudangPendaftar)
+                                        <span class="text-xs font-bold leading-normal text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">{{ $barang->gudangPendaftar->nama_gudang }}</span>
+                                    @elseif($barang->creator && $barang->creator->gudang)
+                                        <span class="text-xs font-bold leading-normal text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">{{ $barang->creator->gudang->nama_gudang }}</span>
+                                    @elseif($barang->gudang_pendaftar_kode)
+                                        <span class="text-xs font-bold leading-normal text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">{{ $barang->gudang_pendaftar_kode }}</span>
+                                    @else
+                                        <span class="text-xs font-semibold leading-normal text-slate-400">-</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">

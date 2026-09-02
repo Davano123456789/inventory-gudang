@@ -136,6 +136,10 @@
                             <span class="text-sky-600 font-bold">{{ $barangKeluar->gudangTujuan->nama_gudang }}</span>
                         </div>
                         @endif
+                        <div class="flex justify-between md:justify-start">
+                            <span class="w-40 font-bold text-slate-700 uppercase md:text-right md:pr-3">Petugas Pengirim :</span>
+                            <span class="text-slate-700 font-semibold">{{ $barangKeluar->user ? $barangKeluar->user->name : '-' }}</span>
+                        </div>
 
 
                     </div>

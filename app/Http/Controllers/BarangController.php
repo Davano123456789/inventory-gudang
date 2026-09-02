@@ -78,7 +78,7 @@ class BarangController extends Controller
         $activeGudang = $user->getActiveGudangCode();
         $gudangs = Gudang::orderBy('nama_gudang', 'asc')->get();
         
-        $query = Barang::with(['satuan', 'stokGudangs'])->where('source', 'manual');
+        $query = Barang::with(['satuan', 'stokGudangs']);
         
         if ($user->isSuperAdmin()) {
             if ($activeGudang && $activeGudang !== 'all') {
@@ -121,11 +121,16 @@ class BarangController extends Controller
             'stok_awal' => 'nullable|numeric|min:0',
         ]);
 
+        $gudangCode = $user->isSuperAdmin() 
+            ? ($request->kode_gudang ?: ($user->getActiveGudangCode() !== 'all' ? $user->getActiveGudangCode() : null)) 
+            : $user->getActiveGudangCode();
+
         $barang = Barang::create([
             'kode_barang' => $request->kode_barang,
             'nama_barang' => $request->nama_barang,
             'satuan_id' => $request->satuan_id,
             'created_by_user_id' => $user->id,
+            'gudang_pendaftar_kode' => $gudangCode,
         ]);
 
         // Global Sync: Create stok_gudang for ALL warehouses
@@ -222,7 +227,7 @@ class BarangController extends Controller
             'nama_barang' => $request->nama_barang,
             'satuan_id' => $request->satuan_id,
             'created_by_user_id' => $user->id,
-            'source' => 'manual',
+            'gudang_pendaftar_kode' => $gudangCode,
         ]);
 
         // Global Sync: Create stok_gudang for ALL warehouses
@@ -299,7 +304,7 @@ class BarangController extends Controller
                         'kode_barang' => $kodeBarang,
                         'nama_barang' => $namaBarang,
                         'created_by_user_id' => $user->id,
-                        'source' => 'excel'
+                        'gudang_pendaftar_kode' => 'excel'
                     ]);
                 }
                 

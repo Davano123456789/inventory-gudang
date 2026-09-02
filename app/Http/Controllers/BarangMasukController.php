@@ -51,6 +51,9 @@ class BarangMasukController extends Controller
         $barangs = Barang::with(['satuan', 'stokGudangs'])->orderBy('nama_barang', 'asc')->get();
         
         $gudangTujuans = Gudang::where('kode_gudang', $activeGudang)->get();
+        if ($activeGudang === 'all') {
+            $gudangTujuans = Gudang::orderBy('nama_gudang', 'asc')->get();
+        }
 
         $gudangs = Gudang::orderBy('nama_gudang', 'asc')->get();
         $satuans = \App\Models\Satuan::orderBy('nama_satuan', 'asc')->get();
@@ -124,7 +127,7 @@ class BarangMasukController extends Controller
                         'nama_barang' => $newItem['nama_barang'],
                         'satuan_id' => $newItem['satuan_id'],
                         'created_by_user_id' => Auth::id() ?: 1,
-                        'source' => 'masuk_baru',
+                        'gudang_pendaftar_kode' => $request->gudang_tujuan_kode,
                     ]);
 
                     // Sync to all warehouses with 0 stock
@@ -290,6 +293,8 @@ class BarangMasukController extends Controller
         
         DB::transaction(function() use ($mutasi) {
             $mutasi->status = \App\Models\BarangKeluar::STATUS_COMPLETED;
+            $mutasi->approved_by = auth()->id();
+            $mutasi->approved_at = now();
             $mutasi->save();
             
             // Create Barang Masuk history record
@@ -303,6 +308,8 @@ class BarangMasukController extends Controller
                 'pengirim' => $mutasi->user ? $mutasi->user->name : 'Gudang Pengirim',
                 'gudang_tujuan_kode' => $mutasi->gudang_tujuan_kode,
                 'user_id' => auth()->id() ?: 1,
+                'approved_by' => auth()->id(),
+                'approved_at' => now(),
                 'catatan' => 'Penerimaan Mutasi Otomatis dari ' . $mutasi->no_surat_jalan,
             ]);
 
@@ -386,6 +393,8 @@ class BarangMasukController extends Controller
 
         DB::transaction(function() use ($mutasi) {
             $mutasi->status = \App\Models\BarangKeluar::STATUS_REJECTED;
+            $mutasi->approved_by = auth()->id();
+            $mutasi->approved_at = now();
             $mutasi->save();
             
             // Create Barang Masuk as "Mutasi" with status "rejected" for historical record
@@ -399,6 +408,8 @@ class BarangMasukController extends Controller
                 'pengirim' => $mutasi->user ? $mutasi->user->name : 'Gudang Pengirim',
                 'gudang_tujuan_kode' => $mutasi->gudang_tujuan_kode,
                 'user_id' => auth()->id(),
+                'approved_by' => auth()->id(),
+                'approved_at' => now(),
                 'catatan' => 'Penolakan Mutasi dari ' . $mutasi->no_surat_jalan,
             ]);
             

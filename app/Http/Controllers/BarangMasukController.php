@@ -29,8 +29,8 @@ class BarangMasukController extends Controller
 
         // Pending Mutasi Query
         $pendingMutasiQuery = \App\Models\BarangKeluar::with(['gudang', 'user', 'details.barang'])
-            ->where('jenis', 'mutasi')
-            ->where('status', \App\Models\KartuStok::STATUS_PENDING);
+            ->where('jenis', \App\Models\BarangKeluar::JENIS_MUTASI)
+            ->where('status', \App\Models\BarangKeluar::STATUS_PENDING);
             
         if ($activeGudang !== 'all') {
             $pendingMutasiQuery->where('gudang_tujuan_kode', $activeGudang);

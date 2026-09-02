@@ -296,7 +296,7 @@
                     </td>
                     <td class="p-3 align-middle bg-transparent border-b shadow-none text-left">
                         <input type="hidden" name="items[${index}][satuan_id]" class="satuan-hidden-input">
-                        <select name="items[${index}][satuan_select]" class="satuan-select w-full px-2.5 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
+                        <select name="items[${index}][satuan_select]" required class="satuan-select w-full px-2.5 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
                             ${satuanOptions}
                         </select>
                     </td>

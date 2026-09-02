@@ -96,7 +96,11 @@
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     @if($tx->status == \App\Models\BarangKeluar::STATUS_COMPLETED)
-                                        <span class="text-xs font-bold leading-normal text-green-600 bg-green-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check mr-1"></i> Selesai/Diterima</span>
+                                        @if($tx->jenis == \App\Models\BarangKeluar::JENIS_MUTASI)
+                                            <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check-double mr-1"></i> Diterima Tujuan</span>
+                                        @else
+                                            <span class="text-xs font-bold leading-normal text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check mr-1"></i> Selesai</span>
+                                        @endif
                                     @elseif($tx->status == \App\Models\BarangKeluar::STATUS_PENDING)
                                         <span class="text-xs font-bold leading-normal text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg"><i class="fa fa-clock mr-1"></i> Menunggu</span>
                                     @elseif($tx->status == \App\Models\BarangKeluar::STATUS_REJECTED)

@@ -15,13 +15,13 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Seed Gudang first to prevent foreign key errors
         Gudang::firstOrCreate(['kode_gudang' => '300003'], [
-            'nama_gudang' => 'Gudang Cabang Surabaya',
+            'nama_gudang' => 'Gudang Surabaya',
             'alamat' => 'Surabaya'
         ]);
 
         Gudang::firstOrCreate(['kode_gudang' => '000003'], [
-            'nama_gudang' => 'Gudang Utama Jakarta',
-            'alamat' => 'Jakarta'
+            'nama_gudang' => 'Gudang Sidoarjo',
+            'alamat' => 'Sidoarjo'
         ]);
 
         // 2. Seed Users

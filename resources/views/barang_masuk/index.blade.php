@@ -178,7 +178,11 @@
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     @if($tx->status == \App\Models\BarangMasuk::STATUS_COMPLETED)
-                                        <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check-double mr-1"></i> Diterima/Selesai</span>
+                                        @if($tx->jenis_transaksi == \App\Models\BarangMasuk::JENIS_MUTASI)
+                                            <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check-double mr-1"></i> Diterima</span>
+                                        @else
+                                            <span class="text-xs font-bold leading-normal text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg"><i class="fa fa-check mr-1"></i> Selesai</span>
+                                        @endif
                                     @elseif($tx->status == \App\Models\BarangMasuk::STATUS_REJECTED)
                                         <span class="text-xs font-bold leading-normal text-red-600 bg-red-50 px-2.5 py-1 rounded-lg"><i class="fa fa-times mr-1"></i> Ditolak</span>
                                     @elseif($tx->status == \App\Models\BarangMasuk::STATUS_PENDING)

@@ -124,14 +124,10 @@
 
                     <!-- Remember Me -->
                     <div class="flex items-center pt-1">
-                        <label class="flex items-center gap-2 cursor-pointer group">
-                            <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-300 text-brand-blue focus:ring-brand-blue/30 transition-all cursor-pointer">
-                            <span class="text-xs text-slate-500 font-medium group-hover:text-slate-700 transition-colors">Ingat saya</span>
-                        </label>
-                    </div>
+                                            </div>
 
                     <!-- Submit Button -->
-                    <div class="pt-4">
+                    <div class="">
                         <button type="submit" class="w-full py-3.5 px-6 font-bold text-center text-white bg-brand-blue hover:bg-brand-light rounded-lg shadow-md hover:shadow-lg transition-all duration-200 active:scale-[0.98] text-sm tracking-wide">
                             Masuk
                         </button>

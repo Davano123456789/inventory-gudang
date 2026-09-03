@@ -124,7 +124,9 @@
 
                     <!-- Remember Me -->
                     <div class="flex items-center pt-1">
-                                            </div>
+                        <input id="remember" type="checkbox" name="remember" class="w-4 h-4 text-brand-blue bg-gray-100 border-gray-300 rounded focus:ring-brand-light focus:ring-2 cursor-pointer">
+                        <label for="remember" class="ml-2 text-xs font-medium text-slate-700 cursor-pointer">Ingat saya</label>
+                    </div>
 
                     <!-- Submit Button -->
                     <div class="">

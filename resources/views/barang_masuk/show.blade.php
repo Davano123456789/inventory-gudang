@@ -17,7 +17,7 @@
                     <button type="button" onclick="window.print()" class="inline-block px-5 py-2.5 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-slate-600 to-slate-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
                         <i class="fa fa-print mr-1"></i> Cetak / Print
                     </button>
-                    <a href="{{ route('barang-masuk.index') }}" class="inline-block px-5 py-2.5 font-bold text-center text-slate-500 uppercase align-middle transition-all rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200 leading-pro text-xs ease-soft-in tracking-tight">
+                    <a href="{{ request('ref') === 'rekap' ? route('laporan.rekap') : route('barang-masuk.index') }}" class="inline-block px-5 py-2.5 font-bold text-center text-slate-500 uppercase align-middle transition-all rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200 leading-pro text-xs ease-soft-in tracking-tight">
                         <i class="fa fa-arrow-left mr-1"></i> Kembali
                     </a>
                 </div>
@@ -27,91 +27,89 @@
             <div class="flex-auto p-6" id="printableArea">
                 
                 <!-- Surat Jalan Header Block -->
-                <div class="border-2 border-slate-200 rounded-2xl p-6 mb-6 bg-slate-50">
-                    <div class="flex flex-wrap justify-between gap-4">
-                        <!-- Left Block: Company Name -->
-                        <div>
-                            <h4 class="font-bold text-slate-800 text-xl tracking-tight mb-1">PT. BINTANG CAKRA KENCANA</h4>
-                            <p class="text-xs text-slate-500">Banyudono Jl. Raya Solo Semarang KM 15 Boyolali</p>
-                        </div>
-                        
-                        <!-- Right Block: Surat Jalan Title & Metadata -->
-                        <div class="text-right md:text-right text-left">
-                            <h5 class="font-bold text-red-600 text-lg uppercase tracking-wider leading-none mb-1">Surat Jalan Masuk</h5>
-                        </div>
+                <div class="mb-6 w-full flex flex-wrap justify-between items-start">
+                    <!-- Left Block: Company Name -->
+                    <div>
+                        <h5 class="font-extrabold text-red-600 text-2xl tracking-wide uppercase m-0 leading-none">PT. BINTANG CAKRA KENCANA</h5>
+                        <p class="text-[10px] text-slate-500 font-bold mt-1 mb-0">BANYUDONO JL. RAYA SOLO SEMARANG KM 15 BOYOLALI</p>
                     </div>
-
-                    <hr class="my-4 border-slate-200">
-
-                    <!-- Metadata Rows -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Left Details -->
-                        <div class="flex flex-col gap-2 text-xs">
-                            <div class="flex">
-                                <span class="w-32 font-bold text-slate-700 uppercase">No Surat Jalan :</span>
-                                <span class="text-slate-600 font-semibold">{{ $barangMasuk->no_surat_jalan }}</span>
-                            </div>
-                            <div class="flex">
-                                <span class="w-32 font-bold text-slate-700 uppercase">Tgl Surat Jalan :</span>
-                                <span class="text-slate-600">{{ $barangMasuk->tanggal_surat_jalan->format('d F Y') }}</span>
-                            </div>
-
-                            @if($barangMasuk->jenis_transaksi !== 'Mutasi')
-                            <div class="flex">
-                                <span class="w-32 font-bold text-slate-700 uppercase">Pengirim (Dari) :</span>
-                                <span class="text-slate-600">{{ $barangMasuk->pengirim ?: '-' }}</span>
-                            </div>
-                            @endif
-                        </div>
-
-                        <!-- Right Details -->
-                        <div class="flex flex-col gap-2 text-xs">
-                            <div class="flex">
-                                <span class="w-32 font-bold text-slate-700 uppercase">Jenis Transaksi :</span>
-                                <span class="text-slate-600 font-semibold">
-                                    @if($barangMasuk->jenis_transaksi === 'Mutasi' || $barangMasuk->jenis_transaksi === 'Mutasi Ditolak')
-                                        <span class="text-purple-600 bg-purple-50 px-2.5 py-1 rounded text-xxs font-bold">Mutasi</span>
-                                    @elseif($barangMasuk->jenis_transaksi === 'Retur' || $barangMasuk->jenis_transaksi === 'Return')
-                                        <span class="text-amber-600 bg-amber-50 px-2.5 py-1 rounded text-xxs font-bold">Return</span>
-                                    @elseif($barangMasuk->jenis_transaksi === 'Stock Opname')
-                                        <span class="text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded text-xxs font-bold">Stock Opname</span>
-                                    @else
-                                        <span class="text-blue-600 bg-blue-50 px-2.5 py-1 rounded text-xxs font-bold">Reguler</span>
-                                    @endif
-                                </span>
-                            </div>
-                            <div class="flex">
-                                <span class="w-32 font-bold text-slate-700 uppercase">Status Transaksi :</span>
-                                <span class="text-slate-600 font-semibold">
-                                    @if($barangMasuk->status === 'approved')
-                                        <span class="text-blue-600 bg-blue-50 px-2.5 py-1 rounded text-xxs font-bold"><i class="fa fa-check-double mr-1"></i> Diterima</span>
-                                    @elseif($barangMasuk->status === 'rejected' || $barangMasuk->jenis_transaksi === 'Mutasi Ditolak')
-                                        <span class="text-red-600 bg-red-50 px-2.5 py-1 rounded text-xxs font-bold"><i class="fa fa-times mr-1"></i> Ditolak</span>
-                                    @else
-                                        <span class="text-green-600 bg-green-50 px-2.5 py-1 rounded text-xxs font-bold"><i class="fa fa-check mr-1"></i> Selesai</span>
-                                    @endif
-                                </span>
-                            </div>
-                            @if($barangMasuk->jenis_transaksi === 'Mutasi' && $barangMasuk->gudangAsal)
-                            <div class="flex">
-                                <span class="w-32 font-bold text-slate-700 uppercase">Gudang Asal :</span>
-                                <span class="text-rose-600 bg-rose-50 px-2.5 py-1 rounded text-xxs font-bold">{{ $barangMasuk->gudangAsal->nama_gudang }} ({{ $barangMasuk->gudang_asal_kode }})</span>
-                            </div>
-                            @endif
-                            <div class="flex">
-                                <span class="w-32 font-bold text-slate-700 uppercase">Gudang Penerima :</span>
-                                <span class="text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded text-xxs font-semibold">{{ $barangMasuk->gudang ? $barangMasuk->gudang->nama_gudang : 'Gudang Terhapus' }} ({{ $barangMasuk->gudang_tujuan_kode }})</span>
-                            </div>
-                            <div class="flex">
-                                <span class="w-32 font-bold text-slate-700 uppercase">Di-input Oleh :</span>
-                                <span class="text-slate-600">{{ $barangMasuk->user ? $barangMasuk->user->name : 'System' }}</span>
-                            </div>
-
-                        </div>
+                    
+                    <!-- Right Block: Surat Jalan Title -->
+                    <div class="text-right md:text-right text-left mt-2 md:mt-0">
+                        <h5 class="font-extrabold text-red-600 text-xl uppercase tracking-wider leading-none mb-1">Surat Jalan Masuk</h5>
                     </div>
                 </div>
 
+                <!-- Metadata Rows -->
+                <div class="flex flex-wrap justify-between items-start border-b pb-6 mb-6">
+                        <!-- Left Details -->
+                        <div class="w-full md:w-1/2 pr-0 md:pr-4">
+                            <div class="flex flex-col gap-2 text-xs">
+                                <div class="flex">
+                                    <span class="w-36 font-bold text-slate-700 uppercase">No Surat Jalan :</span>
+                                    <span class="text-slate-600 font-semibold">{{ $barangMasuk->no_surat_jalan }}</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="w-36 font-bold text-slate-700 uppercase">Tgl Surat Jalan :</span>
+                                    <span class="text-slate-600">{{ $barangMasuk->tanggal_surat_jalan->format('d F Y') }}</span>
+                                </div>
 
+                                @if($barangMasuk->jenis_transaksi !== 'Mutasi')
+                                <div class="flex">
+                                    <span class="w-36 font-bold text-slate-700 uppercase">Pengirim (Dari) :</span>
+                                    <span class="text-slate-600">{{ $barangMasuk->pengirim ?: '-' }}</span>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Right Details -->
+                        <div class="w-full md:w-1/2 mt-6 md:mt-0 flex flex-col md:items-end">
+                            <div class="flex flex-col gap-2 text-xs w-full md:w-auto text-left">
+                                <div class="flex">
+                                    <span class="w-36 font-bold text-slate-700 uppercase">Jenis Transaksi :</span>
+                                    <span class="text-slate-600 font-semibold">
+                                        @if($barangMasuk->jenis_transaksi === 'Mutasi' || $barangMasuk->jenis_transaksi === 'Mutasi Ditolak')
+                                            Mutasi
+                                        @elseif($barangMasuk->jenis_transaksi === 'Retur' || $barangMasuk->jenis_transaksi === 'Return')
+                                            Retur
+                                        @elseif($barangMasuk->jenis_transaksi === 'Stock Opname')
+                                            Stock Opname
+                                        @else
+                                            Reguler
+                                        @endif
+                                    </span>
+                                </div>
+                                <div class="flex">
+                                    <span class="w-36 font-bold text-slate-700 uppercase">Status Transaksi :</span>
+                                    <span class="text-slate-600 font-semibold">
+                                        @if($barangMasuk->status === 'approved')
+                                            Diterima
+                                        @elseif($barangMasuk->status === 'rejected' || $barangMasuk->jenis_transaksi === 'Mutasi Ditolak')
+                                            Ditolak
+                                        @else
+                                            Selesai
+                                        @endif
+                                    </span>
+                                </div>
+                                @if($barangMasuk->jenis_transaksi === 'Mutasi' && $barangMasuk->gudangAsal)
+                                <div class="flex">
+                                    <span class="w-36 font-bold text-slate-700 uppercase">Gudang Asal :</span>
+                                    <span class="text-slate-600 font-semibold">{{ $barangMasuk->gudangAsal->nama_gudang }} ({{ $barangMasuk->gudang_asal_kode }})</span>
+                                </div>
+                                @endif
+                                <div class="flex">
+                                    <span class="w-36 font-bold text-slate-700 uppercase">Gudang Penerima :</span>
+                                    <span class="text-slate-600 font-semibold">{{ $barangMasuk->gudang ? $barangMasuk->gudang->nama_gudang : 'Gudang Terhapus' }} ({{ $barangMasuk->gudang_tujuan_kode }})</span>
+                                </div>
+                                <div class="flex">
+                                    <span class="w-36 font-bold text-slate-700 uppercase">Di-input Oleh :</span>
+                                    <span class="text-slate-600">{{ $barangMasuk->user ? $barangMasuk->user->name : 'System' }}</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 <!-- Items Table -->
                 <h6 class="font-bold text-slate-800 text-md mb-3 pl-1">Daftar Rincian Barang</h6>
                 <div class="overflow-x-auto border border-slate-200 rounded-2xl mb-8">
@@ -149,9 +147,9 @@
                                 </td>
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     @if($detail->barang->satuan)
-                                        <span class="text-xs font-semibold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">{{ $detail->barang->satuan->nama_satuan }}</span>
+                                        <span class="text-xs font-semibold leading-normal text-slate-700">{{ $detail->barang->satuan->nama_satuan }}</span>
                                     @else
-                                        <span class="text-xs font-semibold leading-normal text-slate-400 bg-gray-50 px-2.5 py-1 rounded-lg">Pcs</span>
+                                        <span class="text-xs font-semibold leading-normal text-slate-700">Pcs</span>
                                     @endif
                                 </td>
                             </tr>
@@ -162,7 +160,7 @@
                                 <td class="px-6 py-4 text-center font-bold text-slate-700 text-xs">
                                     {{ number_format($barangMasuk->details->sum('qty_box'), 0, ',', '.') }}
                                 </td>
-                                <td class="px-6 py-4 text-center font-bold text-slate-700 text-xs text-blue-600">
+                                <td class="px-6 py-4 text-center font-bold text-slate-700 text-xs">
                                     {{ number_format($barangMasuk->details->sum('qty_total'), 0, ',', '.') }}
                                 </td>
                                 <td></td>
@@ -181,6 +179,7 @@
 
 <style>
     @media print {
+        @page { margin: 0; }
         body * {
             visibility: hidden;
         }
@@ -196,11 +195,47 @@
             padding: 0;
             border: 0;
         }
+        /* Enforce desktop-style flex layouts on print */
+        .flex {
+            display: flex !important;
+        }
+        .flex-wrap {
+            flex-wrap: nowrap !important;
+        }
+        .justify-between {
+            justify-content: space-between !important;
+        }
+        .items-start {
+            align-items: flex-start !important;
+        }
+        .w-full {
+            width: 100% !important;
+        }
+        .md\:w-1\/2 {
+            width: 50% !important;
+        }
+        .md\:text-right {
+            text-align: right !important;
+        }
+        .md\:items-end {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-end !important;
+        }
+        .md\:justify-start {
+            justify-content: flex-start !important;
+        }
+        .md\:mt-0 {
+            margin-top: 0 !important;
+        }
         .rounded-2xl, .rounded-xl {
             border-radius: 0 !important;
         }
         .border-2 {
             border-width: 1px !important;
+        }
+        aside, nav, footer, button, .no-print {
+            display: none !important;
         }
     }
 </style>

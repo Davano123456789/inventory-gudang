@@ -66,7 +66,7 @@ class BarangKeluarController extends Controller
             'gudang_tujuan_kode' => 'required_if:jenis,mutasi',
             'items' => 'required|array|min:1',
             'items.*.barang_id' => 'required|exists:barangs,id',
-            'items.*.satuan_id' => 'nullable|exists:satuans,id',
+            'items.*.satuan_id' => 'required|exists:satuans,id',
             'items.*.qty' => 'required|numeric|min:0.01',
         ]);
 
@@ -152,11 +152,16 @@ class BarangKeluarController extends Controller
                 ]);
 
                 if ($request->jenis === 'mutasi') {
+                    $stokTujuan = StokGudang::where('kode_gudang', $request->gudang_tujuan_kode)
+                                      ->where('barang_id', $item['barang_id'])
+                                      ->first();
+                    $saldoAwalTujuan = $stokTujuan ? $stokTujuan->stok_sekarang : 0;
+
                     \App\Models\KartuStok::create([
                         'tanggal' => $request->tanggal_keluar . ' ' . date('H:i:s'),
                         'kode_gudang' => $request->gudang_tujuan_kode,
                         'barang_id' => $item['barang_id'],
-                        'saldo_awal' => 0,
+                        'saldo_awal' => $saldoAwalTujuan,
                         'masuk' => $item['qty'],
                         'keluar' => 0,
                         'saldo_akhir' => 0,

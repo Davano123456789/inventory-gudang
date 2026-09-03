@@ -102,9 +102,9 @@
                             <span class="text-xs text-slate-500 font-semibold">Jenis:</span>
                             <select id="filterJenis" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
                                 <option value="" selected>Semua Jenis</option>
-                                <option value="Biasa">Reguler</option>
-                                <option value="Return">Return</option>
-                                <option value="Stock Opname">Stock Opname</option>
+                                <option value="1">Reguler</option>
+                                <option value="3">Retur</option>
+                                <option value="4">Stock Opname</option>
                             </select>
                         </div>
                         
@@ -152,7 +152,7 @@
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Tanggal Masuk</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Pengirim</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Gudang Penerima</th>
-                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Pencatat</th>
+                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">User Input</th>
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Aksi</th>
                             </tr>
                         </thead>
@@ -169,7 +169,7 @@
                                     @if($tx->jenis_transaksi == \App\Models\BarangMasuk::JENIS_MUTASI)
                                         <span class="text-xs font-bold leading-normal text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">Mutasi</span>
                                     @elseif($tx->jenis_transaksi == \App\Models\BarangMasuk::JENIS_RETURN)
-                                        <span class="text-xs font-bold leading-normal text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">Return</span>
+                                        <span class="text-xs font-bold leading-normal text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">Retur</span>
                                     @elseif($tx->jenis_transaksi == \App\Models\BarangMasuk::JENIS_STOCK_OPNAME)
                                         <span class="text-xs font-bold leading-normal text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">Stock Opname</span>
                                     @else

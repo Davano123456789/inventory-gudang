@@ -95,8 +95,8 @@
                                     <option value="reguler">Reguler</option>
                                     <option value="stock_opname">Stock Opname</option>
                                     <option value="mutasi">Mutasi Antar Gudang</option>
-                                    <option value="retur">Return</option>
-                                    <option value="saldo_awal">Saldo Awal</option>
+                                    <option value="retur">Retur</option>
+                                    <option value="saldo_awal">Excel</option>
                                 </select>
                             </div>
                         </div>
@@ -112,7 +112,8 @@
                             <thead class="align-bottom">
                                 <tr class="bg-slate-50">
                                     <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400 rounded-tl-lg">Tanggal</th>
-                                    <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Barang</th>
+                                    <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Kode Barang</th>
+                                    <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Nama Barang</th>
                                     <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Jenis Transaksi</th>
                                     <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Referensi Dokumen</th>
                                     <th class="px-4 py-3 font-bold text-right uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Saldo Awal</th>
@@ -135,7 +136,7 @@
                                     if ($row->barangMasuk) {
                                         $jenisTrans = $row->barangMasuk->jenis_transaksi;
                                         $ref = 'Masuk: ' . $row->barangMasuk->no_surat_jalan;
-                                        $detailLink = route('barang-masuk.show', $row->barangMasuk->id);
+                                        $detailLink = route('barang-masuk.show', $row->barangMasuk->id) . '?ref=rekap';
                                         
                                         if ($row->barangMasuk->status === 'rejected' || $jenisTrans === 'Mutasi Ditolak') {
                                             $jenisLabel = 'Mutasi Ditolak';
@@ -150,7 +151,7 @@
                                             $jenisClass = 'text-purple-600 bg-purple-50';
                                             $jenisCode = 'mutasi';
                                         } elseif ($jenisTrans == 3) {
-                                            $jenisLabel = 'Return';
+                                            $jenisLabel = 'Retur';
                                             $jenisClass = 'text-amber-600 bg-amber-50';
                                             $jenisCode = 'retur';
                                         } else {
@@ -160,7 +161,7 @@
                                         }
                                     } elseif ($row->barangKeluar) {
                                         $jenisTrans = $row->barangKeluar->jenis;
-                                        $detailLink = route('barang-keluar.show', $row->barangKeluar->id);
+                                        $detailLink = route('barang-keluar.show', $row->barangKeluar->id) . '?ref=rekap';
                                         if ($row->status == 1) {
                                             $ref = 'Mutasi Masuk Pending: ' . $row->barangKeluar->no_surat_jalan;
                                             $jenisLabel = 'Mutasi Masuk Pending';
@@ -193,7 +194,7 @@
                                             $jenisClass = 'text-indigo-600 bg-indigo-50';
                                             $jenisCode = 'stock_opname';
                                         } elseif (str_contains($row->keterangan ?? '', 'Stok Awal') || str_contains($row->keterangan ?? '', 'Saldo Awal')) {
-                                            $jenisLabel = 'Saldo Awal';
+                                            $jenisLabel = 'Excel';
                                             $jenisClass = 'text-slate-600 bg-slate-100';
                                             $jenisCode = 'saldo_awal';
                                         } else {
@@ -214,10 +215,10 @@
                                         @endif
                                     </td>
                                     <td class="px-4 py-3 align-middle bg-transparent shadow-none">
-                                        <div class="flex flex-col">
-                                            <span class="text-sm font-bold text-slate-700">{{ $row->barang ? $row->barang->nama_barang : 'Barang Dihapus' }}</span>
-                                            <span class="text-[10px] text-slate-400">Kode: {{ $row->barang ? $row->barang->kode_barang : '-' }}</span>
-                                        </div>
+                                        <span class="text-sm font-semibold text-slate-500">{{ $row->barang ? $row->barang->kode_barang : '-' }}</span>
+                                    </td>
+                                    <td class="px-4 py-3 align-middle bg-transparent shadow-none">
+                                        <span class="text-sm font-bold text-slate-700">{{ $row->barang ? $row->barang->nama_barang : 'Barang Dihapus' }}</span>
                                     </td>
                                     <td class="px-4 py-3 align-middle bg-transparent shadow-none">
                                         <span class="text-[10px] font-bold uppercase leading-none {{ $jenisClass }} px-2.5 py-1 rounded-lg inline-block whitespace-nowrap">{{ $jenisLabel }}</span>

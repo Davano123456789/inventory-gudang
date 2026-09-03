@@ -87,6 +87,9 @@ class BarangMasukController extends Controller
             'new_items.*.qty_box' => 'nullable|numeric|min:0',
             'new_items.*.qty_pcs' => 'nullable|numeric|min:0',
             'new_items.*.qty_total' => 'required|numeric|min:0.01',
+        ], [
+            'new_items.*.kode_barang.unique' => 'Kode barang ":input" sudah ada. Silakan masukkan kode barang lain.',
+            'no_surat_jalan.unique' => 'Nomor Surat Jalan ":input" sudah pernah digunakan.'
         ]);
 
         DB::transaction(function() use ($request) {
@@ -306,7 +309,7 @@ class BarangMasukController extends Controller
                 'jenis_transaksi' => \App\Models\BarangMasuk::JENIS_MUTASI,
                 'status' => \App\Models\BarangMasuk::STATUS_COMPLETED,
                 'gudang_asal_kode' => $mutasi->gudang_asal_kode,
-                'pengirim' => $mutasi->user ? $mutasi->user->name : 'Gudang Pengirim',
+                'pengirim' => $mutasi->gudang_asal_kode,
                 'gudang_tujuan_kode' => $mutasi->gudang_tujuan_kode,
                 'user_id' => auth()->id() ?: 1,
                 'approved_by' => auth()->id(),

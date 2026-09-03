@@ -7,6 +7,7 @@
 <style>
     /* Printing CSS overrides */
     @media print {
+        @page { margin: 0; }
         body * {
             visibility: hidden;
         }
@@ -33,7 +34,10 @@
             align-items: flex-start !important;
         }
         .w-full {
-            width: auto !important;
+            width: 100% !important;
+        }
+        .md\:w-1\/2 {
+            width: 50% !important;
         }
         .md\:w-3\/5 {
             width: 60% !important;
@@ -77,7 +81,7 @@
                     <button type="button" onclick="window.print()" class="inline-block px-5 py-2.5 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-slate-600 to-slate-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
                         <i class="fa fa-print mr-1"></i> Cetak / Print
                     </button>
-                    <a href="{{ route('barang-keluar.index') }}" class="inline-block px-5 py-2.5 font-bold text-center text-slate-500 uppercase align-middle transition-all rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200 leading-pro text-xs ease-soft-in tracking-tight">
+                    <a href="{{ request('ref') === 'rekap' ? route('laporan.rekap') : route('barang-keluar.index') }}" class="inline-block px-5 py-2.5 font-bold text-center text-slate-500 uppercase align-middle transition-all rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200 leading-pro text-xs ease-soft-in tracking-tight">
                         <i class="fa fa-arrow-left mr-1"></i> Kembali
                     </a>
                 </div>
@@ -87,12 +91,14 @@
             <div class="flex-auto p-8" id="printableArea">
             
             <!-- Document Header -->
+            <div class="w-full mb-6">
+                <h5 class="font-extrabold text-red-600 text-2xl tracking-wide uppercase m-0 leading-none">PT. BINTANG CAKRA KENCANA</h5>
+                <p class="text-[10px] text-slate-500 font-bold mt-1 mb-0">BANYUDONO JL. RAYA SOLO SEMARANG KM 15 BOYOLALI</p>
+            </div>
+
             <div class="flex flex-wrap justify-between items-start border-b pb-6 mb-6">
                 <!-- Left: Sender Info & Document Details -->
                 <div class="w-full md:w-1/2 pr-0 md:pr-4">
-                    <h5 class="font-extrabold text-red-600 text-2xl tracking-wide uppercase m-0 leading-none">PT. BINTANG CAKRA KENCANA</h5>
-                    <p class="text-[10px] text-slate-500 font-bold mt-1 mb-4">BANYUDONO JL. RAYA SOLO SEMARANG KM 15 BOYOLALI</p>
-                    
                     <div class="flex flex-col gap-2 text-xs">
                         <div class="flex">
                             <span class="w-36 font-bold text-slate-700 uppercase">No Surat Jalan :</span>
@@ -119,20 +125,11 @@
                     </div>
                 </div>
 
-                <!-- Right: Boxed Number & Badges -->
+                <!-- Right: Badges -->
                 <div class="w-full md:w-1/2 md:text-right mt-6 md:mt-0 flex flex-col md:items-end">
-                    <div class="border-2 border-red-500 text-red-600 rounded-lg px-6 py-2 text-center font-bold text-lg tracking-wider mb-4 bg-red-50/50 w-44">
-                        @php
-                            $dashIndex = strpos($barangKeluar->no_surat_jalan, '/');
-                            $cleanNum = $dashIndex !== false ? substr($barangKeluar->no_surat_jalan, 0, $dashIndex) : $barangKeluar->no_surat_jalan;
-                        @endphp
-                        {{ $cleanNum }}
-                        <div class="text-[9px] uppercase tracking-widest text-slate-400 mt-0.5 border-t border-red-200 pt-0.5 font-bold">ASLI SURAT JALAN</div>
-                    </div>
-
-                    <div class="flex flex-col gap-2 text-xs w-full md:w-auto">
-                        <div class="flex justify-between md:justify-end gap-3">
-                            <span class="font-bold text-slate-700 uppercase">Jenis Transaksi :</span>
+                    <div class="flex flex-col gap-2 text-xs w-full md:w-auto text-left">
+                        <div class="flex">
+                            <span class="w-36 font-bold text-slate-700 uppercase">Jenis Transaksi :</span>
                             <span class="text-slate-600 font-semibold">
                                 @php
                                     $jenisVal = (int)$barangKeluar->jenis;
@@ -140,18 +137,18 @@
                                 @endphp
 
                                 @if($jenisVal === 2 || $jenisStr === 'mutasi')
-                                    <span class="text-purple-600 bg-purple-50 px-2.5 py-1 rounded text-xxs font-bold uppercase">Mutasi</span>
+                                    Mutasi
                                 @elseif($jenisVal === 3 || $jenisStr === 'retur' || $jenisStr === 'return')
-                                    <span class="text-amber-600 bg-amber-50 px-2.5 py-1 rounded text-xxs font-bold uppercase">Retur</span>
+                                    Retur
                                 @elseif($jenisVal === 4 || $jenisStr === 'stock_opname')
-                                    <span class="text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded text-xxs font-bold uppercase">Stock Opname</span>
+                                    Stock Opname
                                 @else
-                                    <span class="text-blue-600 bg-blue-50 px-2.5 py-1 rounded text-xxs font-bold uppercase">Reguler</span>
+                                    Reguler
                                 @endif
                             </span>
                         </div>
-                        <div class="flex justify-between md:justify-end gap-3">
-                            <span class="font-bold text-slate-700 uppercase">Status Transaksi :</span>
+                        <div class="flex">
+                            <span class="w-36 font-bold text-slate-700 uppercase">Status Transaksi :</span>
                             <span class="text-slate-600 font-semibold">
                                 @php
                                     $statusVal = (int)$barangKeluar->status;
@@ -159,24 +156,24 @@
                                 @endphp
 
                                 @if($statusVal === 2 || $statusStr === 'completed' || $statusStr === 'approved')
-                                    <span class="text-green-600 bg-green-50 px-2.5 py-1 rounded text-xxs font-bold uppercase"><i class="fa fa-check mr-1"></i> Selesai</span>
+                                    Selesai
                                 @elseif($statusVal === 1 || $statusStr === 'pending')
-                                    <span class="text-amber-600 bg-amber-50 px-2.5 py-1 rounded text-xxs font-bold uppercase"><i class="fa fa-clock mr-1"></i> Menunggu (Pending)</span>
+                                    Menunggu (Pending)
                                 @elseif($statusVal === 3 || $statusStr === 'rejected')
-                                    <span class="text-red-600 bg-red-50 px-2.5 py-1 rounded text-xxs font-bold uppercase"><i class="fa fa-times mr-1"></i> Ditolak (Rejected)</span>
+                                    Ditolak (Rejected)
                                 @else
-                                    <span class="text-slate-600 bg-slate-100 px-2.5 py-1 rounded text-xxs font-bold uppercase">{{ $barangKeluar->status_text }}</span>
+                                    {{ $barangKeluar->status_text }}
                                 @endif
                             </span>
                         </div>
-                        <div class="flex justify-between md:justify-end gap-3">
-                            <span class="font-bold text-slate-700 uppercase">Gudang Pengirim :</span>
-                            <span class="text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded text-xxs font-bold">{{ $barangKeluar->gudang ? $barangKeluar->gudang->nama_gudang : 'Gudang Terhapus' }} ({{ $barangKeluar->gudang_asal_kode }})</span>
+                        <div class="flex">
+                            <span class="w-36 font-bold text-slate-700 uppercase">Gudang Pengirim :</span>
+                            <span class="text-slate-600 font-semibold">{{ $barangKeluar->gudang ? $barangKeluar->gudang->nama_gudang : 'Gudang Terhapus' }} ({{ $barangKeluar->gudang_asal_kode }})</span>
                         </div>
                         @if(($jenisVal === 2 || $jenisStr === 'mutasi') && $barangKeluar->gudangTujuan)
-                        <div class="flex justify-between md:justify-end gap-3">
-                            <span class="font-bold text-slate-700 uppercase">Gudang Tujuan :</span>
-                            <span class="text-sky-600 bg-sky-50 px-2.5 py-1 rounded text-xxs font-bold">{{ $barangKeluar->gudangTujuan->nama_gudang }} ({{ $barangKeluar->gudang_tujuan_kode }})</span>
+                        <div class="flex">
+                            <span class="w-36 font-bold text-slate-700 uppercase">Gudang Tujuan :</span>
+                            <span class="text-slate-600 font-semibold">{{ $barangKeluar->gudangTujuan->nama_gudang }} ({{ $barangKeluar->gudang_tujuan_kode }})</span>
                         </div>
                         @endif
                     </div>
@@ -209,7 +206,7 @@
                     <tfoot>
                         <tr class="bg-slate-50 font-bold text-slate-800 text-xs">
                             <td colspan="3" class="p-3 border-r border-slate-200 text-right uppercase">Total Jumlah :</td>
-                            <td class="p-3 border-r border-slate-200 text-center text-sm font-extrabold text-blue-600 bg-blue-50/30">
+                            <td class="p-3 border-r border-slate-200 text-center text-sm font-extrabold text-slate-800">
                                 {{ number_format($barangKeluar->details->sum('qty'), 0, ',', '.') }}
                             </td>
                             <td class="p-3 bg-slate-50"></td>

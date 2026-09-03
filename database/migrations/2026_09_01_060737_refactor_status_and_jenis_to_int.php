@@ -13,8 +13,8 @@ return new class extends Migration
     {
         // 1. BARANG MASUKS
         Schema::table('barang_masuks', function (Blueprint $table) {
-            $table->tinyInteger('status_int')->default(2)->after('status');
-            $table->tinyInteger('jenis_transaksi_int')->default(1)->after('jenis_transaksi');
+            $table->tinyInteger('status_int')->default(2)->after('status')->comment('1 = Pending; 2 = Completed/Approved; 3 = Rejected');
+            $table->tinyInteger('jenis_transaksi_int')->default(1)->after('jenis_transaksi')->comment('1 = Reguler; 2 = Mutasi; 3 = Retur; 4 = Stock Opname');
         });
 
         DB::statement("UPDATE barang_masuks SET status_int = CASE 
@@ -42,8 +42,8 @@ return new class extends Migration
 
         // 2. BARANG KELUARS
         Schema::table('barang_keluars', function (Blueprint $table) {
-            $table->tinyInteger('status_int')->default(2)->after('status');
-            $table->tinyInteger('jenis_int')->default(1)->after('jenis');
+            $table->tinyInteger('status_int')->default(2)->after('status')->comment('1 = Pending; 2 = Completed/Approved; 3 = Rejected');
+            $table->tinyInteger('jenis_int')->default(1)->after('jenis')->comment('1 = Reguler; 2 = Mutasi; 3 = Retur; 4 = Stock Opname');
         });
 
         DB::statement("UPDATE barang_keluars SET status_int = CASE 
@@ -71,7 +71,7 @@ return new class extends Migration
 
         // 3. KARTU STOKS
         Schema::table('kartu_stoks', function (Blueprint $table) {
-            $table->tinyInteger('status_int')->default(2)->after('status');
+            $table->tinyInteger('status_int')->default(2)->after('status')->comment('1 = Pending; 2 = Completed/Approved; 3 = Rejected');
         });
 
         DB::statement("UPDATE kartu_stoks SET status_int = CASE 

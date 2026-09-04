@@ -87,12 +87,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
                             <label for="no_surat_jalan" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Nomor Surat Jalan <span class="text-red-500">*</span></label>
-                            <input type="text" name="no_surat_jalan" id="no_surat_jalan" value="{{ old('no_surat_jalan') }}" required placeholder="Contoh: 9908761/26" class="w-full px-3 py-2 text-sm text-slate-700 placeholder-slate-400 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
+                            <input type="text" name="no_surat_jalan" id="no_surat_jalan" value="{{ old('no_surat_jalan') }}" required placeholder="Contoh: 9908761" class="w-full px-3 py-2 text-sm text-slate-700 placeholder-slate-400 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
                         </div>
 
                         <div>
                             <label for="pengirim" class="block mb-2 text-xs font-bold text-slate-700 uppercase">Pengirim (Dari) <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                            <input type="text" name="pengirim" id="pengirim" value="{{ old('pengirim') }}" placeholder="Contoh: PT Bintang Cakra Kencana / Supplier" class="w-full px-3 py-2 text-sm text-slate-700 placeholder-slate-400 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
+                            <input type="text" name="pengirim" id="pengirim" value="{{ old('pengirim') }}" placeholder="Contoh: 10003" class="w-full px-3 py-2 text-sm text-slate-700 placeholder-slate-400 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors">
                         </div>
 
                         <div>
@@ -149,8 +149,8 @@
                         <div class="flex items-center gap-4">
                             <h6 class="font-bold text-slate-800 text-md mb-0">Daftar Barang Masuk</h6>
                         </div>
-                        <button type="button" id="addRowBtn" class="inline-block px-4 py-2 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
-                            <i class="fa fa-plus mr-1"></i> Tambah Baris
+                        <button type="button" id="addRowBtn" class="inline-block px-4 py-2 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-blue-600 hover:bg-blue-700 leading-pro text-xs tracking-tight">
+                            <i class="fa fa-plus mr-1"></i> Tambah Baris Barang
                         </button>
                     </div>
 
@@ -187,8 +187,8 @@
                             <div class="flex items-center gap-4">
                                 <h6 class="font-bold text-slate-800 text-md mb-0">Daftarkan Barang Baru <span class="text-xs font-normal text-slate-400 ml-1">(Opsional)</span></h6>
                             </div>
-                            <button type="button" id="addNewRowBtn" class="inline-block px-4 py-2 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-emerald-500 to-teal-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
-                                <i class="fa fa-plus mr-1"></i> Tambah Barang Baru
+                            <button type="button" id="addNewRowBtn" class="inline-block px-4 py-2 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-emerald-600 hover:bg-emerald-700 leading-pro text-xs tracking-tight">
+                                <i class="fa fa-plus mr-1"></i> Tambah Baris Baru
                             </button>
                         </div>
 
@@ -213,7 +213,7 @@
 
                     <!-- Action Buttons -->
                     <div class="flex justify-start gap-3 border-t pt-4">
-                        <button type="submit" class="px-6 py-3 font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md transition-colors text-xs tracking-wider">
+                        <button type="submit" class="px-6 py-3 font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-xs tracking-wider">
                             <i class="fa fa-save mr-1"></i> Simpan Transaksi
                         </button>
                         <a href="{{ route('barang-masuk.index') }}" class="px-6 py-3 font-bold text-slate-500 uppercase bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-xs tracking-wider">
@@ -248,10 +248,17 @@
         // List of items passed to JS
         const itemsData = [
             @foreach($barangs as $b)
+            @php
+                $activeGudangCode = Auth::user()->getActiveGudangCode();
+                $stokObj = $b->stokGudangs ? $b->stokGudangs->where('kode_gudang', $activeGudangCode)->first() : null;
+                $currentStok = $stokObj ? (float)$stokObj->stok_sekarang : 0;
+                $formattedStok = (floor($currentStok) == $currentStok) ? number_format($currentStok, 0, ',', '.') : number_format($currentStok, 2, ',', '.');
+            @endphp
             {
                 id: "{{ $b->id }}",
                 kode: "{{ $b->kode_barang }}",
                 nama: "{{ $b->nama_barang }}",
+                stok: "{{ $formattedStok }}",
                 satuan_id: "{{ $b->satuan_id }}",
                 satuan: "{{ $b->satuan ? $b->satuan->nama_satuan : '' }}",
                 is_lokal: {{ $b->stokGudangs->contains('kode_gudang', Auth::user()->getActiveGudangCode()) ? 'true' : 'false' }}
@@ -264,7 +271,8 @@
             let lokalOptions = '';
             
             itemsData.forEach(function(item) {
-                let opt = `<option value="${item.id}">${item.kode} - ${item.nama}</option>`;
+                let stokInfo = ` (Stok: ${item.stok} ${item.satuan})`;
+                let opt = `<option value="${item.id}">${item.kode} - ${item.nama}${stokInfo}</option>`;
                 if (item.is_lokal) {
                     lokalOptions += opt;
                 }
@@ -279,6 +287,7 @@
             satuansData.forEach(function(s) {
                 satuanOptions += `<option value="${s.id}">${s.nama}</option>`;
             });
+            satuanOptions += '<option value="NEW_SATUAN" class="font-bold text-blue-600">+ Tambah Satuan Baru...</option>';
 
             return `
                 <tr class="item-row">
@@ -299,6 +308,7 @@
                         <select name="items[${index}][satuan_select]" required class="satuan-select w-full px-2.5 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
                             ${satuanOptions}
                         </select>
+                        <input type="text" name="items[${index}][satuan_baru]" placeholder="Ketik Satuan Baru..." class="satuan-baru-input mt-2 hidden w-full px-2.5 py-1.5 text-xs text-slate-700 bg-white border border-blue-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500">
                     </td>
                     <td class="p-3 align-middle bg-transparent border-b shadow-none text-center">
                         <button type="button" class="remove-row-btn text-slate-400 hover:text-red-600 transition-colors bg-transparent border-0">
@@ -315,6 +325,7 @@
             satuansData.forEach(function(s) {
                 satuanOptions += `<option value="${s.id}">${s.nama}</option>`;
             });
+            satuanOptions += '<option value="NEW_SATUAN" class="font-bold text-blue-600">+ Tambah Satuan Baru...</option>';
 
             return `
                 <tr class="new-item-row">
@@ -335,6 +346,7 @@
                         <select name="new_items[${index}][satuan_id]" required class="satuan-select w-full px-2.5 py-2 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
                             ${satuanOptions}
                         </select>
+                        <input type="text" name="new_items[${index}][satuan_baru]" placeholder="Ketik Satuan Baru..." class="satuan-baru-input mt-2 hidden w-full px-2.5 py-1.5 text-xs text-slate-700 bg-white border border-blue-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500">
                     </td>
                     <td class="p-3 align-top bg-transparent border-b shadow-none text-center">
                         <button type="button" class="remove-new-row-btn text-slate-400 hover:text-red-600 transition-colors bg-transparent border-0">
@@ -396,23 +408,37 @@
             let $row = $select.closest(".item-row");
             let $satuanSelect = $row.find(".satuan-select");
             let $satuanHidden = $row.find(".satuan-hidden-input");
+            let $satuanBaruInput = $row.find(".satuan-baru-input");
             
             if (itemData && itemData.satuan_id) {
-                // Item already has a unit: select it, disable dropdown, and set hidden input
+                // Item already has a unit: select it, disable dropdown, hide new input, and set hidden input
                 $satuanSelect.val(itemData.satuan_id).prop('disabled', true).addClass('bg-gray-100 cursor-not-allowed');
                 $satuanHidden.val(itemData.satuan_id);
+                $satuanBaruInput.addClass("hidden").val("").prop("required", false);
             } else {
                 // Item has NO unit: let user select a unit from dropdown, clear selection, enable it
                 $satuanSelect.val("").prop('disabled', false).removeClass('bg-gray-100 cursor-not-allowed');
                 $satuanHidden.val("");
+                $satuanBaruInput.addClass("hidden").val("").prop("required", false);
             }
         });
 
-        // Update hidden input when user manually changes the enabled unit dropdown
+        // Update hidden input or show new unit input when user changes unit dropdown
         $(document).on("change", ".satuan-select", function() {
             let $select = $(this);
-            let $row = $select.closest(".item-row");
-            $row.find(".satuan-hidden-input").val($select.val());
+            let val = $select.val();
+            let $td = $select.closest("td");
+            let $row = $select.closest("tr");
+            let $satuanHidden = $row.find(".satuan-hidden-input");
+            let $satuanBaruInput = $td.find(".satuan-baru-input");
+            
+            if (val === "NEW_SATUAN") {
+                $satuanBaruInput.removeClass("hidden").prop("required", true).focus();
+                if ($satuanHidden.length) $satuanHidden.val("NEW_SATUAN");
+            } else {
+                $satuanBaruInput.addClass("hidden").val("").prop("required", false);
+                if ($satuanHidden.length) $satuanHidden.val(val);
+            }
         });
 
         function toggleGudangAsal() {

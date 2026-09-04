@@ -28,6 +28,17 @@
                                 <option value="all">Semua Baris</option>
                             </select>
                         </div>
+
+                        <!-- Filter Dropdown (Jenis Transaksi) -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-xs text-slate-500 font-semibold">Jenis:</span>
+                            <select id="filterJenis" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
+                                <option value="" selected>Semua Jenis</option>
+                                <option value="1">Reguler</option>
+                                <option value="2">Mutasi</option>
+                                <option value="4">Stock Opname</option>
+                            </select>
+                        </div>
                         
                         <!-- Filter Tanggal -->
                         <div class="flex items-center gap-1.5 ml-2">
@@ -50,11 +61,11 @@
                     </div>
 
                     <!-- Export Excel Button -->
-                    <button onclick="exportTableToExcel('keluarTable', 'Riwayat_Barang_Keluar')" class="inline-block px-4 py-2.5 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-green-600 to-emerald-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
+                    <button onclick="exportTableToExcel('keluarTable', 'Riwayat_Barang_Keluar')" class="inline-block px-4 py-2.5 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-emerald-600 hover:bg-emerald-700 leading-pro text-xs tracking-tight">
                         <i class="fa fa-file-excel mr-1"></i> Cetak Excel
                     </button>
                     <!-- Add Button -->
-                    <a href="{{ route('barang-keluar.create') }}" class="inline-block px-4 py-2.5 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
+                    <a href="{{ route('barang-keluar.create') }}" class="inline-block px-4 py-2.5 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-blue-600 hover:bg-blue-700 leading-pro text-xs tracking-tight">
                         <i class="fa fa-plus mr-1"></i> Catat Keluar
                     </a>
                 </div>
@@ -78,7 +89,7 @@
                         </thead>
                         <tbody>
                             @forelse($transactions as $index => $tx)
-                            <tr class="tx-row" data-date="{{ $tx->tanggal_keluar->format('Y-m-d') }}" data-search="{{ strtolower($tx->no_surat_jalan) }} {{ strtolower($tx->jenis) }} {{ strtolower($tx->status) }} {{ strtolower($tx->gudang ? $tx->gudang->nama_gudang : '') }} {{ strtolower($tx->gudangTujuan ? $tx->gudangTujuan->nama_gudang : '') }} {{ strtolower($tx->user ? $tx->user->name : 'system') }}">
+                            <tr class="tx-row" data-date="{{ $tx->tanggal_keluar->format('Y-m-d') }}" data-jenis="{{ $tx->jenis }}" data-search="{{ strtolower($tx->no_surat_jalan) }} {{ strtolower($tx->jenis) }} {{ strtolower($tx->status) }} {{ strtolower($tx->gudang ? $tx->gudang->nama_gudang : '') }} {{ strtolower($tx->gudangTujuan ? $tx->gudangTujuan->nama_gudang : '') }} {{ strtolower($tx->user ? $tx->user->name : 'system') }}">
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     <span class="text-sm font-semibold leading-normal text-slate-600">{{ $index + 1 }}</span>
                                 </td>
@@ -189,18 +200,21 @@
         let rows = clone.querySelectorAll('.tx-row');
         rows.forEach(row => {
             let rowSearchText = row.getAttribute('data-search') || '';
+            let rowJenis = row.getAttribute('data-jenis') || '';
             let rowDate = row.getAttribute('data-date') || '';
             
             let searchQuery = document.getElementById("searchInput") ? document.getElementById("searchInput").value.toLowerCase().trim() : "";
+            let selectedJenis = document.getElementById("filterJenis") ? document.getElementById("filterJenis").value : '';
             let dateStart = document.getElementById("filterDateStart") ? document.getElementById("filterDateStart").value : '';
             let dateEnd = document.getElementById("filterDateEnd") ? document.getElementById("filterDateEnd").value : '';
             
             let matchSearch = rowSearchText.indexOf(searchQuery) > -1;
+            let matchJenis = selectedJenis === "" || rowJenis == selectedJenis || (selectedJenis == "1" && (rowJenis == "1" || rowJenis == "reguler" || rowJenis == "Reguler")) || (selectedJenis == "2" && (rowJenis == "2" || rowJenis == "mutasi" || rowJenis == "Mutasi")) || (selectedJenis == "3" && (rowJenis == "3" || rowJenis == "retur" || rowJenis == "Retur")) || (selectedJenis == "4" && (rowJenis == "4" || rowJenis == "stock_opname" || rowJenis == "Stock Opname"));
             let matchDate = true;
             if (dateStart && rowDate < dateStart) matchDate = false;
             if (dateEnd && rowDate > dateEnd) matchDate = false;
             
-            if (!(matchSearch && matchDate)) {
+            if (!(matchSearch && matchJenis && matchDate)) {
                 row.remove(); // Buang baris yang tidak cocok filter
             } else {
                 row.style.display = ''; // Tampilkan baris yang cocok
@@ -241,6 +255,7 @@
 
         function filterAndPaginate() {
             let searchQuery = $("#searchInput").val().toLowerCase().trim();
+            let selectedJenis = $("#filterJenis").val();
             let dateStart = $("#filterDateStart").val();
             let dateEnd = $("#filterDateEnd").val();
             
@@ -248,15 +263,17 @@
             let $matchingRows = $(".tx-row").filter(function() {
                 let $row = $(this);
                 let rowSearchText = $row.data("search") || '';
+                let rowJenis = $row.data("jenis") || '';
                 let rowDate = $row.data("date") || '';
                 
                 let matchSearch = rowSearchText.indexOf(searchQuery) > -1;
+                let matchJenis = selectedJenis === "" || rowJenis == selectedJenis || (selectedJenis == "1" && (rowJenis == "1" || rowJenis == "reguler" || rowJenis == "Reguler")) || (selectedJenis == "2" && (rowJenis == "2" || rowJenis == "mutasi" || rowJenis == "Mutasi")) || (selectedJenis == "3" && (rowJenis == "3" || rowJenis == "retur" || rowJenis == "Retur")) || (selectedJenis == "4" && (rowJenis == "4" || rowJenis == "stock_opname" || rowJenis == "Stock Opname"));
                 
                 let matchDate = true;
                 if (dateStart && rowDate < dateStart) matchDate = false;
                 if (dateEnd && rowDate > dateEnd) matchDate = false;
                 
-                return matchSearch && matchDate;
+                return matchSearch && matchJenis && matchDate;
             });
 
             let totalItems = $matchingRows.length;
@@ -286,7 +303,7 @@
                 
                 // Show empty placeholder row
                 if ($("#emptySearchPlaceholder").length === 0) {
-                    $("tbody").append(`
+                    $("#keluarTable tbody").append(`
                         <tr id="emptySearchPlaceholder">
                             <td colspan="7" class="px-6 py-10 text-center align-middle bg-transparent border-b shadow-none">
                                 <div class="flex flex-col items-center justify-center">
@@ -360,7 +377,7 @@
             filterAndPaginate();
         });
         
-        $("#entriesLimit, #filterDateStart, #filterDateEnd").on("change", function() {
+        $("#entriesLimit, #filterJenis, #filterDateStart, #filterDateEnd").on("change", function() {
             currentPage = 1;
             filterAndPaginate();
         });

@@ -14,7 +14,7 @@
             <div class="p-6 pb-0 mb-0 border-b-0 border-solid border-black-125 rounded-t-2xl flex flex-wrap justify-between items-center gap-4">
                 <h6 class="font-bold text-slate-800 text-lg leading-none">Daftar Akun Pengguna</h6>
                 
-                <a href="{{ route('user.create') }}" class="inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
+                <a href="{{ route('user.create') }}" class="inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-blue-600 hover:bg-blue-700 leading-pro text-xs tracking-tight">
                     <i class="fa fa-user-plus mr-1"></i> Tambah Pengguna
                 </a>
             </div>
@@ -47,7 +47,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     @if($u->isSuperAdmin())
-                                        <span class="text-xs font-bold leading-normal text-white bg-gradient-to-tl from-blue-600 to-sky-400 px-2.5 py-1 rounded-lg shadow-soft-md">Super Admin</span>
+                                        <span class="text-xs font-bold leading-normal text-white bg-blue-600 px-2.5 py-1 rounded-lg">Super Admin</span>
                                     @else
                                         <span class="text-xs font-bold leading-normal text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg">Kepala Gudang</span>
                                     @endif

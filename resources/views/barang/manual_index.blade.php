@@ -52,7 +52,7 @@
                     </div>
 
                     <!-- Add Barang Button -->
-                    <a href="{{ route('barang-manual.create') }}" class="inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
+                    <a href="{{ route('barang-manual.create') }}" class="inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-blue-600 hover:bg-blue-700 leading-pro text-xs tracking-tight">
                         <i class="fa fa-plus mr-1"></i> Tambah Barang
                     </a>
                 </div>

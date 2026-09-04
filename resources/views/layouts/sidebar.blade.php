@@ -1,130 +1,143 @@
-<aside class="max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 block w-full -translate-x-full flex-wrap items-center justify-between border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-white text-slate-500" id="sidenav-main">
-    <div class="h-19.5">
-        <i class="absolute top-0 right-0 hidden p-4 opacity-50 cursor-pointer fas fa-times text-slate-400 xl:hidden" sidenav-close="" aria-hidden="true"></i>
-        <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap text-slate-700" href="javascript:;">
-            <img src="https://demos.creative-tim.com/soft-ui-dashboard-tailwind/assets/img/logo-ct.png" class="inline h-full max-w-full transition-all duration-200 ease-nav-brand max-h-8" alt="main_logo">
-            <span class="ml-1 font-semibold transition-all duration-200 ease-nav-brand">Inventory Gudang</span>
+<aside class="max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 block w-full -translate-x-full flex-wrap items-center justify-between border-0 bg-[#0f172a] p-0 antialiased shadow-xl transition-transform duration-200 xl:left-0 xl:translate-x-0 text-white" id="sidenav-main">
+    <!-- Sidebar Header / Logo -->
+    <div class="h-20 flex items-center px-5 py-4 border-b border-slate-800">
+        <i class="absolute top-0 right-0 hidden p-4 opacity-75 cursor-pointer fas fa-times text-white xl:hidden" sidenav-close="" aria-hidden="true"></i>
+        <a class="flex items-center gap-3 text-white no-underline" href="{{ url('/') }}">
+            <img src="{{ asset('images/logo-pt.png') }}" class="h-10 w-10 object-contain" alt="PT. Bintang Cakra Kencana Logo">
+            <div class="flex flex-col leading-tight font-normal">
+                <span class="text-xs text-white tracking-tight uppercase">PT. BINTANG CAKRA</span>
+                <span class="text-[11px] text-white tracking-wider uppercase">KENCANA</span>
+            </div>
         </a>
     </div>
-    <hr class="h-px mt-0 bg-transparent bg-gradient-horizontal-dark">
-    <div class="items-center block w-auto max-h-screen overflow-auto grow basis-full">
+
+    <!-- Sidebar Menu Navigation -->
+    <div class="items-center block w-auto max-h-screen overflow-auto grow basis-full mt-2">
         <ul class="flex flex-col pl-0 mb-0 pb-32">
+            
+            <!-- Dashboard -->
+            @php $isActive = Request::is('/') || Request::is('dashboard'); @endphp
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ Request::is('/') || Request::is('dashboard') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ url('/') }}">
-                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                        <svg width="12px" height="12px" viewBox="0 0 45 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                            <title>shop</title>
-                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                <g transform="translate(-1716.000000, -439.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                                    <g transform="translate(1716.000000, 291.000000)">
-                                        <g transform="translate(0.000000, 148.000000)">
-                                            <path class="{{ Request::is('/') || Request::is('dashboard') ? 'fill-slate-500' : 'fill-slate-500 opacity-60' }}" d="M46.7199583,10.7414583 L40.8449583,0.949791667 C40.4909749,0.360605034 39.8540131,0 39.1666667,0 L7.83333333,0 C7.1459869,0 6.50902508,0.360605034 6.15504167,0.949791667 L0.280041667,10.7414583 C0.0969176761,11.0460037 -1.23209662e-05,11.3946378 -1.23209662e-05,11.75 C-0.00758042603,16.0663731 3.48367543,19.5725301 7.80004167,19.5833333 L7.81570833,19.5833333 C9.75003686,19.5882688 11.6168794,18.8726691 13.0522917,17.5760417 C16.0171492,20.2556967 20.5292675,20.2556967 23.494125,17.5760417 C26.4604562,20.2616016 30.9794188,20.2616016 33.94575,17.5760417 C36.2421905,19.6477597 39.5441143,20.1708521 42.3684437,18.9103691 C45.1927731,17.649886 47.0084685,14.8428276 47.0000295,11.75 C47.0000295,11.3946378 46.9030823,11.0460037 46.7199583,10.7414583 Z"></path>
-                                            <path class="{{ Request::is('/') || Request::is('dashboard') ? 'fill-slate-500' : 'fill-slate-500 opacity-60' }}" d="M39.198,22.4912623 C37.3776246,22.4928106 35.5817531,22.0149171 33.951625,21.0951667 L33.92225,21.1107282 C31.1430221,22.6838032 27.9255001,22.9318916 24.9844167,21.7998837 C24.4750389,21.605469 23.9777983,21.3722567 23.4960833,21.1018359 L23.4745417,21.1129513 C20.6961809,22.6871153 17.4786145,22.9344611 14.5386667,21.7998837 C14.029926,21.6054643 13.533337,21.3722507 13.0522917,21.1018359 C11.4250962,22.0190609 9.63246555,22.4947009 7.81570833,22.4912623 C7.16510551,22.4842162 6.51607673,22.4173045 5.875,22.2911849 L5.875,44.7220845 C5.875,45.9498589 6.7517757,46.9451667 7.83333333,46.9451667 L19.5833333,46.9451667 L19.5833333,33.6066734 L27.4166667,33.6066734 L27.4166667,46.9451667 L39.1666667,46.9451667 C40.2482243,46.9451667 41.125,45.9498589 41.125,44.7220845 L41.125,22.2822926 C40.4887822,22.4116582 39.8442868,22.4815492 39.198,22.4912623 Z"></path>
-                                        </g>
-                                    </g>
-                                </g>
-                            </g>
-                        </svg>
+                <a class="py-3 my-0.5 flex items-center whitespace-nowrap px-5 transition-all text-sm font-medium {{ $isActive ? 'bg-blue-600 text-white font-bold border-l-4 border-blue-400 shadow-sm' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}" href="{{ url('/') }}">
+                    <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg {{ $isActive ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400' }} text-center">
+                        <i class="fa fa-home text-sm"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Dashboard</span>
+                    <span class="ml-1">Dashboard</span>
                 </a>
             </li>
 
-
-
+            <!-- Master Gudang -->
+            @php $isActive = Request::is('gudang*'); @endphp
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ Request::is('gudang*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('gudang.index') }}">
-                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="fa fa-warehouse text-slate-500"></i>
+                <a class="py-3 my-0.5 flex items-center whitespace-nowrap px-5 transition-all text-sm font-medium {{ $isActive ? 'bg-blue-600 text-white font-bold border-l-4 border-blue-400 shadow-sm' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}" href="{{ route('gudang.index') }}">
+                    <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg {{ $isActive ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400' }} text-center">
+                        <i class="fa fa-warehouse text-sm"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Master Gudang</span>
+                    <span class="ml-1">Master Gudang</span>
                 </a>
             </li>
 
+            <!-- Master Satuan -->
+            @php $isActive = Request::is('satuan*'); @endphp
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ Request::is('satuan*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('satuan.index') }}">
-                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="fa fa-tag text-slate-500"></i>
+                <a class="py-3 my-0.5 flex items-center whitespace-nowrap px-5 transition-all text-sm font-medium {{ $isActive ? 'bg-blue-600 text-white font-bold border-l-4 border-blue-400 shadow-sm' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}" href="{{ route('satuan.index') }}">
+                    <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg {{ $isActive ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400' }} text-center">
+                        <i class="fa fa-tag text-sm"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Master Satuan</span>
+                    <span class="ml-1">Master Satuan</span>
                 </a>
             </li>
 
+            <!-- Master Barang -->
+            @php $isActive = Request::is('barang') || Request::is('barang/*'); @endphp
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ (Request::is('barang') || Request::is('barang/*')) ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang.index') }}">
-                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="fa fa-boxes text-slate-500"></i>
+                <a class="py-3 my-0.5 flex items-center whitespace-nowrap px-5 transition-all text-sm font-medium {{ $isActive ? 'bg-blue-600 text-white font-bold border-l-4 border-blue-400 shadow-sm' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}" href="{{ route('barang.index') }}">
+                    <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg {{ $isActive ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400' }} text-center">
+                        <i class="fa fa-boxes text-sm"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Master Barang</span>
+                    <span class="ml-1">Master Barang</span>
                 </a>
             </li>
 
-            <li class="w-full mt-4">
-                <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">Transaksi</h6>
+            <!-- Section: Transaksi -->
+            <li class="w-full mt-5 mb-1">
+                <h6 class="px-6 font-extrabold uppercase text-[10px] tracking-wider text-slate-400 m-0">TRANSAKSI</h6>
             </li>
 
+            <!-- Barang Masuk -->
+            @php $isActive = Request::is('barang-masuk') || (Request::is('barang-masuk/*') && !Request::is('barang-masuk/create')); @endphp
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ (Request::is('barang-masuk') || (Request::is('barang-masuk/*') && !Request::is('barang-masuk/create'))) ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang-masuk.index') }}">
-                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="fa fa-arrow-down text-slate-500"></i>
+                <a class="py-3 my-0.5 flex items-center whitespace-nowrap px-5 transition-all text-sm font-medium {{ $isActive ? 'bg-blue-600 text-white font-bold border-l-4 border-blue-400 shadow-sm' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}" href="{{ route('barang-masuk.index') }}">
+                    <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg {{ $isActive ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400' }} text-center">
+                        <i class="fa fa-arrow-down text-sm"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Barang Masuk</span>
+                    <span class="ml-1">Barang Masuk</span>
                 </a>
             </li>
 
+            <!-- Barang Keluar -->
+            @php $isActive = Request::is('barang-keluar*'); @endphp
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ Request::is('barang-keluar*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('barang-keluar.index') }}">
-                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="fa fa-arrow-up text-slate-500"></i>
+                <a class="py-3 my-0.5 flex items-center whitespace-nowrap px-5 transition-all text-sm font-medium {{ $isActive ? 'bg-blue-600 text-white font-bold border-l-4 border-blue-400 shadow-sm' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}" href="{{ route('barang-keluar.index') }}">
+                    <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg {{ $isActive ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400' }} text-center">
+                        <i class="fa fa-arrow-up text-sm"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Barang Keluar</span>
+                    <span class="ml-1">Barang Keluar</span>
                 </a>
             </li>
 
+            <!-- Stock Opname -->
+            @php $isActive = Request::is('stock-opname*'); @endphp
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ Request::is('stock-opname*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('stock-opname.index') }}">
-                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="fa fa-clipboard-check text-slate-500"></i>
+                <a class="py-3 my-0.5 flex items-center whitespace-nowrap px-5 transition-all text-sm font-medium {{ $isActive ? 'bg-blue-600 text-white font-bold border-l-4 border-blue-400 shadow-sm' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}" href="{{ route('stock-opname.index') }}">
+                    <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg {{ $isActive ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400' }} text-center">
+                        <i class="fa fa-clipboard-check text-sm"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Stock Opname</span>
+                    <span class="ml-1">Stock Opname</span>
                 </a>
             </li>
 
-            <li class="w-full mt-4">
-                <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">Laporan</h6>
+            <!-- Section: Laporan -->
+            <li class="w-full mt-5 mb-1">
+                <h6 class="px-6 font-extrabold uppercase text-[10px] tracking-wider text-slate-400 m-0">LAPORAN</h6>
             </li>
 
+            <!-- Rekap Stok -->
+            @php $isActive = Request::is('laporan/rekap*'); @endphp
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ Request::is('laporan/rekap*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('laporan.rekap') }}">
-                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="fa fa-file-invoice text-slate-500"></i>
+                <a class="py-3 my-0.5 flex items-center whitespace-nowrap px-5 transition-all text-sm font-medium {{ $isActive ? 'bg-blue-600 text-white font-bold border-l-4 border-blue-400 shadow-sm' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}" href="{{ route('laporan.rekap') }}">
+                    <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg {{ $isActive ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400' }} text-center">
+                        <i class="fa fa-file-invoice text-sm"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Rekap Stok</span>
+                    <span class="ml-1">Rekap Stok</span>
                 </a>
             </li>
 
-
+            <!-- Section: Sistem (If Admin) -->
             @if(Auth::user() && !Auth::user()->isStaff())
-            <li class="w-full mt-4">
-                <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">Sistem</h6>
+            <li class="w-full mt-5 mb-1">
+                <h6 class="px-6 font-extrabold uppercase text-[10px] tracking-wider text-slate-400 m-0">SISTEM</h6>
             </li>
 
+            <!-- Kelola Pengguna -->
+            @php $isActive = Request::is('user*'); @endphp
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ Request::is('user*') ? 'shadow-soft-xl rounded-lg bg-white font-semibold text-slate-700' : 'text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors' }} my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors" href="{{ route('user.index') }}">
-                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="fa fa-users text-slate-500"></i>
+                <a class="py-3 my-0.5 flex items-center whitespace-nowrap px-5 transition-all text-sm font-medium {{ $isActive ? 'bg-blue-600 text-white font-bold border-l-4 border-blue-400 shadow-sm' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}" href="{{ route('user.index') }}">
+                    <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg {{ $isActive ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-400' }} text-center">
+                        <i class="fa fa-users text-sm"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">Kelola Pengguna</span>
+                    <span class="ml-1">Kelola Pengguna</span>
                 </a>
             </li>
             @endif
 
-            <li class="mt-0.5 w-full mb-6">
-                <a class="py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors text-slate-500 hover:text-red-600" href="javascript:;" onclick="event.preventDefault(); document.getElementById('sidebarLogoutForm').submit();" title="Keluar dari sistem">
-                    <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="fa fa-sign-out-alt text-red-500"></i>
+            <!-- Logout -->
+            <li class="mt-4 w-full mb-6">
+                <a class="py-3 my-0.5 flex items-center whitespace-nowrap px-5 transition-all text-sm font-medium text-slate-300 hover:bg-red-500/20 hover:text-red-400" href="javascript:;" onclick="event.preventDefault(); document.getElementById('sidebarLogoutForm').submit();" title="Keluar dari sistem">
+                    <div class="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-red-400 text-center">
+                        <i class="fa fa-sign-out-alt text-sm"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft font-semibold">Keluar</span>
+                    <span class="ml-1 font-semibold">Keluar</span>
                 </a>
                 <form id="sidebarLogoutForm" action="{{ route('logout') }}" method="POST" class="hidden">
                     @csrf

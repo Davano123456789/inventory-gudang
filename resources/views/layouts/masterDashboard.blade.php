@@ -18,6 +18,29 @@
             font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free', 'FontAwesome' !important;
             font-weight: 900 !important;
         }
+        /* Custom Scrollbar for Sidebar to match dark navy blue background */
+        #sidenav-main, #sidenav-main * {
+            scrollbar-color: rgba(255, 255, 255, 0.6) #0f172a;
+            scrollbar-width: thin;
+        }
+        #sidenav-main::-webkit-scrollbar,
+        #sidenav-main *::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        #sidenav-main::-webkit-scrollbar-track,
+        #sidenav-main *::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        #sidenav-main::-webkit-scrollbar-thumb,
+        #sidenav-main *::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 4px;
+        }
+        #sidenav-main::-webkit-scrollbar-thumb:hover,
+        #sidenav-main *::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.8);
+        }
     </style>
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <link href="https://demos.creative-tim.com/soft-ui-dashboard-tailwind/assets/css/nucleo-icons.css" rel="stylesheet" />
@@ -58,7 +81,6 @@
                         </li>
                         <li class="text-sm pl-2 capitalize leading-normal text-slate-700 before:float-left before:pr-2 before:text-gray-600 before:content-['/']" aria-current="page">@yield('page_title', 'Dashboard')</li>
                     </ol>
-                    <h6 class="mb-0 font-bold capitalize">@yield('page_title', 'Dashboard')</h6>
                 </nav>
                 <div class="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
                     <div class="flex items-center md:ml-auto md:pr-4">
@@ -66,7 +88,7 @@
                             @php $navbarGudangs = \App\Models\Gudang::orderBy('nama_gudang', 'asc')->get(); @endphp
                             <form action="{{ route('switch-gudang') }}" method="POST" id="switchGudangForm" class="m-0">
                                 @csrf
-                                <select name="kode_gudang" onchange="document.getElementById('switchGudangForm').submit()" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold shadow-soft-md border-0 focus:outline-none focus:ring-0 cursor-pointer pr-8">
+                                <select name="kode_gudang" onchange="document.getElementById('switchGudangForm').submit()" class="bg-[#0f172a] text-white text-xs px-3 py-1.5 rounded-lg font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer pr-8">
                                     @foreach($navbarGudangs as $g)
                                         <option value="{{ $g->kode_gudang }}" {{ Auth::user()->getActiveGudangCode() === $g->kode_gudang ? 'selected' : '' }}>
                                             Gudang: {{ $g->nama_gudang }}
@@ -75,11 +97,11 @@
                                 </select>
                             </form>
                         @elseif(Auth::user() && (Auth::user()->isKepalaGudang() || Auth::user()->isStaff()))
-                            <div class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold shadow-soft-md">
+                            <div class="bg-[#0f172a] text-white text-xs px-3 py-1.5 rounded-lg font-semibold">
                                 <i class="fa fa-warehouse mr-1"></i> Gudang: {{ Auth::user()->gudang ? Auth::user()->gudang->nama_gudang : 'Tidak Ditugaskan' }}
                             </div>
                         @else
-                            <div class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold shadow-soft-md">
+                            <div class="bg-[#0f172a] text-white text-xs px-3 py-1.5 rounded-lg font-semibold">
                                 <i class="fa fa-warehouse mr-1"></i> Sistem Inventory
                             </div>
                         @endif
@@ -144,8 +166,8 @@
                 cancelButtonText: 'Batal',
                 customClass: {
                     popup: 'rounded-2xl shadow-soft-2xl border-0 bg-white p-6 antialiased',
-                    confirmButton: 'inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight mr-2',
-                    cancelButton: 'inline-block px-6 py-3 font-bold text-center text-slate-500 uppercase align-middle transition-all rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200 leading-pro text-xs ease-soft-in tracking-tight'
+                    confirmButton: 'inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-blue-600 hover:bg-blue-700 leading-pro text-xs tracking-tight mr-2',
+                    cancelButton: 'inline-block px-6 py-3 font-bold text-center text-slate-500 uppercase align-middle transition-colors rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200 leading-pro text-xs tracking-tight'
                 },
                 buttonsStyling: false
             }).then((result) => {
@@ -208,7 +230,7 @@
                 confirmButtonText: 'OK',
                 customClass: {
                     popup: 'rounded-2xl shadow-soft-2xl border-0 bg-white p-6 antialiased',
-                    confirmButton: 'inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight'
+                    confirmButton: 'inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-blue-600 hover:bg-blue-700 leading-pro text-xs tracking-tight'
                 },
                 buttonsStyling: false
             });

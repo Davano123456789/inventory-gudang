@@ -114,7 +114,7 @@
                     <!-- Action Buttons -->
                     <div class="flex justify-start items-center gap-3 border-t pt-4">
                         <!-- Submit as Selesai -->
-                        <button type="submit" onclick="setStatus('Selesai')" class="px-6 py-3 font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md transition-colors text-xs tracking-wider">
+                        <button type="submit" onclick="setStatus('Selesai')" class="px-6 py-3 font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-xs tracking-wider">
                             <i class="fa fa-check mr-1"></i> Selesaikan Opname
                         </button>
                         
@@ -331,15 +331,14 @@
                                     
                                     <!-- System Stock (Read-Only) -->
                                     <td class="px-4 py-3.5 text-center align-middle bg-transparent shadow-none">
-                                        <span class="text-sm font-semibold text-slate-600">${item.stok_sistem.toLocaleString('id-ID')} ${item.unit}</span>
+                                        <span class="text-sm font-semibold text-slate-600">${item.stok_sistem.toLocaleString('id-ID')}</span>
                                         <input type="hidden" class="stok-sistem-input" value="${item.stok_sistem}">
                                     </td>
                                     
                                     <!-- Physical Stock Input -->
                                     <td class="px-4 py-3.5 text-center align-middle bg-transparent shadow-none">
-                                        <div class="relative flex items-center justify-center gap-1.5">
-                                            <input type="number" step="any" placeholder="-" class="stok-fisik-input w-28 text-center px-2.5 py-1.5 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-all font-semibold">
-                                            <span class="text-xxs font-bold text-slate-400 uppercase w-10 text-left">${item.unit}</span>
+                                        <div class="relative flex items-center justify-center">
+                                            <input type="number" step="any" placeholder="-" class="stok-fisik-input w-32 text-center px-2.5 py-1.5 text-xs text-slate-700 bg-white border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-all font-semibold">
                                         </div>
                                     </td>
                                     
@@ -387,7 +386,6 @@
         $(document).on("input", ".stok-fisik-input", function() {
             let $input = $(this);
             let $row = $input.closest(".item-row");
-            let unit = $row.data("unit") || 'Unit';
             
             let systemVal = parseFloat($row.find(".stok-sistem-input").val()) || 0;
             let physicalStr = $input.val();
@@ -406,13 +404,13 @@
             $badge.removeClass("text-slate-500 bg-red-50 text-red-600 bg-green-50 text-green-600 bg-blue-50 text-blue-600 border border-red-200 border-green-200 border-blue-200");
 
             if (diff < 0) {
-                $badge.text(diff.toLocaleString('id-ID') + " " + unit + " (Kurang)")
+                $badge.text(diff.toLocaleString('id-ID') + " (Kurang)")
                       .addClass("bg-red-50 text-red-600 border border-red-200");
             } else if (diff > 0) {
-                $badge.text("+" + diff.toLocaleString('id-ID') + " " + unit + " (Lebih)")
+                $badge.text("+" + diff.toLocaleString('id-ID') + " (Lebih)")
                       .addClass("bg-green-50 text-green-600 border border-green-200");
             } else {
-                $badge.text("0 " + unit + " (Sesuai)")
+                $badge.text("0 (Sesuai)")
                       .addClass("bg-blue-50 text-blue-600 border border-blue-200");
             }
         });

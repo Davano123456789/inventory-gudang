@@ -18,10 +18,10 @@
                 </div>
                 
                 <div class="flex gap-2">
-                    <button onclick="exportTableToExcel('rekapTable', 'Laporan_Rekap_Stok_Gudang')" class="inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-green-600 to-emerald-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
+                    <button onclick="exportTableToExcel('rekapTable', 'Laporan_Rekap_Stok_Gudang')" class="inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-emerald-600 hover:bg-emerald-700 leading-pro text-xs tracking-tight">
                         <i class="fa fa-file-excel mr-1"></i> Cetak Excel
                     </button>
-                    <button onclick="window.print()" class="inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-slate-600 to-slate-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
+                    <button onclick="printReport()" class="inline-block px-6 py-3 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-slate-600 hover:bg-slate-700 leading-pro text-xs tracking-tight">
                         <i class="fa fa-print mr-1"></i> Cetak PDF
                     </button>
                 </div>
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="w-full md:w-auto mt-4 md:mt-0">
-                        <button type="submit" class="w-full px-6 py-2.5 font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md transition-colors text-xs tracking-wider">
+                        <button type="submit" class="w-full px-6 py-2.5 font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-xs tracking-wider">
                             <i class="fa fa-filter mr-1"></i> Terapkan
                         </button>
                     </div>
@@ -58,7 +58,6 @@
                         $gudangObj = $gudangs->firstWhere('kode_gudang', $selectedGudang);
                     @endphp
                     <p class="text-sm text-slate-600 font-semibold mt-1">Gudang: {{ $gudangObj ? $gudangObj->nama_gudang : '-' }}</p>
-                    <p class="text-sm text-slate-600 font-semibold">Periode: {{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} s/d {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}</p>
                 </div>
 
                 @if(!$selectedGudang)
@@ -115,7 +114,7 @@
                                     <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Kode Barang</th>
                                     <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Nama Barang</th>
                                     <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Jenis Transaksi</th>
-                                    <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Referensi Dokumen</th>
+                                    <th class="px-4 py-3 font-bold text-left uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">No. Surat Jalan</th>
                                     <th class="px-4 py-3 font-bold text-right uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-slate-400">Saldo Awal</th>
                                     <th class="px-4 py-3 font-bold text-right uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-green-500">Masuk (+)</th>
                                     <th class="px-4 py-3 font-bold text-right uppercase align-middle border-b border-gray-200 shadow-none text-xxs tracking-wider text-red-500">Keluar (-)</th>
@@ -193,7 +192,7 @@
                                             $jenisLabel = 'Stock Opname';
                                             $jenisClass = 'text-indigo-600 bg-indigo-50';
                                             $jenisCode = 'stock_opname';
-                                        } elseif (str_contains($row->keterangan ?? '', 'Stok Awal') || str_contains($row->keterangan ?? '', 'Saldo Awal')) {
+                                        } elseif (str_contains($row->keterangan ?? '', 'Stok Awal') || str_contains($row->keterangan ?? '', 'Saldo Awal') || str_contains($row->keterangan ?? '', 'Import Excel')) {
                                             $jenisLabel = 'Excel';
                                             $jenisClass = 'text-slate-600 bg-slate-100';
                                             $jenisCode = 'saldo_awal';
@@ -202,7 +201,7 @@
                                             $jenisClass = 'text-gray-600 bg-gray-100';
                                             $jenisCode = 'lainnya';
                                         }
-                                        $ref = $row->keterangan ?: '-';
+                                        $ref = str_replace('Stok Awal (Import Excel)', 'Import Excel', $row->keterangan ?: '-');
                                     }
                                 @endphp
                                 <tr class="report-row border-b border-slate-100 hover:bg-slate-50/50 transition-colors {{ $row->status == 1 ? 'bg-yellow-50/50' : '' }}" 
@@ -227,19 +226,19 @@
                                         <span class="text-xs font-semibold text-slate-600">{{ $ref }}</span>
                                     </td>
                                     <td class="px-4 py-3 text-right align-middle bg-transparent shadow-none">
-                                        <span class="text-sm font-semibold text-slate-600">{{ number_format($row->saldo_awal, 0, ',', '.') }} <span class="text-xs text-slate-400">{{ $satuan }}</span></span>
+                                        <span class="text-sm font-semibold text-slate-600">{{ number_format($row->saldo_awal, 0, ',', '.') }}</span>
                                     </td>
                                     <td class="px-4 py-3 text-right align-middle bg-transparent shadow-none">
-                                        <span class="text-sm font-bold text-green-600">{{ number_format($row->masuk, 0, ',', '.') }} <span class="text-xs text-green-400">{{ $satuan }}</span></span>
+                                        <span class="text-sm font-bold text-green-600">{{ number_format($row->masuk, 0, ',', '.') }}</span>
                                     </td>
                                     <td class="px-4 py-3 text-right align-middle bg-transparent shadow-none">
-                                        <span class="text-sm font-bold text-red-600">{{ number_format($row->keluar, 0, ',', '.') }} <span class="text-xs text-red-400">{{ $satuan }}</span></span>
+                                        <span class="text-sm font-bold text-red-600">{{ number_format($row->keluar, 0, ',', '.') }}</span>
                                     </td>
                                     <td class="px-4 py-3 text-right align-middle bg-transparent shadow-none">
                                         @if($row->status == 1)
-                                            <span class="text-sm font-bold text-slate-400">? <span class="text-xs">{{ $satuan }}</span></span>
+                                            <span class="text-sm font-bold text-slate-400">?</span>
                                         @else
-                                            <span class="text-sm font-bold text-slate-800">{{ number_format($row->saldo_akhir, 0, ',', '.') }} <span class="text-xs text-slate-400">{{ $satuan }}</span></span>
+                                            <span class="text-sm font-bold text-slate-800">{{ number_format($row->saldo_akhir, 0, ',', '.') }}</span>
                                         @endif
                                     </td>
                                     <td class="px-4 py-3 text-center align-middle bg-transparent shadow-none hide-on-print">
@@ -278,6 +277,10 @@
         display: none !important;
     }
     @media print {
+        @page { 
+            size: landscape; 
+            margin: 0 !important; 
+        }
         body * {
             visibility: hidden;
         }
@@ -290,21 +293,23 @@
         .print-header {
             display: block !important;
             position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
+            left: 15mm;
+            top: 15mm;
+            width: calc(100% - 30mm);
         }
         .print-table {
             position: absolute;
-            left: 0;
-            top: 100px;
-            width: 100%;
+            left: 15mm;
+            top: 150px;
+            width: calc(100% - 30mm);
         }
-        /* Ensure rows are expanded for printing */
+        /* Ensure rows are expanded for printing, but hide filtered-out rows */
         .report-row {
             display: table-row !important;
         }
-        @page { size: landscape; }
+        .report-row.search-hidden {
+            display: none !important;
+        }
     }
 </style>
 
@@ -313,6 +318,14 @@
 <!-- SheetJS for proper Excel Export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+    function printReport() {
+        let origTitle = document.title;
+        document.title = '';
+        window.print();
+        setTimeout(function() {
+            document.title = origTitle;
+        }, 500);
+    }
     $(document).ready(function() {
         let currentPage = 1;
 

@@ -76,20 +76,30 @@ class BarangMasukController extends Controller
             'catatan' => 'nullable|string',
             'items' => 'required_without:new_items|array',
             'items.*.barang_id' => 'required|exists:barangs,id',
-            'items.*.satuan_id' => 'nullable|exists:satuans,id',
+            'items.*.satuan_id' => 'nullable',
+            'items.*.satuan_baru' => 'nullable|string|max:100',
             'items.*.qty_box' => 'nullable|numeric|min:0',
             'items.*.qty_pcs' => 'nullable|numeric|min:0',
             'items.*.qty_total' => 'required|numeric|min:0.01',
             'new_items' => 'required_without:items|array',
             'new_items.*.kode_barang' => 'required|string|max:100|unique:barangs,kode_barang',
             'new_items.*.nama_barang' => 'required|string|max:255',
-            'new_items.*.satuan_id' => 'required|exists:satuans,id',
+            'new_items.*.satuan_id' => 'required',
+            'new_items.*.satuan_baru' => 'nullable|string|max:100',
             'new_items.*.qty_box' => 'nullable|numeric|min:0',
             'new_items.*.qty_pcs' => 'nullable|numeric|min:0',
             'new_items.*.qty_total' => 'required|numeric|min:0.01',
         ], [
-            'new_items.*.kode_barang.unique' => 'Kode barang ":input" sudah ada. Silakan masukkan kode barang lain.',
-            'no_surat_jalan.unique' => 'Nomor Surat Jalan ":input" sudah pernah digunakan.'
+            'no_surat_jalan.required' => 'Nomor Surat Jalan wajib diisi.',
+            'no_surat_jalan.unique' => 'Nomor Surat Jalan sudah terdaftar / sudah digunakan.',
+            'tanggal_masuk.required' => 'Tanggal masuk / tanggal diterima wajib diisi.',
+            'tanggal_surat_jalan.required' => 'Tanggal Surat Jalan wajib diisi.',
+            'jenis_transaksi.required' => 'Jenis transaksi wajib dipilih.',
+            'gudang_asal_kode.required_if' => 'Gudang pengirim wajib dipilih untuk transaksi mutasi.',
+            'gudang_tujuan_kode.required' => 'Gudang penerima wajib dipilih.',
+            'items.required_without' => 'Minimal harus menambahkan 1 barang.',
+            'new_items.required_without' => 'Minimal harus menambahkan 1 barang.',
+            'new_items.*.kode_barang.unique' => 'Kode barang baru sudah terdaftar di sistem.',
         ]);
 
         DB::transaction(function() use ($request) {
@@ -118,6 +128,10 @@ class BarangMasukController extends Controller
             // Collect existing items
             if ($request->has('items') && is_array($request->items)) {
                 foreach ($request->items as $item) {
+                    $satuanId = $item['satuan_id'] ?? null;
+                    if (!empty($item['satuan_baru']) || $satuanId === 'NEW_SATUAN') {
+                        $item['satuan_id'] = $this->resolveOrCreateSatuan($item['satuan_baru'] ?? null);
+                    }
                     $allItems[] = $item;
                 }
             }
@@ -125,10 +139,15 @@ class BarangMasukController extends Controller
             // Collect and process new items
             if ($request->has('new_items') && is_array($request->new_items)) {
                 foreach ($request->new_items as $newItem) {
+                    $satuanId = $newItem['satuan_id'] ?? null;
+                    if (!empty($newItem['satuan_baru']) || $satuanId === 'NEW_SATUAN') {
+                        $satuanId = $this->resolveOrCreateSatuan($newItem['satuan_baru'] ?? null);
+                    }
+
                     $newBarang = \App\Models\Barang::create([
                         'kode_barang' => $newItem['kode_barang'],
                         'nama_barang' => $newItem['nama_barang'],
-                        'satuan_id' => $newItem['satuan_id'],
+                        'satuan_id' => $satuanId,
                         'created_by_user_id' => Auth::id() ?: 1,
                         'gudang_pendaftar_kode' => $request->gudang_tujuan_kode,
                     ]);
@@ -144,7 +163,7 @@ class BarangMasukController extends Controller
 
                     $allItems[] = [
                         'barang_id' => $newBarang->id,
-                        'satuan_id' => $newItem['satuan_id'],
+                        'satuan_id' => $satuanId,
                         'qty_box' => $newItem['qty_box'] ?? 0,
                         'qty_pcs' => $newItem['qty_pcs'] ?? 0,
                         'qty_total' => $newItem['qty_total'],
@@ -459,5 +478,28 @@ class BarangMasukController extends Controller
         });
 
         return redirect()->back()->with('success', 'Mutasi Surat Jalan ' . $mutasi->no_surat_jalan . ' ditolak. Stok telah dikembalikan ke Gudang Asal.');
+    }
+
+    /**
+     * Resolve existing unit (case-insensitive) or create new unit in uppercase.
+     */
+    private function resolveOrCreateSatuan(?string $namaSatuanBaru): ?int
+    {
+        if (empty($namaSatuanBaru)) {
+            return null;
+        }
+
+        $namaClean = trim($namaSatuanBaru);
+        $existing = \App\Models\Satuan::whereRaw('LOWER(nama_satuan) = ?', [mb_strtolower($namaClean)])->first();
+        
+        if ($existing) {
+            return $existing->id;
+        }
+
+        $newSatuan = \App\Models\Satuan::create([
+            'nama_satuan' => mb_strtoupper($namaClean),
+        ]);
+
+        return $newSatuan->id;
     }
 }

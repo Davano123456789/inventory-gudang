@@ -60,6 +60,22 @@ class BarangController extends Controller
             });
         }
 
+        if ($activeGudang && $activeGudang !== 'all') {
+            $query->select('barangs.*')
+                ->selectSub(function ($q) use ($activeGudang) {
+                    $q->from('stok_gudangs')
+                      ->select('stok_sekarang')
+                      ->whereColumn('stok_gudangs.barang_id', 'barangs.id')
+                      ->where('stok_gudangs.kode_gudang', $activeGudang)
+                      ->limit(1);
+                }, 'current_stok')
+                ->orderByRaw('COALESCE(current_stok, 0) ASC')
+                ->orderBy('barangs.id', 'desc');
+        } else {
+            $query->orderBy('stok_global', 'asc')
+                ->orderBy('barangs.id', 'desc');
+        }
+
         $barangs = $query->get();
 
         return view('barang.index', compact('barangs', 'gudangs'));
@@ -362,7 +378,7 @@ class BarangController extends Controller
                     'masuk' => $saldoDecimal - $saldoAwal > 0 ? $saldoDecimal - $saldoAwal : 0,
                     'keluar' => $saldoAwal - $saldoDecimal > 0 ? $saldoAwal - $saldoDecimal : 0,
                     'saldo_akhir' => $saldoDecimal,
-                    'keterangan' => 'Stok Awal (Import Excel)'
+                    'keterangan' => 'Import Excel'
                 ]);
                 
                 $importedCount++;

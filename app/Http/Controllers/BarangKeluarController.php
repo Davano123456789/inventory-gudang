@@ -38,9 +38,25 @@ class BarangKeluarController extends Controller
     {
         $user = auth()->user();
         $activeGudang = $user->getActiveGudangCode();
-        $barangs = Barang::with('satuan')->orderBy('nama_barang', 'asc')->get();
+        
+        $barangsQuery = Barang::with(['satuan', 'stokGudangs' => function($q) use ($activeGudang) {
+            if ($activeGudang !== 'all') {
+                $q->where('kode_gudang', $activeGudang);
+            }
+        }]);
+
+        if ($activeGudang !== 'all') {
+            $barangsQuery->whereHas('stokGudangs', function($q) use ($activeGudang) {
+                $q->where('kode_gudang', $activeGudang);
+            });
+        }
+
+        $barangs = $barangsQuery->orderBy('nama_barang', 'asc')->get();
         
         $gudangs = Gudang::where('kode_gudang', $activeGudang)->get();
+        if ($activeGudang === 'all') {
+            $gudangs = Gudang::orderBy('nama_gudang', 'asc')->get();
+        }
         
         $allGudangsQuery = Gudang::orderBy('nama_gudang', 'asc');
         if ($activeGudang !== 'all') {
@@ -66,8 +82,18 @@ class BarangKeluarController extends Controller
             'gudang_tujuan_kode' => 'required_if:jenis,mutasi',
             'items' => 'required|array|min:1',
             'items.*.barang_id' => 'required|exists:barangs,id',
-            'items.*.satuan_id' => 'required|exists:satuans,id',
+            'items.*.satuan_id' => 'nullable',
+            'items.*.satuan_baru' => 'nullable|string|max:100',
             'items.*.qty' => 'required|numeric|min:0.01',
+        ], [
+            'no_surat_jalan.required' => 'Nomor Surat Jalan wajib diisi.',
+            'no_surat_jalan.unique' => 'Nomor Surat Jalan sudah terdaftar / sudah digunakan.',
+            'tanggal_keluar.required' => 'Tanggal pengiriman / keluar wajib diisi.',
+            'tanggal_surat_jalan.required' => 'Tanggal Surat Jalan wajib diisi.',
+            'jenis.required' => 'Jenis transaksi wajib dipilih.',
+            'gudang_tujuan_kode.required_if' => 'Gudang tujuan wajib dipilih untuk transaksi mutasi.',
+            'items.required' => 'Minimal harus memasukkan 1 barang.',
+            'items.min' => 'Minimal harus memasukkan 1 barang.',
         ]);
 
         // CRITICAL VALIDATION: Check warehouse stock for each item before saving
@@ -109,11 +135,15 @@ class BarangKeluarController extends Controller
 
             // 2. Create detail and decrement stock
             foreach ($request->items as $item) {
-                // Auto-update item unit if it is missing
-                if (!empty($item['satuan_id'])) {
+                $satuanId = $item['satuan_id'] ?? null;
+                if (!empty($item['satuan_baru']) || $satuanId === 'NEW_SATUAN') {
+                    $satuanId = $this->resolveOrCreateSatuan($item['satuan_baru'] ?? null);
+                }
+
+                if (!empty($satuanId)) {
                     $barangObj = Barang::find($item['barang_id']);
                     if ($barangObj && is_null($barangObj->satuan_id)) {
-                        $barangObj->update(['satuan_id' => $item['satuan_id']]);
+                        $barangObj->update(['satuan_id' => $satuanId]);
                     }
                 }
 
@@ -221,5 +251,28 @@ class BarangKeluarController extends Controller
         });
 
         return redirect()->route('barang-keluar.index')->with('success', 'Transaksi barang keluar berhasil dihapus dan stok telah disesuaikan kembali!');
+    }
+
+    /**
+     * Resolve existing unit (case-insensitive) or create new unit in uppercase.
+     */
+    private function resolveOrCreateSatuan(?string $namaSatuanBaru): ?int
+    {
+        if (empty($namaSatuanBaru)) {
+            return null;
+        }
+
+        $namaClean = trim($namaSatuanBaru);
+        $existing = \App\Models\Satuan::whereRaw('LOWER(nama_satuan) = ?', [mb_strtolower($namaClean)])->first();
+        
+        if ($existing) {
+            return $existing->id;
+        }
+
+        $newSatuan = \App\Models\Satuan::create([
+            'nama_satuan' => mb_strtoupper($namaClean),
+        ]);
+
+        return $newSatuan->id;
     }
 }

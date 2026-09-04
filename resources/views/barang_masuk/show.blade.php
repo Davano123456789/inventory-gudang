@@ -14,8 +14,8 @@
             <div class="p-6 pb-0 mb-0 border-b-0 border-solid border-black-125 rounded-t-2xl flex justify-between items-center">
                 <h6 class="font-bold text-slate-800 text-lg">Informasi Surat Jalan</h6>
                 <div class="flex gap-2">
-                    <button type="button" onclick="window.print()" class="inline-block px-5 py-2.5 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-slate-600 to-slate-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
-                        <i class="fa fa-print mr-1"></i> Cetak / Print
+                    <button type="button" onclick="window.print()" class="inline-block px-5 py-2.5 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-slate-600 hover:bg-slate-700 leading-pro text-xs tracking-tight">
+                        <i class="fa fa-print mr-1"></i> Cetak Surat Jalan
                     </button>
                     <a href="{{ request('ref') === 'rekap' ? route('laporan.rekap') : route('barang-masuk.index') }}" class="inline-block px-5 py-2.5 font-bold text-center text-slate-500 uppercase align-middle transition-all rounded-lg cursor-pointer bg-gray-100 hover:bg-gray-200 leading-pro text-xs ease-soft-in tracking-tight">
                         <i class="fa fa-arrow-left mr-1"></i> Kembali

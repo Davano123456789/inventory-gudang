@@ -95,7 +95,7 @@
 
                     <!-- Action Buttons -->
                     <div class="flex justify-start gap-3 border-t pt-4">
-                        <button type="submit" class="px-6 py-3 font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md transition-colors text-xs tracking-wider">
+                        <button type="submit" class="px-6 py-3 font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-xs tracking-wider">
                             <i class="fa fa-save mr-1"></i> Simpan Pengguna
                         </button>
                         <a href="{{ route('user.index') }}" class="px-6 py-3 font-bold text-slate-500 uppercase bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-xs tracking-wider">

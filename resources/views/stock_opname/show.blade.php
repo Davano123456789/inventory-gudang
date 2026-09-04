@@ -6,6 +6,7 @@
 @push('styles')
 <style>
     @media print {
+        @page { margin: 10mm; }
         body * {
             visibility: hidden;
         }
@@ -116,23 +117,23 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-center align-middle bg-transparent shadow-none">
-                                    <span class="text-sm leading-normal text-slate-600 font-semibold">{{ number_format($detail->stok_sistem, 0, ',', '.') }} {{ $detail->barang->satuan ? $detail->barang->satuan->nama_satuan : '' }}</span>
+                                    <span class="text-sm leading-normal text-slate-600 font-semibold">{{ number_format($detail->stok_sistem, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center align-middle bg-transparent shadow-none">
-                                    <span class="text-sm font-bold leading-normal text-slate-700">{{ number_format($detail->stok_fisik, 0, ',', '.') }} {{ $detail->barang->satuan ? $detail->barang->satuan->nama_satuan : '' }}</span>
+                                    <span class="text-sm font-bold leading-normal text-slate-700">{{ number_format($detail->stok_fisik, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center align-middle bg-transparent shadow-none">
                                     @if($detail->selisih < 0)
                                         <span class="text-xs font-bold leading-normal text-red-600 bg-red-50 px-2.5 py-1 rounded-lg">
-                                            {{ number_format($detail->selisih, 0, ',', '.') }} {{ $detail->barang->satuan ? $detail->barang->satuan->nama_satuan : '' }}
+                                            {{ number_format($detail->selisih, 0, ',', '.') }}
                                         </span>
                                     @elseif($detail->selisih > 0)
                                         <span class="text-xs font-bold leading-normal text-green-600 bg-green-50 px-2.5 py-1 rounded-lg">
-                                            +{{ number_format($detail->selisih, 0, ',', '.') }} {{ $detail->barang->satuan ? $detail->barang->satuan->nama_satuan : '' }}
+                                            +{{ number_format($detail->selisih, 0, ',', '.') }}
                                         </span>
                                     @else
                                         <span class="text-xs font-bold leading-normal text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">
-                                            0 {{ $detail->barang->satuan ? $detail->barang->satuan->nama_satuan : '' }}
+                                            0
                                         </span>
                                     @endif
                                 </td>

@@ -20,7 +20,7 @@
                         <thead class="align-bottom">
                             <tr>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-y border-gray-200 shadow-none text-xxs text-slate-400 opacity-70">Surat Jalan</th>
-                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-y border-gray-200 shadow-none text-xxs text-slate-400 opacity-70">Gudang Pengirim</th>
+                                <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-y border-gray-200 shadow-none text-xxs text-slate-400 opacity-70">Pengirim</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-y border-gray-200 shadow-none text-xxs text-slate-400 opacity-70">Tanggal Kirim</th>
                                 <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-slate-50 border-y border-gray-200 shadow-none text-xxs text-slate-400 opacity-70">Barang & Qty</th>
                                 <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-slate-50 border-y border-gray-200 shadow-none text-xxs text-slate-400 opacity-70">Aksi</th>
@@ -33,7 +33,7 @@
                                     <span class="text-sm font-bold leading-normal text-slate-700">{{ $mutasi->no_surat_jalan }}</span>
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
-                                    <span class="text-xs font-bold leading-normal text-rose-600 bg-rose-50 px-2.5 py-1 rounded-lg">{{ $mutasi->gudang ? $mutasi->gudang->nama_gudang : 'Gudang Terhapus' }}</span>
+                                    <span class="text-sm font-semibold leading-normal text-slate-600">{{ $mutasi->gudang_kode_asal ?? ($mutasi->gudang ? $mutasi->gudang->kode_gudang : '-') }}</span>
                                 </td>
                                 <td class="px-6 py-4 align-middle bg-transparent border-b whitespace-nowrap shadow-none">
                                     <span class="text-sm leading-normal text-slate-600">{{ $mutasi->tanggal_keluar->format('d/m/Y') }}</span>
@@ -41,10 +41,14 @@
                                 <td class="px-6 py-4 align-middle bg-transparent border-b shadow-none">
                                     <ul class="list-disc pl-4 text-xs text-slate-600">
                                         @foreach($mutasi->details->take(2) as $det)
-                                            <li>{{ $det->barang->nama_barang }} ({{ $det->qty }} {{ $det->barang->satuan ? $det->barang->satuan->nama_satuan : '' }})</li>
+                                            <li>{{ $det->barang->nama_barang }} ({{ (float)$det->qty }} {{ $det->barang->satuan ? $det->barang->satuan->nama_satuan : '' }})</li>
                                         @endforeach
                                         @if($mutasi->details->count() > 2)
-                                            <li class="italic text-slate-400">+ {{ $mutasi->details->count() - 2 }} barang lainnya</li>
+                                            <li class="list-none mt-1">
+                                                <button type="button" onclick="showDetailMutasiModal('{{ $mutasi->no_surat_jalan }}', {{ json_encode($mutasi->details->map(function($d) { return ['nama' => $d->barang->nama_barang, 'kode' => $d->barang->kode_barang, 'qty' => (float)$d->qty, 'satuan' => $d->barang->satuan ? $d->barang->satuan->nama_satuan : '']; })) }})" class="italic text-blue-600 hover:text-blue-800 underline font-semibold text-[11px] bg-transparent border-0 cursor-pointer">
+                                                    + {{ $mutasi->details->count() - 2 }} barang lainnya
+                                                </button>
+                                            </li>
                                         @endif
                                     </ul>
                                 </td>
@@ -52,13 +56,13 @@
                                     @if(Auth::user() && Auth::user()->role !== 'staff_gudang')
                                     <form action="{{ route('mutasi.approve', $mutasi->id) }}" method="POST" class="inline-block mr-1">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1.5 text-xs font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded shadow-md transition-colors" onclick="confirmTerima(event, this.closest('form'))">
+                                        <button type="submit" class="px-3 py-1.5 text-xs font-bold text-white uppercase bg-blue-600 hover:bg-blue-700 rounded transition-colors" onclick="confirmTerima(event, this.closest('form'))">
                                             <i class="fa fa-check mr-1"></i> Terima
                                         </button>
                                     </form>
                                     <form action="{{ route('mutasi.reject', $mutasi->id) }}" method="POST" class="inline-block">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1.5 text-xs font-bold text-white uppercase bg-red-600 hover:bg-red-700 rounded shadow-md transition-colors" onclick="confirmTolak(event, this.closest('form'))">
+                                        <button type="submit" class="px-3 py-1.5 text-xs font-bold text-white uppercase bg-rose-600 hover:bg-rose-700 rounded transition-colors" onclick="confirmTolak(event, this.closest('form'))">
                                             <i class="fa fa-times mr-1"></i> Tolak
                                         </button>
                                     </form>
@@ -103,6 +107,7 @@
                             <select id="filterJenis" class="text-xs text-slate-600 bg-white border border-gray-200 rounded-lg p-1.5 focus:outline-none cursor-pointer font-semibold shadow-soft-xs">
                                 <option value="" selected>Semua Jenis</option>
                                 <option value="1">Reguler</option>
+                                <option value="2">Mutasi</option>
                                 <option value="3">Retur</option>
                                 <option value="4">Stock Opname</option>
                             </select>
@@ -129,11 +134,11 @@
                     </div>
 
                     <!-- Export Excel Button -->
-                    <button onclick="exportTableToExcel('masukTable', 'Riwayat_Barang_Masuk')" class="inline-block px-4 py-2.5 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-green-600 to-emerald-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
+                    <button onclick="exportTableToExcel('masukTable', 'Riwayat_Barang_Masuk')" class="inline-block px-4 py-2.5 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-emerald-600 hover:bg-emerald-700 leading-pro text-xs tracking-tight">
                         <i class="fa fa-file-excel mr-1"></i> Cetak Excel
                     </button>
                     <!-- Add Button -->
-                    <a href="{{ route('barang-masuk.create') }}" class="inline-block px-4 py-2.5 font-bold text-center text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-600 to-sky-400 leading-pro text-xs ease-soft-in shadow-soft-md hover:shadow-soft-2xl hover:scale-102 active:opacity-85 tracking-tight">
+                    <a href="{{ route('barang-masuk.create') }}" class="inline-block px-4 py-2.5 font-bold text-center text-white uppercase align-middle transition-colors rounded-lg cursor-pointer bg-blue-600 hover:bg-blue-700 leading-pro text-xs tracking-tight">
                         <i class="fa fa-plus mr-1"></i> Catat Masuk
                     </a>
                 </div>
@@ -252,11 +257,73 @@
     @method('DELETE')
 </form>
 
+<!-- Modal Detail Barang Mutasi -->
+<div id="detailMutasiModal" onclick="closeDetailMutasiModalOnBackdrop(event)" class="fixed inset-0 z-[9999] hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="relative w-full max-w-md bg-white rounded-2xl shadow-soft-2xl border border-slate-100 overflow-hidden transform transition-all">
+        <!-- Header -->
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+            <div>
+                <h6 class="text-sm font-bold text-slate-800 mb-0">Detail Barang Mutasi</h6>
+                <p class="text-xs text-slate-500 mb-0">No Surat Jalan: <span id="modalNoSuratJalan" class="font-bold text-blue-600"></span></p>
+            </div>
+            <button type="button" onclick="closeDetailMutasiModal()" class="text-slate-400 hover:text-slate-600 text-sm p-1 transition-colors">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+        <!-- Body -->
+        <div class="p-6 max-h-[60vh] overflow-y-auto">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="border-b border-slate-200 text-slate-400 font-bold uppercase text-[10px]">
+                        <th class="pb-2 w-8">No</th>
+                        <th class="pb-2">Barang</th>
+                        <th class="pb-2 text-right">Qty</th>
+                    </tr>
+                </thead>
+                <tbody id="modalItemsBody" class="divide-y divide-slate-100">
+                    <!-- Dynamic items -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <!-- SheetJS for proper Excel Export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+    function showDetailMutasiModal(noSuratJalan, items) {
+        $("#modalNoSuratJalan").text(noSuratJalan);
+        let $body = $("#modalItemsBody");
+        $body.empty();
+        
+        items.forEach(function(item, idx) {
+            let cleanQty = parseFloat(item.qty) || item.qty;
+            $body.append(`
+                <tr>
+                    <td class="py-2.5 font-semibold text-slate-500">${idx + 1}</td>
+                    <td class="py-2.5">
+                        <div class="font-bold text-slate-700">${item.nama}</div>
+                        <div class="text-[10px] text-slate-400">Kode: ${item.kode}</div>
+                    </td>
+                    <td class="py-2.5 text-right font-bold text-slate-800">${cleanQty} ${item.satuan}</td>
+                </tr>
+            `);
+        });
+        
+        $("#detailMutasiModal").removeClass("hidden").addClass("flex");
+    }
+
+    function closeDetailMutasiModal() {
+        $("#detailMutasiModal").addClass("hidden").removeClass("flex");
+    }
+
+    function closeDetailMutasiModalOnBackdrop(event) {
+        if (event.target.id === 'detailMutasiModal') {
+            closeDetailMutasiModal();
+        }
+    }
     function confirmTerima(event, form) {
         event.preventDefault();
         Swal.fire({
@@ -323,7 +390,7 @@
             let dateEnd = document.getElementById("filterDateEnd") ? document.getElementById("filterDateEnd").value : '';
             
             let matchSearch = rowSearchText.indexOf(searchQuery) > -1;
-            let matchJenis = selectedJenis === "" || rowJenis === selectedJenis;
+            let matchJenis = selectedJenis === "" || rowJenis == selectedJenis || (selectedJenis == "1" && (rowJenis == "1" || rowJenis == "Reguler")) || (selectedJenis == "2" && (rowJenis == "2" || rowJenis == "Mutasi")) || (selectedJenis == "3" && (rowJenis == "3" || rowJenis == "Retur" || rowJenis == "Return")) || (selectedJenis == "4" && (rowJenis == "4" || rowJenis == "Stock Opname"));
             let matchDate = true;
             if (dateStart && rowDate < dateStart) matchDate = false;
             if (dateEnd && rowDate > dateEnd) matchDate = false;
@@ -381,7 +448,7 @@
                 let rowDate = $row.data("date") || '';
 
                 let matchSearch = rowSearchText.indexOf(searchQuery) > -1;
-                let matchJenis = selectedJenis === "" || rowJenis === selectedJenis;
+                let matchJenis = selectedJenis === "" || rowJenis == selectedJenis || (selectedJenis == "1" && (rowJenis == "1" || rowJenis == "Reguler")) || (selectedJenis == "2" && (rowJenis == "2" || rowJenis == "Mutasi")) || (selectedJenis == "3" && (rowJenis == "3" || rowJenis == "Retur" || rowJenis == "Return")) || (selectedJenis == "4" && (rowJenis == "4" || rowJenis == "Stock Opname"));
                 
                 let matchDate = true;
                 if (dateStart && rowDate < dateStart) matchDate = false;
@@ -417,7 +484,7 @@
                 
                 // Show empty placeholder row
                 if ($("#emptySearchPlaceholder").length === 0) {
-                    $("tbody").append(`
+                    $("#masukTable tbody").append(`
                         <tr id="emptySearchPlaceholder">
                             <td colspan="8" class="px-6 py-10 text-center align-middle bg-transparent border-b shadow-none">
                                 <div class="flex flex-col items-center justify-center">

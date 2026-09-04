@@ -19,8 +19,8 @@
                     },
                     colors: {
                         brand: {
-                            blue: '#0a235c', // Dark blue from the design
-                            light: '#1e3c87'
+                            blue: '#0f172a', // Dark navy blue matching sidebar
+                            light: '#1e293b'
                         }
                     }
                 }
@@ -33,30 +33,32 @@
     <!-- Main Container -->
     <div class="w-full max-w-5xl bg-white rounded-3xl shadow-[0_20px_50px_rgba(15,23,42,0.1)] overflow-hidden flex flex-col md:flex-row min-h-[600px]">
         
-        <!-- Left Column (Branding & Illustration) -->
-        <div class="md:w-1/2 bg-brand-blue relative flex flex-col pt-12 overflow-hidden">
+        <!-- Left Column (Branding & Info with Background Image & Overlay) -->
+        <div class="md:w-1/2 relative flex flex-col p-10 md:p-14 overflow-hidden bg-[#0f172a]">
+            <!-- Background Image -->
+            <img src="{{ asset('images/bg-inventory.jpg') }}" alt="Warehouse Background" class="absolute inset-0 w-full h-full object-cover z-0">
             
-            <!-- Text Content Wrapper -->
-            <div class="px-10 md:px-14 relative z-10">
-                <!-- Top Logo -->
-                <div class="flex items-center gap-3 mb-12 lg:mb-16">
-                    <h1 class="text-white text-xl font-bold tracking-wide">Inventory Gudang</h1>
-                </div>
+            <!-- Dark Navy Semi-transparent Overlay -->
+            <div class="absolute inset-0 bg-[#0f172a]/90 z-0"></div>
 
-                <!-- Text Content -->
-                <div>
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-4">
-                        Kelola Gudang Lebih<br>Teratur
-                    </h2>
-                    <p class="text-blue-100 text-sm md:text-base leading-relaxed opacity-90 max-w-sm">
-                        Pantau stok, barang masuk, dan barang keluar dalam satu sistem terintegrasi.
-                    </p>
+            <!-- Top Logo Header -->
+            <div class="flex items-center gap-3 mb-10 relative z-10">
+                <img src="{{ asset('images/logo-pt.png') }}" class="h-10 w-10 object-contain" alt="PT. Bintang Cakra Kencana Logo">
+                <div class="flex flex-col leading-tight font-normal">
+                    <span class="text-xs text-white tracking-tight uppercase">PT. BINTANG CAKRA</span>
+                    <span class="text-[11px] text-white tracking-wider uppercase">KENCANA</span>
                 </div>
             </div>
 
-            <!-- Illustration -->
-            <div class="mt-8 flex-grow relative w-full">
-                <img src="{{ asset('images/gambar-gudang.png') }}" alt="Warehouse Illustration" class="absolute inset-0 w-full h-full object-cover object-bottom mix-blend-luminosity opacity-90" style="mix-blend-mode: normal; opacity: 1;">
+            <!-- Text Content -->
+            <div class="relative z-10 mt-10 md:mt-14">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-4 drop-shadow-sm">
+                    Kelola Gudang Lebih<br>Teratur
+                </h2>
+                <p class="text-blue-100 text-sm md:text-base leading-relaxed opacity-90 max-w-sm mb-6">
+                    Pantau stok, barang masuk, dan barang keluar dalam satu sistem terintegrasi.
+                </p>
+                <div class="w-32 h-[2px] bg-white rounded-full"></div>
             </div>
         </div>
 
@@ -130,7 +132,7 @@
 
                     <!-- Submit Button -->
                     <div class="">
-                        <button type="submit" class="w-full py-3.5 px-6 font-bold text-center text-white bg-brand-blue hover:bg-brand-light rounded-lg shadow-md hover:shadow-lg transition-all duration-200 active:scale-[0.98] text-sm tracking-wide">
+                        <button type="submit" class="w-full py-3.5 px-6 font-bold text-center text-white bg-brand-blue hover:bg-brand-light rounded-lg transition-colors text-sm tracking-wide">
                             Masuk
                         </button>
                     </div>
